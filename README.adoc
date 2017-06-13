@@ -1,0 +1,70 @@
+# Artifactory Resource
+
+A http://concourse.ci/[Concourse] resource for Artifactory.
+
+
+
+## Overview
+
+## Configuration
+
+
+
+### Resource Configuration
+To use the `artifactory-resource` you must declare it in the `resource_types` section of your `pipeline.yml` file:
+
+[source,yml]
+.Resource configuration
+----
+resource_types:
+  - name: artifactory-resource
+    type: docker-image
+    source:
+      repository: springio/artifactory-resource
+      tag: latest
+----
+
+
+
+### Source Configuration
+
+* `username`: *Required.* The artifactory username
+* `password`: *Required.* The artifactory password
+* `name`: *Required.* The name of the build
+* `repo`: *Required.* The artifact repository
+
+[source,yaml]
+.Source configuration
+----
+
+----
+
+
+
+## Behavior
+
+
+
+### `check`: Check for new builds
+
+
+
+### `in`: Fetches build artifacts
+
+
+
+#### Params
+
+* `number`: *Required.* The build number to fetch
+* `generate_maven_metadata`: If maven meta-data should be regenerated
+
+
+### `out`: Saves build artifacts
+
+* `number`: *Required.* The build number to save
+* `exclude`: A list of file patterns to exclude
+* `url`: The URL back to the concourse build (e.g. `+++https://my.concourse.url/builds/$BUILD_ID+++`)
+* `build_agent`: The build agent
+
+
+#### Params
