@@ -1,0 +1,14 @@
+{
+	"source": {
+		"uri": "http://repo.example.com",
+		"username": "admin",
+		"password": "password",
+		"repo": "libs-snapshot-local"
+	},
+	"version": {
+		"build_id": "5678"
+	},
+	"params": {
+		"build_number": "1234"
+	}
+}

@@ -2,39 +2,55 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.0.0.M1</version>
+		<relativePath />
+	</parent>
 	<groupId>io.spring.concourse.artifactoryresource</groupId>
 	<artifactId>artifactory-resource</artifactId>
 	<version>${revision}</version>
 	<properties>
 		<revision>1.0.0-SNAPSHOT</revision>
 		<java.version>1.8</java.version>
-		<maven.compiler.source>${java.version}</maven.compiler.source>
-		<maven.compiler.target>${java.version}</maven.compiler.target>
-
 	</properties>
 	<dependencies>
 		<!-- Compile -->
 		<dependency>
-			<groupId>org.jfrog.artifactory.client</groupId>
-			<artifactId>artifactory-java-client-services</artifactId>
-			<version>2.4.0</version>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.jfrog.buildinfo</groupId>
-			<artifactId>build-info-extractor</artifactId>
-			<version>2.7.8</version>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jdk8</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.module</groupId>
+			<artifactId>jackson-module-parameter-names</artifactId>
 		</dependency>
 		<!-- Test -->
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.assertj</groupId>
-			<artifactId>assertj-core</artifactId>
-			<version>3.8.0</version>
+			<groupId>com.palantir.docker.compose</groupId>
+			<artifactId>docker-compose-rule-junit4</artifactId>
+			<version>0.31.1</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -43,7 +59,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
-				<version>2.10</version>
 				<configuration>
 					<useProjectReferences>false</useProjectReferences>
 					<additionalConfig>
@@ -59,29 +74,75 @@
 				</configuration>
 			</plugin>
 			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>add-test-source</id>
+						<phase>generate-test-sources</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>src/integration/java</source>
+							</sources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>add-test-resources</id>
+						<phase>generate-test-resources</phase>
+						<goals>
+							<goal>add-test-resource</goal>
+						</goals>
+						<configuration>
+							<resources>
+								<resource>
+									<directory>src/integration/resources</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.20</version>
+				<artifactId>maven-failsafe-plugin</artifactId>
 				<configuration>
-					<includes>
-						<include>**/*Tests.java</include>
-						<include>**/*Test.java</include>
-					</includes>
-					<excludes>
-						<exclude>**/Abstract*.java</exclude>
-					</excludes>
+					<testSourceDirectory>src/it/java</testSourceDirectory>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<compilerArgs>
+						<arg>-parameters</arg>
+					</compilerArgs>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
 	<repositories>
 		<repository>
+			<id>spring-milestone</id>
+			<url>http://repo.spring.io/milestone</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
-			<id>central</id>
-			<name>bintray</name>
-			<url>http://jcenter.bintray.com</url>
+		</repository>
+		<repository>
+			<id>palantir</id>
+			<url>https://dl.bintray.com/palantir/releases</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
 		</repository>
 	</repositories>
 </project>

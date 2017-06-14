@@ -28,6 +28,7 @@ resource_types:
 
 ### Source Configuration
 
+* `uri`:
 * `username`: *Required.* The artifactory username
 * `password`: *Required.* The artifactory password
 * `name`: *Required.* The name of the build
@@ -36,7 +37,14 @@ resource_types:
 [source,yaml]
 .Source configuration
 ----
-
+resources:
+- name: artifacts
+  type: artifactory-resource
+    source:
+      uri: http://repo.example.com
+      username: admin
+      password: secret
+      repo: libs-snapshot-local
 ----
 
 
@@ -55,16 +63,15 @@ resource_types:
 
 #### Params
 
-* `number`: *Required.* The build number to fetch
+* `build_number`: *Required.* The build number to fetch
 * `generate_maven_metadata`: If maven meta-data should be regenerated
 
 
 ### `out`: Saves build artifacts
 
-* `number`: *Required.* The build number to save
+* `build_number`: *Required.* The build number to save
 * `exclude`: A list of file patterns to exclude
-* `url`: The URL back to the concourse build (e.g. `+++https://my.concourse.url/builds/$BUILD_ID+++`)
-* `build_agent`: The build agent
+* `build_url`: The URL back to the concourse build (e.g. `+++https://my.concourse.url/builds/$BUILD_ID+++`)
 
 
 #### Params

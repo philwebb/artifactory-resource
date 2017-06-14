@@ -1,0 +1,15 @@
+{
+	"version": {
+		"build_id": "1234"
+	},
+	"metadata": [
+		{
+			"name": "foo",
+			"value": "bar"
+		},
+		{
+			"name" : "bin",
+			"value":"bag"
+		}
+	]
+}

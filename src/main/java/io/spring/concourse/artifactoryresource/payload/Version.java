@@ -14,19 +14,30 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource;
+package io.spring.concourse.artifactoryresource.payload;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import org.springframework.util.Assert;
 
 /**
- * Main Application entry point.
+ * The version payload detailing a single build version. Can be used as both input and
+ * output.
  */
-@SpringBootApplication
-public class Application {
+public class Version {
 
-	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
+	@JsonProperty("build_id")
+	private final String buildId;
+
+	@JsonCreator
+	public Version(@JsonProperty("build_id") String buildId) {
+		Assert.hasText(buildId, "Build ID must not be empty");
+		this.buildId = buildId;
+	}
+
+	public String getBuildId() {
+		return this.buildId;
 	}
 
 }

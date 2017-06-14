@@ -14,19 +14,30 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource;
+package io.spring.concourse.artifactoryresource.payload;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import java.util.Collections;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonValue;
+
+import org.springframework.util.Assert;
 
 /**
- * Main Application entry point.
+ * Response from the {@code "/opt/resource/check"} script.
  */
-@SpringBootApplication
-public class Application {
+public class CheckResponse {
 
-	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
+	@JsonValue
+	private final List<Version> versions;
+
+	public CheckResponse(List<Version> versions) {
+		Assert.notNull(versions, "Versions must not be null");
+		this.versions = Collections.unmodifiableList(versions);
+	}
+
+	public List<Version> getVersions() {
+		return this.versions;
 	}
 
 }

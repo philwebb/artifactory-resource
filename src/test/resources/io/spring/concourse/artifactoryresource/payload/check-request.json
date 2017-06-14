@@ -1,0 +1,8 @@
+{
+	"source": {
+		"uri": "http://repo.example.com",
+		"username": "admin",
+		"password": "password",
+		"repo": "libs-snapshot-local"
+	}
+}

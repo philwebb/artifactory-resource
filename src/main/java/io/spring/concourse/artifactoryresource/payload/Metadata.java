@@ -14,19 +14,32 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource;
+package io.spring.concourse.artifactoryresource.payload;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.util.Assert;
 
 /**
- * Main Application entry point.
+ * A metadata item that can be returned as part of {@link InRequest} or
+ * {@link OutResponse}.
  */
-@SpringBootApplication
-public class Application {
+public class Metadata {
 
-	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
+	private final String name;
+
+	private final Object value;
+
+	public Metadata(String name, Object value) {
+		Assert.hasText(name, "Name must not be empty");
+		this.name = name;
+		this.value = value;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public Object getValue() {
+		return this.value;
 	}
 
 }
