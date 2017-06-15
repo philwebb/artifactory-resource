@@ -28,22 +28,23 @@ import org.springframework.util.Assert;
  */
 public class Version {
 
-	@JsonProperty("build_id")
-	private final String buildId;
+	@JsonProperty("build_number")
+	private final String buildNumber;
 
 	@JsonCreator
-	public Version(@JsonProperty("build_id") String buildId) {
-		Assert.hasText(buildId, "Build ID must not be empty");
-		this.buildId = buildId;
+	public Version(@JsonProperty("build_number") String buildNumber) {
+		Assert.hasText(buildNumber, "Build Number must not be empty");
+		this.buildNumber = buildNumber;
 	}
 
-	public String getBuildId() {
-		return this.buildId;
+	public String getBuildNumber() {
+		return this.buildNumber;
 	}
 
 	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("buildId", this.buildId).toString();
+		return new ToStringCreator(this).append("buildNumber", this.buildNumber)
+				.toString();
 	}
 
 }

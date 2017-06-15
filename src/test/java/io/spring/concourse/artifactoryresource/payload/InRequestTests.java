@@ -40,7 +40,7 @@ public class InRequestTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	private Source source = new Source("http://localhost:8181", "username", "password",
-			"libs-snapshot-local");
+			"libs-snapshot-local", "my-build");
 
 	private Version version = new Version("1234");
 
@@ -85,7 +85,7 @@ public class InRequestTests {
 		assertThat(request.getSource().getUsername()).isEqualTo("admin");
 		assertThat(request.getSource().getPassword()).isEqualTo("password");
 		assertThat(request.getSource().getRepo()).isEqualTo("libs-snapshot-local");
-		assertThat(request.getVersion().getBuildId()).isEqualTo("5678");
+		assertThat(request.getVersion().getBuildNumber()).isEqualTo("5678");
 		assertThat(request.getParams().getBuildNumber()).isEqualTo("1234");
 		assertThat(request.getParams().isGenerateMavenMetadata()).isFalse();
 	}

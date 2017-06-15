@@ -19,6 +19,6 @@ package io.spring.concourse.artifactoryresource.artifactory;
 /**
  * Artifactory service.
  */
-public interface ArtifactoryService {
+public interface Artifactory {
 
 }

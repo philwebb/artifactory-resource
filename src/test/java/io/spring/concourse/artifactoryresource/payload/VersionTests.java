@@ -42,9 +42,9 @@ public class VersionTests {
 	private JacksonTester<Version> json;
 
 	@Test
-	public void createWhenBuildIdIsEmptyShouldThrowException() {
+	public void createWhenBuildNumberIsEmptyShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Build ID must not be empty");
+		this.thrown.expectMessage("Build Number must not be empty");
 		new Version("");
 	}
 
@@ -57,7 +57,7 @@ public class VersionTests {
 	@Test
 	public void readShouldDeserialize() throws Exception {
 		Version version = this.json.readObject("version.json");
-		assertThat(version.getBuildId()).isEqualTo("5678");
+		assertThat(version.getBuildNumber()).isEqualTo("5678");
 	}
 
 }

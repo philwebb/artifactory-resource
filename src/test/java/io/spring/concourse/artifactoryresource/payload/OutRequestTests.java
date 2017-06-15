@@ -40,7 +40,7 @@ public class OutRequestTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	private Source source = new Source("http://localhost:8181", "username", "password",
-			"libs-snapshot-local");
+			"libs-snapshot-local", "my-build");
 
 	private Params params = new Params("1234", null, null);
 

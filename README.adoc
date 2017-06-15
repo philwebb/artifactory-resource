@@ -31,7 +31,7 @@ resource_types:
 * `uri`:
 * `username`: *Required.* The artifactory username
 * `password`: *Required.* The artifactory password
-* `name`: *Required.* The name of the build
+* `build_name`: *Required.* The name of the build
 * `repo`: *Required.* The artifact repository
 
 [source,yaml]

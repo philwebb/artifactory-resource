@@ -19,8 +19,6 @@ package io.spring.concourse.artifactoryresource.payload;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.spring.concourse.artifactoryresource.payload.CheckResponse;
-import io.spring.concourse.artifactoryresource.payload.Version;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

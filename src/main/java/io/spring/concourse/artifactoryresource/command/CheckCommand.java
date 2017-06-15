@@ -28,15 +28,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class CheckCommand implements Command {
 
-	private final SystemInputJson systemInputJson;
+	private final SystemInputJson inputJson;
 
-	public CheckCommand(SystemInputJson systemInputJson) {
-		this.systemInputJson = systemInputJson;
+	public CheckCommand(SystemInputJson inputJson) {
+		this.inputJson = inputJson;
 	}
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-		CheckRequest request = this.systemInputJson.read(CheckRequest.class);
+		CheckRequest request = this.inputJson.read(CheckRequest.class);
 		System.out.println(request);
 	}
 

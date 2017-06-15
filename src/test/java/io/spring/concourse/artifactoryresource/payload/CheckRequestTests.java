@@ -16,8 +16,6 @@
 
 package io.spring.concourse.artifactoryresource.payload;
 
-import io.spring.concourse.artifactoryresource.payload.CheckRequest;
-import io.spring.concourse.artifactoryresource.payload.Version;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -67,7 +65,7 @@ public class CheckRequestTests {
 		assertThat(request.getSource().getUsername()).isEqualTo("admin");
 		assertThat(request.getSource().getPassword()).isEqualTo("password");
 		assertThat(request.getSource().getRepo()).isEqualTo("libs-snapshot-local");
-		assertThat(request.getVersion().getBuildId()).isEqualTo("1234");
+		assertThat(request.getVersion().getBuildNumber()).isEqualTo("1234");
 	}
 
 }

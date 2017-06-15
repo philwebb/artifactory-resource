@@ -2,5 +2,6 @@
 	"uri": "http://repo.example.com",
 	"username": "admin",
 	"password": "password",
-	"repo": "libs-snapshot-local"
+	"repo": "libs-snapshot-local",
+	"build_name": "my-build"
 }

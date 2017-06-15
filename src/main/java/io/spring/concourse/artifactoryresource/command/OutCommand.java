@@ -16,6 +16,12 @@
 
 package io.spring.concourse.artifactoryresource.command;
 
+import io.spring.concourse.artifactoryresource.io.Directory;
+import io.spring.concourse.artifactoryresource.payload.OutRequest;
+import io.spring.concourse.artifactoryresource.payload.OutRequest.Params;
+import io.spring.concourse.artifactoryresource.payload.Source;
+import io.spring.concourse.artifactoryresource.system.SystemInputJson;
+
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.stereotype.Component;
 
@@ -25,8 +31,23 @@ import org.springframework.stereotype.Component;
 @Component
 public class OutCommand implements Command {
 
+	private final SystemInputJson inputJson;
+
+	public OutCommand(SystemInputJson inputJson) {
+		this.inputJson = inputJson;
+	}
+
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
+		OutRequest request = this.inputJson.read(OutRequest.class);
+		Directory directory = Directory.fromArgs(args);
+		Source source = request.getSource();
+		Params params = request.getParams();
+		// files = directory.scan(params.getExclude());
+		// artifactory.connect();
+		// connection.upload(buildNumber, buildUri, files);
+		// Version version = new Version(buildId);
+		// OutResponse response = new OutResponse(version, metadata);
 	}
 
 }

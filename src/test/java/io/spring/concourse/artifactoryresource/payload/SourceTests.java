@@ -45,28 +45,38 @@ public class SourceTests {
 	public void createWhenUriIsEmptyShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("URI must not be empty");
-		new Source("", "username", "password", "libs-snapshot-local");
+		new Source("", "username", "password", "libs-snapshot-local", "my-build");
 	}
 
 	@Test
 	public void createWhenUsernameIsEmptyShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Username must not be empty");
-		new Source("http://repo.example.com", "", "password", "libs-snapshot-local");
+		new Source("http://repo.example.com", "", "password", "libs-snapshot-local",
+				"my-build");
 	}
 
 	@Test
 	public void createWhenPasswordIsEmptyShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Password must not be empty");
-		new Source("http://repo.example.com", "username", "", "libs-snapshot-local");
+		new Source("http://repo.example.com", "username", "", "libs-snapshot-local",
+				"my-build");
 	}
 
 	@Test
 	public void createWhenRepoIsEmptyShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Repo must not be empty");
-		new Source("http://repo.example.com", "username", "password", "");
+		new Source("http://repo.example.com", "username", "password", "", "my-build");
+	}
+
+	@Test
+	public void createWhenBuildNameIsEmptyShouldThrowException() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Build Name must not be empty");
+		new Source("http://repo.example.com", "username", "password",
+				"libs-local-snapshot", "");
 	}
 
 	@Test
@@ -76,6 +86,7 @@ public class SourceTests {
 		assertThat(source.getUsername()).isEqualTo("admin");
 		assertThat(source.getPassword()).isEqualTo("password");
 		assertThat(source.getRepo()).isEqualTo("libs-snapshot-local");
+		assertThat(source.getBuildName()).isEqualTo("my-build");
 	}
 
 }

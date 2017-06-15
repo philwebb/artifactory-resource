@@ -16,6 +16,10 @@
 
 package io.spring.concourse.artifactoryresource.command;
 
+import io.spring.concourse.artifactoryresource.io.Directory;
+import io.spring.concourse.artifactoryresource.payload.InRequest;
+import io.spring.concourse.artifactoryresource.system.SystemInputJson;
+
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.stereotype.Component;
 
@@ -25,8 +29,21 @@ import org.springframework.stereotype.Component;
 @Component
 public class InCommand implements Command {
 
+	private final SystemInputJson inputJson;
+
+	public InCommand(SystemInputJson inputJson) {
+		this.inputJson = inputJson;
+	}
+
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
+		InRequest request = this.inputJson.read(InRequest.class);
+		Directory directory = Directory.fromArgs(args);
+		System.out.println(directory);
+		System.out.println(request);
+
+		// Connection connection = artifactoy.connect(args.getSource().get...);
+
 	}
 
 }

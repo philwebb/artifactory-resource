@@ -35,19 +35,23 @@ public class Source {
 
 	private final String repo;
 
+	private final String buildName;
+
 	@JsonCreator
 	public Source(@JsonProperty("uri") String uri,
 			@JsonProperty("username") String username,
-			@JsonProperty("password") String password,
-			@JsonProperty("repo") String repo) {
+			@JsonProperty("password") String password, @JsonProperty("repo") String repo,
+			@JsonProperty("build_name") String buildName) {
 		Assert.hasText(uri, "URI must not be empty");
 		Assert.hasText(username, "Username must not be empty");
 		Assert.hasText(password, "Password must not be empty");
 		Assert.hasText(repo, "Repo must not be empty");
+		Assert.hasText(buildName, "Build Name must not be empty");
 		this.uri = uri;
 		this.username = username;
 		this.password = password;
 		this.repo = repo;
+		this.buildName = buildName;
 	}
 
 	public String getUri() {
@@ -66,11 +70,15 @@ public class Source {
 		return this.repo;
 	}
 
+	public String getBuildName() {
+		return this.buildName;
+	}
+
 	@Override
 	public String toString() {
 		return new ToStringCreator(this).append("uri", this.uri)
 				.append("username", this.username).append("password", this.password)
-				.append("repo", this.repo).toString();
+				.append("repo", this.repo).append("buildName", this.buildName).toString();
 	}
 
 }

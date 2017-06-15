@@ -1,8 +1,8 @@
 [
 	{
-		"build_id": "1234"
+		"build_number": "1234"
 	},
 	{
-		"build_id": "5678"
+		"build_number": "5678"
 	}
 ]
