@@ -19,6 +19,7 @@ package io.spring.concourse.artifactoryresource.payload;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 
 /**
@@ -63,6 +64,13 @@ public class Source {
 
 	public String getRepo() {
 		return this.repo;
+	}
+
+	@Override
+	public String toString() {
+		return new ToStringCreator(this).append("uri", this.uri)
+				.append("username", this.username).append("password", this.password)
+				.append("repo", this.repo).toString();
 	}
 
 }

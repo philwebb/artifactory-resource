@@ -23,6 +23,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 
 /**
@@ -51,23 +52,29 @@ public class OutRequest {
 		return this.params;
 	}
 
+	@Override
+	public String toString() {
+		return new ToStringCreator(this).append("source", this.source)
+				.append("params", this.params).toString();
+	}
+
 	public static class Params {
 
 		private final String buildNumber;
 
 		private final List<String> exclude;
 
-		private final String buildUrl;
+		private final String buildUri;
 
 		@JsonCreator
 		public Params(@JsonProperty("build_number") String buildNumber,
 				@JsonProperty("exclude") List<String> exclude,
-				@JsonProperty("build_url") String buildUrl) {
+				@JsonProperty("build_uri") String buildUri) {
 			Assert.hasText(buildNumber, "Build Number must not be empty");
 			this.buildNumber = buildNumber;
 			this.exclude = (exclude == null ? Collections.emptyList()
 					: Collections.unmodifiableList(new ArrayList<>(exclude)));
-			this.buildUrl = buildUrl;
+			this.buildUri = buildUri;
 		}
 
 		public String getBuildNumber() {
@@ -79,7 +86,14 @@ public class OutRequest {
 		}
 
 		public String getBuildUrl() {
-			return this.buildUrl;
+			return this.buildUri;
+		}
+
+		@Override
+		public String toString() {
+			return new ToStringCreator(this).append("buildNumber", this.buildNumber)
+					.append("exclude", this.exclude).append("buildUri", this.buildUri)
+					.toString();
 		}
 
 	}

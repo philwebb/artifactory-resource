@@ -21,6 +21,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 
 /**
@@ -38,6 +39,11 @@ public class CheckResponse {
 
 	public List<Version> getVersions() {
 		return this.versions;
+	}
+
+	@Override
+	public String toString() {
+		return new ToStringCreator(this).append("versions", this.versions).toString();
 	}
 
 }

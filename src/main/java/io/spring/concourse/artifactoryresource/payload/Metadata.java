@@ -16,6 +16,7 @@
 
 package io.spring.concourse.artifactoryresource.payload;
 
+import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 
 /**
@@ -42,4 +43,9 @@ public class Metadata {
 		return this.value;
 	}
 
+	@Override
+	public String toString() {
+		return new ToStringCreator(this).append("name", this.name)
+				.append("value", this.value).toString();
+	}
 }

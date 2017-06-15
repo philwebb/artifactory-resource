@@ -16,28 +16,35 @@
 
 package io.spring.concourse.artifactoryresource.command;
 
-import io.spring.concourse.artifactoryresource.payload.CheckRequest;
-import io.spring.concourse.artifactoryresource.system.SystemInputJson;
+import java.util.Collections;
+import java.util.List;
 
 import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 /**
- * Command to handle requests to the {@code "/opt/resource/check"} script.
+ * {@link ApplicationRunner} to delegate incoming requests to commands.
  */
 @Component
-public class CheckCommand implements Command {
+public class CommandProcessor implements ApplicationRunner {
 
-	private final SystemInputJson systemInputJson;
+	private final List<Command> commands;
 
-	public CheckCommand(SystemInputJson systemInputJson) {
-		this.systemInputJson = systemInputJson;
+	public CommandProcessor(List<Command> commands) {
+		this.commands = Collections.unmodifiableList(commands);
 	}
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-		CheckRequest request = this.systemInputJson.read(CheckRequest.class);
-		System.out.println(request);
+		List<String> nonOptionArgs = args.getNonOptionArgs();
+		Assert.state(!nonOptionArgs.isEmpty(), "No command argument specified");
+		String request = nonOptionArgs.get(0);
+		this.commands.stream().filter((c) -> c.getName().equals(request)).findFirst()
+				.orElseThrow(() -> new IllegalStateException(
+						"Unknown command '" + request + "'"))
+				.run(args);
 	}
 
 }

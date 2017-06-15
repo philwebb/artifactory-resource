@@ -19,6 +19,7 @@ package io.spring.concourse.artifactoryresource.payload;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 
 /**
@@ -56,6 +57,12 @@ public class InRequest {
 		return this.params;
 	}
 
+	@Override
+	public String toString() {
+		return new ToStringCreator(this).append("source", this.source)
+				.append("version", this.version).append("params", this.params).toString();
+	}
+
 	public static class Params {
 
 		private final String buildNumber;
@@ -77,6 +84,13 @@ public class InRequest {
 
 		public boolean isGenerateMavenMetadata() {
 			return this.generateMavenMetadata;
+		}
+
+		@Override
+		public String toString() {
+			return new ToStringCreator(this).append("buildNumber", this.buildNumber)
+					.append("generateMavenMetadata", this.generateMavenMetadata)
+					.toString();
 		}
 
 	}

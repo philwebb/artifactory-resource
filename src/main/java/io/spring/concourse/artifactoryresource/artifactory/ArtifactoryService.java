@@ -14,20 +14,11 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.command;
+package io.spring.concourse.artifactoryresource.artifactory;
 
-public class DirectoryCommand implements Command {
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * io.spring.concourse.artifactoryresource.command.Command#run(java.lang.String[])
-	 */
-	@Override
-	public void run(String[] commandArgs) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
-	}
+/**
+ * Artifactory service.
+ */
+public interface ArtifactoryService {
 
 }

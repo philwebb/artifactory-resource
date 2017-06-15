@@ -19,6 +19,7 @@ package io.spring.concourse.artifactoryresource.payload;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 
 /**
@@ -44,6 +45,12 @@ public class CheckRequest {
 
 	public Version getVersion() {
 		return this.version;
+	}
+
+	@Override
+	public String toString() {
+		return new ToStringCreator(this).append("source", this.source)
+				.append("version", this.version).toString();
 	}
 
 }

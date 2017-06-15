@@ -16,28 +16,22 @@
 
 package io.spring.concourse.artifactoryresource.command;
 
+import org.junit.Test;
+
 import org.springframework.boot.ApplicationArguments;
-import org.springframework.util.ClassUtils;
+import org.springframework.boot.DefaultApplicationArguments;
 
 /**
- * Interface for a command that can be run.
+ * Tests for {@link CheckCommand}.
  */
-public interface Command {
+public class CheckCommandTests {
 
-	public static final String NAME_SUFFIX = "Command";
+	private ApplicationArguments args = new DefaultApplicationArguments(
+			new String[] { "check" });
 
-	default String getName() {
-		String name = ClassUtils.getShortName(getClass());
-		int lastDot = name.lastIndexOf(".");
-		if (lastDot != -1) {
-			name = name.substring(lastDot + 1, name.length());
-		}
-		if (name.endsWith(NAME_SUFFIX)) {
-			name = name.substring(0, name.length() - NAME_SUFFIX.length());
-		}
-		return name.toLowerCase();
+	@Test
+	public void testName() throws Exception {
+
 	}
-
-	void run(ApplicationArguments args) throws Exception;
 
 }

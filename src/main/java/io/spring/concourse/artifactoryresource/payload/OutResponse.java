@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 
 /**
@@ -44,6 +45,12 @@ public class OutResponse {
 
 	public List<Metadata> getMetadata() {
 		return this.metadata;
+	}
+
+	@Override
+	public String toString() {
+		return new ToStringCreator(this).append("version", this.version)
+				.append("metadata", this.metadata).toString();
 	}
 
 }

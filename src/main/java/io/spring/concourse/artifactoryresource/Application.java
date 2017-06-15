@@ -16,6 +16,8 @@
 
 package io.spring.concourse.artifactoryresource;
 
+import io.spring.concourse.artifactoryresource.system.SystemStreams;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -26,7 +28,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class Application {
 
 	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
+		SystemStreams systemStreams = SystemStreams.reconfigureSystem();
+		SpringApplication application = new SpringApplication(Application.class);
+		application.addInitializers((c) -> c.getBeanFactory()
+				.registerSingleton("systemStreams", systemStreams));
+		application.run(args);
 	}
 
 }

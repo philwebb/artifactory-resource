@@ -16,6 +16,17 @@
 
 package io.spring.concourse.artifactoryresource.command;
 
-public class OutCommand extends DirectoryCommand {
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.stereotype.Component;
+
+/**
+ * Command to handle requests to the {@code "/opt/resource/out"} script.
+ */
+@Component
+public class OutCommand implements Command {
+
+	@Override
+	public void run(ApplicationArguments args) throws Exception {
+	}
 
 }
