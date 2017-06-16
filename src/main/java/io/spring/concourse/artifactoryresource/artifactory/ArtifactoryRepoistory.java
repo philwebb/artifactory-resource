@@ -16,10 +16,29 @@
 
 package io.spring.concourse.artifactoryresource.artifactory;
 
+import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
+
 /**
+ * Access to an artifactory repository.
+ *
+ * @author Phillip Webb
  */
 public interface ArtifactoryRepoistory {
 
-	void deploy(Artifact artifact);
+	/**
+	 * Deploy the specified artifacts to the repository.
+	 * @param artifacts the artifacts to deploy
+	 */
+	default void deploy(Iterable<DeployableArtifact> artifacts) {
+		for (DeployableArtifact artifact : artifacts) {
+			deploy(artifact);
+		}
+	}
+
+	/**
+	 * Deploy the specified artifact to the repository.
+	 * @param artifact the artifact to deploy
+	 */
+	void deploy(DeployableArtifact artifact);
 
 }

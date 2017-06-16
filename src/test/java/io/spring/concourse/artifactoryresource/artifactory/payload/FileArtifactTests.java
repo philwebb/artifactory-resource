@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.artifactory;
+package io.spring.concourse.artifactoryresource.artifactory.payload;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +28,9 @@ import org.junit.rules.TemporaryFolder;
 import org.springframework.util.FileCopyUtils;
 
 /**
- * Tests for {@link FileArtifact}.
+ * Tests for {@link DeployableFileArtifact}.
+ *
+ * @author Phillip Webb
  */
 public class FileArtifactTests extends AbstractArtifactTests {
 
@@ -44,18 +46,18 @@ public class FileArtifactTests extends AbstractArtifactTests {
 		File file = this.temp.newFile();
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("is not a parent of");
-		new FileArtifact(parent, file);
+		new DeployableFileArtifact(parent, file);
 	}
 
 	@Override
-	protected AbstractArtifact create(String path, byte[] content,
+	protected AbstractDeployableArtifact create(String path, byte[] content,
 			Map<String, String> properties, Checksums checksums) throws IOException {
 		File parent = this.temp.newFolder();
 		File file = new File(parent.getAbsolutePath() + File.separatorChar
 				+ path.replace("/", File.separator));
 		file.getParentFile().mkdirs();
 		FileCopyUtils.copy(content, file);
-		return new FileArtifact(parent, file, properties, checksums);
+		return new DeployableFileArtifact(parent, file, properties, checksums);
 	}
 
 }

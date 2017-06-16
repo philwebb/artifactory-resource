@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.artifactory;
+package io.spring.concourse.artifactoryresource.artifactory.payload;
 
 import java.io.IOException;
 import java.util.Map;
@@ -24,7 +24,9 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 /**
- * Tests for {@link ByteArrayArtifact}.
+ * Tests for {@link DeployableByteArrayArtifact}.
+ *
+ * @author Phillip Webb
  */
 public class ByteArrayArtifactTests extends AbstractArtifactTests {
 
@@ -35,13 +37,13 @@ public class ByteArrayArtifactTests extends AbstractArtifactTests {
 	public void createWhenBytesIsNullShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Content must not be null");
-		new ByteArrayArtifact("foo", null);
+		new DeployableByteArrayArtifact("foo", null);
 	}
 
 	@Override
-	protected AbstractArtifact create(String path, byte[] content,
+	protected AbstractDeployableArtifact create(String path, byte[] content,
 			Map<String, String> properties, Checksums checksums) throws IOException {
-		return new ByteArrayArtifact(path, content, properties, checksums);
+		return new DeployableByteArrayArtifact(path, content, properties, checksums);
 	}
 
 }

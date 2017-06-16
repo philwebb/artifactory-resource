@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.artifactory;
+package io.spring.concourse.artifactoryresource.artifactory.payload;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -27,7 +27,9 @@ import org.springframework.util.FileCopyUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link AbstractArtifact}.
+ * Tests for {@link AbstractDeployableArtifact}.
+ *
+ * @author Phillip Webb
  */
 public abstract class AbstractArtifactTests {
 
@@ -35,13 +37,13 @@ public abstract class AbstractArtifactTests {
 
 	@Test
 	public void createWhenPropertiesIsNullShouldUseEmptyProperties() throws Exception {
-		AbstractArtifact artifact = create("foo", CONTENT, null, null);
+		AbstractDeployableArtifact artifact = create("foo", CONTENT, null, null);
 		assertThat(artifact.getProperties()).isNotNull().isEmpty();
 	}
 
 	@Test
 	public void createWhenChecksumIsNullShouldCalculateChecksums() throws Exception {
-		AbstractArtifact artifact = create("foo", CONTENT, null, null);
+		AbstractDeployableArtifact artifact = create("foo", CONTENT, null, null);
 		assertThat(artifact.getChecksums().getSha1())
 				.isEqualTo("A9993E364706816ABA3E25717850C26C9CD0D89D");
 		assertThat(artifact.getChecksums().getMd5())
@@ -51,7 +53,7 @@ public abstract class AbstractArtifactTests {
 	@Test
 	public void getPropertiesShouldReturnProperties() throws Exception {
 		Map<String, String> properties = Collections.singletonMap("foo", "bar");
-		AbstractArtifact artifact = create("foo", CONTENT, properties, null);
+		AbstractDeployableArtifact artifact = create("foo", CONTENT, properties, null);
 		assertThat(artifact.getProperties()).isEqualTo(properties);
 	}
 
@@ -59,25 +61,24 @@ public abstract class AbstractArtifactTests {
 	public void getChecksumShouldReturnChecksum() throws Exception {
 		Checksums checksums = new Checksums("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
 				"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-		AbstractArtifact artifact = create("foo", CONTENT, null, checksums);
+		AbstractDeployableArtifact artifact = create("foo", CONTENT, null, checksums);
 		assertThat(artifact.getChecksums()).isEqualTo(checksums);
 	}
 
 	@Test
 	public void getPathShouldReturnPath() throws Exception {
-		AbstractArtifact artifact = create("foo/bar", CONTENT, null, null);
+		AbstractDeployableArtifact artifact = create("foo/bar", CONTENT, null, null);
 		assertThat(artifact.getPath()).isEqualTo("/foo/bar");
 	}
 
 	@Test
 	public void getContentShouldReturnContent() throws Exception {
-		AbstractArtifact artifact = create("foo", CONTENT, null, null);
-		assertThat(FileCopyUtils.copyToByteArray(artifact.getContent()))
+		AbstractDeployableArtifact artifact = create("foo", CONTENT, null, null);
+		assertThat(FileCopyUtils.copyToByteArray(artifact.getContent().getInputStream()))
 				.isEqualTo(CONTENT);
 	}
 
-	protected abstract AbstractArtifact create(String path,
-			byte[] content, Map<String, String> properties, Checksums checksums)
-					throws IOException;
+	protected abstract AbstractDeployableArtifact create(String path, byte[] content,
+			Map<String, String> properties, Checksums checksums) throws IOException;
 
 }

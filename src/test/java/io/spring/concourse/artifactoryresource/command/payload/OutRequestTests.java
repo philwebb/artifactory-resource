@@ -30,6 +30,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link OutRequest}.
+ *
+ * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
 @JsonTest
@@ -41,7 +43,8 @@ public class OutRequestTests {
 	private Source source = new Source("http://localhost:8181", "username", "password",
 			"libs-snapshot-local", "my-build");
 
-	private OutRequest.Params params = new OutRequest.Params("1234", null, null);
+	private OutRequest.Params params = new OutRequest.Params("1234", "folder", null, null,
+			null);
 
 	@Autowired
 	private JacksonTester<OutRequest> json;
@@ -65,7 +68,14 @@ public class OutRequestTests {
 			throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Build Number must not be empty");
-		new OutRequest.Params("", null, null);
+		new OutRequest.Params("", "folder", null, null, null);
+	}
+
+	@Test
+	public void createParamsWhenFolderIsEmptyShouldThrowException() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Folder must not be empty");
+		new OutRequest.Params("1234", "", null, null, null);
 	}
 
 	@Test
@@ -76,6 +86,8 @@ public class OutRequestTests {
 		assertThat(request.getSource().getPassword()).isEqualTo("password");
 		assertThat(request.getSource().getRepo()).isEqualTo("libs-snapshot-local");
 		assertThat(request.getParams().getBuildNumber()).isEqualTo("1234");
+		assertThat(request.getParams().getFolder()).isEqualTo("dist");
+		assertThat(request.getParams().getInclude()).containsExactly("*");
 		assertThat(request.getParams().getExclude()).containsExactly("foo", "bar");
 		assertThat(request.getParams().getBuildUrl()).isEqualTo("http://ci.example.com");
 	}

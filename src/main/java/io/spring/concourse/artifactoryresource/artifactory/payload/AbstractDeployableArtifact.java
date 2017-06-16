@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.artifactory;
+package io.spring.concourse.artifactoryresource.artifactory.payload;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -25,9 +25,11 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
- * Abstract {@link Artifact} implementation.
+ * Abstract {@link DeployableArtifact} implementation.
+ *
+ * @author Phillip Webb
  */
-public abstract class AbstractArtifact implements Artifact {
+public abstract class AbstractDeployableArtifact implements DeployableArtifact {
 
 	private final String path;
 
@@ -35,7 +37,7 @@ public abstract class AbstractArtifact implements Artifact {
 
 	private Checksums checksums;
 
-	public AbstractArtifact(String path, Map<String, String> properties,
+	public AbstractDeployableArtifact(String path, Map<String, String> properties,
 			Checksums checksums) {
 		Assert.hasText(path, "Path must not be empty");
 		this.path = cleanPath(path);

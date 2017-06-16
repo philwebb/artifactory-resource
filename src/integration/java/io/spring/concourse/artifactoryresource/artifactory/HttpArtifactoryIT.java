@@ -14,21 +14,37 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource;
+package io.spring.concourse.artifactoryresource.artifactory;
 
 import com.palantir.docker.compose.DockerComposeRule;
 import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.connection.waiting.HealthChecks;
+import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
+import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableByteArrayArtifact;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-public abstract class AbstractArtifactoryIT {
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringRunner;
+
+/**
+ *
+ * @author Phillip Webb
+ */
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@ActiveProfiles("test")
+public class HttpArtifactoryIT {
 
 	@ClassRule
 	public static DockerComposeRule docker = DockerComposeRule.builder()
 			.file("src/integration/resources/docker-compose.yml")
 			.waitingForService("artifactory", HealthChecks.toRespond2xxOverHttp(8081,
-					AbstractArtifactoryIT::artifactoryUri))
+					HttpArtifactoryIT::artifactoryUri))
 			.build();
 
 	public static DockerPort port;
@@ -38,6 +54,18 @@ public abstract class AbstractArtifactoryIT {
 		port = docker.containers().container("artifactory").port(8081);
 	}
 
+	@Autowired
+	private Artifactory artifactory;
+
+	@Test
+	public void deployArtifact() throws Exception {
+		ArtifactoryRepoistory repository = this.artifactory
+				.server(artifactoryUri(), "admin", "password")
+				.repository("example-repo-local");
+		DeployableArtifact artifact = new DeployableByteArrayArtifact("foo/bar", "foo".getBytes());
+		repository.deploy(artifact);
+	}
+
 	public static String artifactoryUri() {
 		return artifactoryUri(port);
 	}
@@ -45,4 +73,5 @@ public abstract class AbstractArtifactoryIT {
 	private static String artifactoryUri(DockerPort port) {
 		return port.inFormat("http://$HOST:$EXTERNAL_PORT/artifactory");
 	}
+
 }

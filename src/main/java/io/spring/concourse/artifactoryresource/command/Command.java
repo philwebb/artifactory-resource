@@ -21,6 +21,8 @@ import org.springframework.util.ClassUtils;
 
 /**
  * Interface for a command that can be run.
+ *
+ * @author Phillip Webb
  */
 public interface Command {
 

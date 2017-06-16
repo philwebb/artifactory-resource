@@ -14,23 +14,45 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.artifactory;
+package io.spring.concourse.artifactoryresource.artifactory.payload;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
+
+import org.springframework.core.io.Resource;
 
 /**
  * A single artifact that can be deployed.
+ *
+ * @author Phillip Webb
  */
-public interface Artifact {
+public interface DeployableArtifact {
 
+	/**
+	 * Return the path of the artifact starting with {@code /}, for example
+	 * {@code /libs-snapshot-local/com/example/foo/1.0.0-SNAPSHOT/bar.jar}.
+	 * @return the path of the artifact
+	 */
 	String getPath();
 
-	InputStream getContent() throws IOException;
+	/**
+	 * Return the contents of the underlying artifact file.
+	 * @return the contents of the artifact
+	 * @throws IOException on IO error
+	 */
+	Resource getContent() throws IOException;
 
+	/**
+	 * Return any property meta-data that is attached to the artifact.
+	 * @return the property meta-data
+	 */
 	Map<String, String> getProperties();
 
+	/**
+	 * Return the checksums (SHA1, MD5) for the artifact.
+	 * @return the checksums
+	 * @throws IOException on IO error
+	 */
 	Checksums getChecksums() throws IOException;
 
 }

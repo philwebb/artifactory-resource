@@ -24,6 +24,8 @@ import org.springframework.util.Assert;
 
 /**
  * The source payload containing shared configuration.
+ *
+ * @author Phillip Webb
  */
 public class Source {
 

@@ -25,6 +25,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SystemInputJson}.
+ *
+ * @author Phillip Webb
  */
 public class SystemInputJsonTests {
 

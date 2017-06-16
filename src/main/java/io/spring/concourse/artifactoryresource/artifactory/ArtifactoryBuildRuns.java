@@ -17,24 +17,10 @@
 package io.spring.concourse.artifactoryresource.artifactory;
 
 /**
- * Interface providing access to a specific artifactory server.
+ * Access to artifactory build runs.
  *
  * @author Phillip Webb
  */
-public interface ArtifactoryServer {
-
-	/**
-	 * Access a specific repository from the server.
-	 * @param repositoryName the name of the repository
-	 * @return the artifactory repository
-	 */
-	ArtifactoryRepoistory repository(String repositoryName);
-
-	/**
-	 * Access specific builds runs from the server.
-	 * @param buildName the name of the build
-	 * @return the artifactory build runs
-	 */
-	ArtifactoryBuildRuns buildRuns(String buildName);
+public interface ArtifactoryBuildRuns {
 
 }

@@ -14,32 +14,34 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.artifactory;
+package io.spring.concourse.artifactoryresource.artifactory.payload;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
 
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
 /**
- * {@link Artifact} backed by a byte array.
+ * {@link DeployableArtifact} backed by a byte array.
+ *
+ * @author Phillip Webb
  */
-public class ByteArrayArtifact extends AbstractArtifact {
+public class DeployableByteArrayArtifact extends AbstractDeployableArtifact {
 
 	private final byte[] content;
 
-	public ByteArrayArtifact(String path, byte[] content) {
+	public DeployableByteArrayArtifact(String path, byte[] content) {
 		this(path, content, null);
 	}
 
-	public ByteArrayArtifact(String path, byte[] content,
+	public DeployableByteArrayArtifact(String path, byte[] content,
 			Map<String, String> properties) {
 		this(path, content, properties, null);
 	}
 
-	public ByteArrayArtifact(String path, byte[] content, Map<String, String> properties,
+	public DeployableByteArrayArtifact(String path, byte[] content, Map<String, String> properties,
 			Checksums checksums) {
 		super(path, properties, checksums);
 		Assert.notNull(content, "Content must not be null");
@@ -47,8 +49,8 @@ public class ByteArrayArtifact extends AbstractArtifact {
 	}
 
 	@Override
-	public InputStream getContent() throws IOException {
-		return new ByteArrayInputStream(this.content);
+	public Resource getContent() throws IOException {
+		return new ByteArrayResource(this.content);
 	}
 
 }

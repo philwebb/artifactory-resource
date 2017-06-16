@@ -24,6 +24,8 @@ import org.springframework.context.annotation.Bean;
 
 /**
  * Main Application entry point.
+ *
+ * @author Phillip Webb
  */
 @SpringBootApplication
 public class Application {

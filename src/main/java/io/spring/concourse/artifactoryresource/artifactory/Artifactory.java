@@ -18,6 +18,9 @@ package io.spring.concourse.artifactoryresource.artifactory;
 
 /**
  * Interface providing access to Artifactory.
+ *
+ * @author Phillip Webb
+ * @see HttpArtifactory
  */
 public interface Artifactory {
 

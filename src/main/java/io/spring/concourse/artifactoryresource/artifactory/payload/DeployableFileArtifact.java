@@ -14,32 +14,34 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.artifactory;
+package io.spring.concourse.artifactoryresource.artifactory.payload;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
 
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
 /**
- * {@link Artifact} backed by a {@link File}.
+ * {@link DeployableArtifact} backed by a {@link File}.
+ *
+ * @author Phillip Webb
  */
-public class FileArtifact extends AbstractArtifact {
+public class DeployableFileArtifact extends AbstractDeployableArtifact {
 
 	private File file;
 
-	public FileArtifact(File parent, File file) {
+	public DeployableFileArtifact(File parent, File file) {
 		this(parent, file, null);
 	}
 
-	public FileArtifact(File parent, File file, Map<String, String> properties) {
+	public DeployableFileArtifact(File parent, File file, Map<String, String> properties) {
 		this(parent, file, properties, null);
 	}
 
-	public FileArtifact(File parent, File file, Map<String, String> properties,
+	public DeployableFileArtifact(File parent, File file, Map<String, String> properties,
 			Checksums checksums) {
 		super(calculatePath(parent, file), properties, checksums);
 		Assert.isTrue(file.exists(), "File '" + file + "' does not exist");
@@ -48,8 +50,8 @@ public class FileArtifact extends AbstractArtifact {
 	}
 
 	@Override
-	public InputStream getContent() throws IOException {
-		return new FileInputStream(this.file);
+	public Resource getContent() throws IOException {
+		return new FileSystemResource(this.file);
 	}
 
 	private static String calculatePath(File parent, File file) {

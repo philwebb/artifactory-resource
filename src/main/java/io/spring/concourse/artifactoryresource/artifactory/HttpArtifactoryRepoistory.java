@@ -19,7 +19,9 @@ package io.spring.concourse.artifactoryresource.artifactory;
 import java.io.IOException;
 import java.net.URI;
 
-import org.springframework.core.io.InputStreamResource;
+import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
+import io.spring.concourse.artifactoryresource.artifactory.payload.Checksums;
+
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
@@ -29,6 +31,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * Default {@link ArtifactoryRepoistory} implementation communicating over HTTP.
+ *
+ * @author Phillip Webb
  */
 class HttpArtifactoryRepoistory implements ArtifactoryRepoistory {
 
@@ -37,29 +41,33 @@ class HttpArtifactoryRepoistory implements ArtifactoryRepoistory {
 
 	private static final Object[] NO_VARIABLES = {};
 
-	private final UriComponentsBuilder uri;
-
 	private final RestTemplate restTemplate;
 
-	public HttpArtifactoryRepoistory(UriComponentsBuilder uri,
-			RestTemplate restTemplate) {
-		this.uri = uri;
+	private final UriComponentsBuilder uri;
+
+	private final String repositoryName;
+
+	public HttpArtifactoryRepoistory(RestTemplate restTemplate, UriComponentsBuilder uri,
+			String repositoryName) {
 		this.restTemplate = restTemplate;
+		this.uri = uri;
+		this.repositoryName = repositoryName;
 	}
 
 	@Override
-	public void deploy(Artifact artifact) {
+	public void deploy(DeployableArtifact artifact) {
 		try {
 			Assert.notNull(artifact, "Artifact must not be null");
-			URI deployUri = this.uri.path(artifact.getPath()).build(NO_VARIABLES);
+			URI deployUri = this.uri.path(this.repositoryName).path(artifact.getPath())
+					.build(NO_VARIABLES);
 			Checksums checksums = artifact.getChecksums();
 			RequestEntity<Resource> request = RequestEntity.put(deployUri)
 					.contentType(BINARY_OCTET_STREAM)
 					.header("X-Checksum-Sha1", checksums.getSha1())
 					.header("X-Checksum-Md5", checksums.getMd5())
-					.body(new InputStreamResource(artifact.getContent()));
+					.body(artifact.getContent());
 			// FIXME "X-Checksum-Deploy", "true" (based on min size 10240)
-			this.restTemplate.exchange(request, String.class);
+			this.restTemplate.exchange(request, Void.class);
 		}
 		catch (IOException ex) {
 			throw new RuntimeException(ex);

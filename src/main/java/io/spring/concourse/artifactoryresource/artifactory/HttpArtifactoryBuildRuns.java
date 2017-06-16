@@ -16,25 +16,18 @@
 
 package io.spring.concourse.artifactoryresource.artifactory;
 
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
+
 /**
- * Interface providing access to a specific artifactory server.
+ * Default {@link ArtifactoryBuildRuns} implementation communicating over HTTP.
  *
  * @author Phillip Webb
  */
-public interface ArtifactoryServer {
+public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 
-	/**
-	 * Access a specific repository from the server.
-	 * @param repositoryName the name of the repository
-	 * @return the artifactory repository
-	 */
-	ArtifactoryRepoistory repository(String repositoryName);
-
-	/**
-	 * Access specific builds runs from the server.
-	 * @param buildName the name of the build
-	 * @return the artifactory build runs
-	 */
-	ArtifactoryBuildRuns buildRuns(String buildName);
+	public HttpArtifactoryBuildRuns(RestTemplate build, UriComponentsBuilder uri,
+			String buildName) {
+	}
 
 }

@@ -27,6 +27,8 @@ import org.springframework.util.Assert;
 
 /**
  * {@link ApplicationRunner} to delegate incoming requests to commands.
+ *
+ * @author Phillip Webb
  */
 @Component
 @Profile("!test")

@@ -25,6 +25,8 @@ import org.springframework.util.Assert;
 /**
  * The version payload detailing a single build version. Can be used as both input and
  * output.
+ *
+ * @author Phillip Webb
  */
 public class Version {
 

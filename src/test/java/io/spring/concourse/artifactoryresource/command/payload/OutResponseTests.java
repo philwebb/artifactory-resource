@@ -33,6 +33,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link OutResponse}.
+ *
+ * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
 @JsonTest

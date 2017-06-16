@@ -22,6 +22,8 @@ import java.io.PrintStream;
 
 /**
  * Mock {@link SystemStreams} implementation.
+ *
+ * @author Phillip Webb
  */
 public class MockSystemStreams extends SystemStreams {
 

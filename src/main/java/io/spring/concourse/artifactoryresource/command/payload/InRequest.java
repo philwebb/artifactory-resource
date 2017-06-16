@@ -24,6 +24,8 @@ import org.springframework.util.Assert;
 
 /**
  * Request to the {@code "/opt/resource/in"} script.
+ *
+ * @author Phillip Webb
  */
 public class InRequest {
 

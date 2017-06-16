@@ -70,6 +70,8 @@ resources:
 ### `out`: Saves build artifacts
 
 * `build_number`: *Required.* The build number to save
+* `folder`: *Required.* The folder to save
+* `include`: A list of file patterns to include
 * `exclude`: A list of file patterns to exclude
 * `build_url`: The URL back to the concourse build (e.g. `+++https://my.concourse.url/builds/$BUILD_ID+++`)
 

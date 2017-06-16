@@ -28,6 +28,8 @@ import org.springframework.util.Assert;
 
 /**
  * Request to the {@code "/opt/resource/out"} script.
+ *
+ * @author Phillip Webb
  */
 public class OutRequest {
 
@@ -62,16 +64,26 @@ public class OutRequest {
 
 		private final String buildNumber;
 
+		private final String folder;
+
+		private final List<String> include;
+
 		private final List<String> exclude;
 
 		private final String buildUri;
 
 		@JsonCreator
 		public Params(@JsonProperty("build_number") String buildNumber,
+				@JsonProperty("folder") String folder,
+				@JsonProperty("include ") List<String> include,
 				@JsonProperty("exclude") List<String> exclude,
 				@JsonProperty("build_uri") String buildUri) {
 			Assert.hasText(buildNumber, "Build Number must not be empty");
+			Assert.hasText(folder, "Folder must not be empty");
 			this.buildNumber = buildNumber;
+			this.folder = folder;
+			this.include = (include == null ? Collections.emptyList()
+					: Collections.unmodifiableList(new ArrayList<>(include)));
 			this.exclude = (exclude == null ? Collections.emptyList()
 					: Collections.unmodifiableList(new ArrayList<>(exclude)));
 			this.buildUri = buildUri;
@@ -79,6 +91,14 @@ public class OutRequest {
 
 		public String getBuildNumber() {
 			return this.buildNumber;
+		}
+
+		public String getFolder() {
+			return this.folder;
+		}
+
+		public List<String> getInclude() {
+			return this.include;
 		}
 
 		public List<String> getExclude() {
@@ -92,6 +112,7 @@ public class OutRequest {
 		@Override
 		public String toString() {
 			return new ToStringCreator(this).append("buildNumber", this.buildNumber)
+					.append("folder", this.folder).append("include", this.include)
 					.append("exclude", this.exclude).append("buildUri", this.buildUri)
 					.toString();
 		}

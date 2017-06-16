@@ -24,6 +24,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link Command}.
+ *
+ * @author Phillip Webb
  */
 public class CommandTests {
 

@@ -22,6 +22,8 @@ import org.springframework.util.Assert;
 /**
  * A metadata item that can be returned as part of {@link InRequest} or
  * {@link OutResponse}.
+ *
+ * @author Phillip Webb
  */
 public class Metadata {
 

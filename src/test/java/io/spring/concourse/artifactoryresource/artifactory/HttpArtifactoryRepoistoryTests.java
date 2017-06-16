@@ -16,6 +16,8 @@
 
 package io.spring.concourse.artifactoryresource.artifactory;
 
+import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
+import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableByteArrayArtifact;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -29,6 +31,8 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 /**
  * Tests for {@link HttpArtifactoryRepoistory}.
+ *
+ * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
 @RestClientTest(HttpArtifactory.class)
@@ -45,7 +49,7 @@ public class HttpArtifactoryRepoistoryTests {
 		ArtifactoryRepoistory repository = this.artifactory
 				.server("http://repo.example.com", "admin", "password")
 				.repository("libs-snapshot-local");
-		Artifact artifact = new ByteArrayArtifact("/foo/bar.jar", "foo".getBytes());
+		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar", "foo".getBytes());
 		this.server
 				.expect(requestTo(
 						"http://repo.example.com/libs-snapshot-local/foo/bar.jar"))

@@ -14,27 +14,28 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.artifactory;
+package io.spring.concourse.artifactoryresource.artifactory.payload;
+
+import java.util.Date;
+import java.util.List;
 
 /**
- * Interface providing access to a specific artifactory server.
+ * Build information for artifactory.
  *
  * @author Phillip Webb
  */
-public interface ArtifactoryServer {
+public class BuildInfo {
 
-	/**
-	 * Access a specific repository from the server.
-	 * @param repositoryName the name of the repository
-	 * @return the artifactory repository
-	 */
-	ArtifactoryRepoistory repository(String repositoryName);
+	private String buildName;
 
-	/**
-	 * Access specific builds runs from the server.
-	 * @param buildName the name of the build
-	 * @return the artifactory build runs
-	 */
-	ArtifactoryBuildRuns buildRuns(String buildName);
+	private String buildNumber;
+
+	private Agent agent;
+
+	private Date started;
+
+	private String url;
+
+	private List<Module> modules;
 
 }

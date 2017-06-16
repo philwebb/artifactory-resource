@@ -25,6 +25,8 @@ import org.springframework.util.Assert;
 
 /**
  * Response from the {@code "/opt/resource/in"} script.
+ *
+ * @author Phillip Webb
  */
 public class InResponse {
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.artifactory;
+package io.spring.concourse.artifactoryresource.artifactory.payload;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,12 +23,15 @@ import java.security.MessageDigest;
 
 import javax.xml.bind.DatatypeConverter;
 
+import org.springframework.core.io.Resource;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 
 /**
- * SHA1 and MD5 Checksums supported by Artifactory.
+ * SHA1 and MD5 Checksums supported by artifactory.
+ *
+ * @author Phillip Webb
  */
 public final class Checksums {
 
@@ -65,9 +68,15 @@ public final class Checksums {
 				.toString();
 	}
 
-	public static Checksums calculate(InputStream inputStream) throws IOException {
+	public static Checksums calculate(Resource content) throws IOException {
+		Assert.notNull(content, "Content must not be null");
+		return calculate(content.getInputStream());
+	}
+
+	public static Checksums calculate(InputStream content) throws IOException {
+		Assert.notNull(content, "Content must not be null");
 		try {
-			DigestInputStream sha1 = new DigestInputStream(inputStream,
+			DigestInputStream sha1 = new DigestInputStream(content,
 					MessageDigest.getInstance("SHA-1"));
 			DigestInputStream md5 = new DigestInputStream(sha1,
 					MessageDigest.getInstance("MD5"));
@@ -80,7 +89,7 @@ public final class Checksums {
 			throw new RuntimeException(ex);
 		}
 		finally {
-			inputStream.close();
+			content.close();
 		}
 	}
 

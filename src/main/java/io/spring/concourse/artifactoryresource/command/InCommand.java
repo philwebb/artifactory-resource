@@ -24,6 +24,8 @@ import org.springframework.stereotype.Component;
 
 /**
  * Command to handle requests to the {@code "/opt/resource/in"} script.
+ *
+ * @author Phillip Webb
  */
 @Component
 public class InCommand implements Command {

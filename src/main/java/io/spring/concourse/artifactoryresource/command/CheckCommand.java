@@ -24,6 +24,8 @@ import org.springframework.stereotype.Component;
 
 /**
  * Command to handle requests to the {@code "/opt/resource/check"} script.
+ *
+ * @author Phillip Webb
  */
 @Component
 public class CheckCommand implements Command {

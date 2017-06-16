@@ -26,7 +26,8 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * @author pwebb
+ *
+ * @author Phillip Webb
  */
 public class SystemStreamsTests {
 

@@ -26,6 +26,8 @@ import org.springframework.util.Assert;
 
 /**
  * Response from the {@code "/opt/resource/check"} script.
+ *
+ * @author Phillip Webb
  */
 public class CheckResponse {
 

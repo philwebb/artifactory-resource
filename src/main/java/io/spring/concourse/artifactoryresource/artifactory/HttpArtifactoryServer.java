@@ -21,6 +21,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * Default {@link ArtifactoryServer} implementation communicating over HTTP.
+ *
+ * @author Phillip Webb
  */
 class HttpArtifactoryServer implements ArtifactoryServer {
 
@@ -35,9 +37,15 @@ class HttpArtifactoryServer implements ArtifactoryServer {
 	}
 
 	@Override
-	public ArtifactoryRepoistory repository(String name) {
-		return new HttpArtifactoryRepoistory(this.uri.path(name),
-				this.restTemplateBuilder.build());
+	public ArtifactoryRepoistory repository(String repositoryName) {
+		return new HttpArtifactoryRepoistory(this.restTemplateBuilder.build(), this.uri,
+				repositoryName);
+	}
+
+	@Override
+	public ArtifactoryBuildRuns buildRuns(String buildName) {
+		return new HttpArtifactoryBuildRuns(this.restTemplateBuilder.build(), this.uri,
+				buildName);
 	}
 
 }

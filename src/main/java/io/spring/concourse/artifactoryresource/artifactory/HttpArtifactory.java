@@ -22,6 +22,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * Default {@link Artifactory} implementation communicating over HTTP.
+ *
+ * @author Phillip Webb
  */
 @Service
 public class HttpArtifactory implements Artifactory {

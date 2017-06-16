@@ -24,6 +24,8 @@ import org.springframework.util.Assert;
 
 /**
  * A directory passed to a command.
+ *
+ * @author Phillip Webb
  */
 public class Directory {
 

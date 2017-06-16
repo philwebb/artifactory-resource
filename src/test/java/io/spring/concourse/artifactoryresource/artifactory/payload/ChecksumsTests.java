@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.artifactory;
+package io.spring.concourse.artifactoryresource.artifactory.payload;
 
 import java.io.ByteArrayInputStream;
 
@@ -26,6 +26,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link Checksums}.
+ *
+ * @author Phillip Webb
  */
 public class ChecksumsTests {
 

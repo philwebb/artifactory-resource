@@ -22,6 +22,8 @@ import java.io.PrintStream;
 /**
  * Provides access to {@code stdin} and {@code stdout} and remaps {@code System.out} to
  * {@code System.err} to prevent accidental log output.
+ *
+ * @author Phillip Webb
  */
 public class SystemStreams {
 

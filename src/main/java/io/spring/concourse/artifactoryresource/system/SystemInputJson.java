@@ -30,6 +30,8 @@ import org.springframework.util.Assert;
 /**
  * JSON deserializer that uses an {@link ObjectMapper} to read input from
  * {@link SystemStreams#in()} (dealing with timeouts).
+ *
+ * @author Phillip Webb
  */
 @Component
 public class SystemInputJson {

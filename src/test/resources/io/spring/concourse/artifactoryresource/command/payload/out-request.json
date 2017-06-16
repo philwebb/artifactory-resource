@@ -11,6 +11,10 @@
 	},
 	"params": {
 		"build_number": "1234",
+		"folder": "dist",
+		"include": [
+			"*"
+		],
 		"exclude": [
 			"foo",
 			"bar"
