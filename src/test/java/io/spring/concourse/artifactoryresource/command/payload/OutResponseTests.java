@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.payload;
+package io.spring.concourse.artifactoryresource.command.payload;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,17 +32,17 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link InResponse}.
+ * Tests for {@link OutResponse}.
  */
 @RunWith(SpringRunner.class)
 @JsonTest
-public class InResponseTests {
+public class OutResponseTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Autowired
-	private JacksonTester<InResponse> json;
+	private JacksonTester<OutResponse> json;
 
 	@Test
 	public void createWhenVersionIsNullShouldThrowException() throws Exception {
@@ -56,15 +56,15 @@ public class InResponseTests {
 		List<Metadata> metadata = new ArrayList<>();
 		metadata.add(new Metadata("foo", "bar"));
 		metadata.add(new Metadata("bin", "bag"));
-		InResponse response = new InResponse(new Version("1234"), metadata);
-		assertThat(this.json.write(response)).isEqualToJson("in-response.json");
+		OutResponse response = new OutResponse(new Version("1234"), metadata);
+		assertThat(this.json.write(response)).isEqualToJson("out-response.json");
 	}
 
 	@Test
 	public void writeWhenMetadataIsNullShouldSerialize() throws Exception {
-		InResponse response = new InResponse(new Version("1234"), null);
+		OutResponse response = new OutResponse(new Version("1234"), null);
 		assertThat(this.json.write(response))
-				.isEqualToJson("in-response-without-metadata.json");
+				.isEqualToJson("out-response-without-metadata.json");
 	}
 
 }

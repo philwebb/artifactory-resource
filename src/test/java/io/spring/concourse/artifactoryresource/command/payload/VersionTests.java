@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.payload;
+package io.spring.concourse.artifactoryresource.command.payload;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,29 +29,35 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link Metadata}.
+ * Tests for {@link Version}.
  */
 @RunWith(SpringRunner.class)
 @JsonTest
-public class MetadataTests {
+public class VersionTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Autowired
-	private JacksonTester<Metadata> json;
+	private JacksonTester<Version> json;
 
 	@Test
-	public void createWhenMisstingNameShouldThrowException() throws Exception {
+	public void createWhenBuildNumberIsEmptyShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Name must not be empty");
-		new Metadata("", "value");
+		this.thrown.expectMessage("Build Number must not be empty");
+		new Version("");
 	}
 
 	@Test
 	public void writeShouldSerialize() throws Exception {
-		assertThat(this.json.write(new Metadata("foo", "bar")))
-				.isEqualToJson("metadata.json");
+		Version version = new Version("5678");
+		assertThat(this.json.write(version)).isEqualTo("version.json");
+	}
+
+	@Test
+	public void readShouldDeserialize() throws Exception {
+		Version version = this.json.readObject("version.json");
+		assertThat(version.getBuildNumber()).isEqualTo("5678");
 	}
 
 }

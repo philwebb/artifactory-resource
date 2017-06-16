@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.payload;
+package io.spring.concourse.artifactoryresource.command.payload;
 
-import io.spring.concourse.artifactoryresource.payload.InRequest.Params;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -30,11 +29,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link InRequest}.
+ * Tests for {@link OutRequest}.
  */
 @RunWith(SpringRunner.class)
 @JsonTest
-public class InRequestTests {
+public class OutRequestTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -42,32 +41,23 @@ public class InRequestTests {
 	private Source source = new Source("http://localhost:8181", "username", "password",
 			"libs-snapshot-local", "my-build");
 
-	private Version version = new Version("1234");
-
-	private Params params = new Params("1234", false);
+	private OutRequest.Params params = new OutRequest.Params("1234", null, null);
 
 	@Autowired
-	private JacksonTester<InRequest> json;
+	private JacksonTester<OutRequest> json;
 
 	@Test
 	public void createWhenSourceIsNullShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Source must not be null");
-		new InRequest(null, this.version, this.params);
-	}
-
-	@Test
-	public void createWhenVersionIsNullShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Version must not be null");
-		new InRequest(this.source, null, this.params);
+		new OutRequest(null, this.params);
 	}
 
 	@Test
 	public void createWhenParamsIsNullShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Params must not be null");
-		new InRequest(this.source, this.version, null);
+		new OutRequest(this.source, null);
 	}
 
 	@Test
@@ -75,26 +65,19 @@ public class InRequestTests {
 			throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Build Number must not be empty");
-		new Params("", true);
+		new OutRequest.Params("", null, null);
 	}
 
 	@Test
 	public void readShouldDeserialize() throws Exception {
-		InRequest request = this.json.readObject("in-request.json");
+		OutRequest request = this.json.readObject("out-request.json");
 		assertThat(request.getSource().getUri()).isEqualTo("http://repo.example.com");
 		assertThat(request.getSource().getUsername()).isEqualTo("admin");
 		assertThat(request.getSource().getPassword()).isEqualTo("password");
 		assertThat(request.getSource().getRepo()).isEqualTo("libs-snapshot-local");
-		assertThat(request.getVersion().getBuildNumber()).isEqualTo("5678");
 		assertThat(request.getParams().getBuildNumber()).isEqualTo("1234");
-		assertThat(request.getParams().isGenerateMavenMetadata()).isFalse();
-	}
-
-	@Test
-	public void readWhenMissingGenerateMavenMetadataShouldDeserialize() throws Exception {
-		InRequest request = this.json
-				.readObject("in-request-without-generate-maven-metadata.json");
-		assertThat(request.getParams().isGenerateMavenMetadata()).isTrue();
+		assertThat(request.getParams().getExclude()).containsExactly("foo", "bar");
+		assertThat(request.getParams().getBuildUrl()).isEqualTo("http://ci.example.com");
 	}
 
 }

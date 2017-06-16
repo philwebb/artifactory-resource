@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.payload;
+package io.spring.concourse.artifactoryresource.command.payload;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,19 +24,15 @@ import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 
 /**
- * Response from the {@code "/opt/resource/out"} script.
+ * Response from the {@code "/opt/resource/in"} script.
  */
-public class OutResponse {
+public class InResponse {
 
 	private final Version version;
 
 	private final List<Metadata> metadata;
 
-	public OutResponse(Version version) {
-		this(version, null);
-	}
-
-	public OutResponse(Version version, List<Metadata> metadata) {
+	public InResponse(Version version, List<Metadata> metadata) {
 		Assert.notNull(version, "Version must not be null");
 		this.version = version;
 		this.metadata = (metadata == null ? Collections.emptyList()
@@ -56,5 +52,4 @@ public class OutResponse {
 		return new ToStringCreator(this).append("version", this.version)
 				.append("metadata", this.metadata).toString();
 	}
-
 }

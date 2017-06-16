@@ -14,38 +14,37 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.payload;
+package io.spring.concourse.artifactoryresource.command.payload;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 
 /**
- * A metadata item that can be returned as part of {@link InRequest} or
- * {@link OutResponse}.
+ * The version payload detailing a single build version. Can be used as both input and
+ * output.
  */
-public class Metadata {
+public class Version {
 
-	private final String name;
+	@JsonProperty("build_number")
+	private final String buildNumber;
 
-	private final Object value;
-
-	public Metadata(String name, Object value) {
-		Assert.hasText(name, "Name must not be empty");
-		this.name = name;
-		this.value = value;
+	@JsonCreator
+	public Version(@JsonProperty("build_number") String buildNumber) {
+		Assert.hasText(buildNumber, "Build Number must not be empty");
+		this.buildNumber = buildNumber;
 	}
 
-	public String getName() {
-		return this.name;
-	}
-
-	public Object getValue() {
-		return this.value;
+	public String getBuildNumber() {
+		return this.buildNumber;
 	}
 
 	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("name", this.name)
-				.append("value", this.value).toString();
+		return new ToStringCreator(this).append("buildNumber", this.buildNumber)
+				.toString();
 	}
+
 }

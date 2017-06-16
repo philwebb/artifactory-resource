@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.payload;
+package io.spring.concourse.artifactoryresource.command.payload;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,35 +32,32 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link Version}.
+ * Tests for {@link CheckResponse}.
  */
 @RunWith(SpringRunner.class)
 @JsonTest
-public class VersionTests {
+public class CheckResponseTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Autowired
-	private JacksonTester<Version> json;
+	private JacksonTester<CheckResponse> json;
 
 	@Test
-	public void createWhenBuildNumberIsEmptyShouldThrowException() {
+	public void createWhenVersionsIsNullShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Build Number must not be empty");
-		new Version("");
+		this.thrown.expectMessage("Versions must not be null");
+		new CheckResponse(null);
 	}
 
 	@Test
 	public void writeShouldSerialize() throws Exception {
-		Version version = new Version("5678");
-		assertThat(this.json.write(version)).isEqualTo("version.json");
-	}
-
-	@Test
-	public void readShouldDeserialize() throws Exception {
-		Version version = this.json.readObject("version.json");
-		assertThat(version.getBuildNumber()).isEqualTo("5678");
+		List<Version> versions = new ArrayList<>();
+		versions.add(new Version("1234"));
+		versions.add(new Version("5678"));
+		CheckResponse value = new CheckResponse(versions);
+		assertThat(this.json.write(value)).isEqualToJson("check-response.json");
 	}
 
 }

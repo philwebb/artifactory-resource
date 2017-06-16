@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.payload;
+package io.spring.concourse.artifactoryresource.command.payload;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,32 +32,39 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link CheckResponse}.
+ * Tests for {@link InResponse}.
  */
 @RunWith(SpringRunner.class)
 @JsonTest
-public class CheckResponseTests {
+public class InResponseTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Autowired
-	private JacksonTester<CheckResponse> json;
+	private JacksonTester<InResponse> json;
 
 	@Test
-	public void createWhenVersionsIsNullShouldThrowException() throws Exception {
+	public void createWhenVersionIsNullShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Versions must not be null");
-		new CheckResponse(null);
+		this.thrown.expectMessage("Version must not be null");
+		new InResponse(null, null);
 	}
 
 	@Test
 	public void writeShouldSerialize() throws Exception {
-		List<Version> versions = new ArrayList<>();
-		versions.add(new Version("1234"));
-		versions.add(new Version("5678"));
-		CheckResponse value = new CheckResponse(versions);
-		assertThat(this.json.write(value)).isEqualToJson("check-response.json");
+		List<Metadata> metadata = new ArrayList<>();
+		metadata.add(new Metadata("foo", "bar"));
+		metadata.add(new Metadata("bin", "bag"));
+		InResponse response = new InResponse(new Version("1234"), metadata);
+		assertThat(this.json.write(response)).isEqualToJson("in-response.json");
+	}
+
+	@Test
+	public void writeWhenMetadataIsNullShouldSerialize() throws Exception {
+		InResponse response = new InResponse(new Version("1234"), null);
+		assertThat(this.json.write(response))
+				.isEqualToJson("in-response-without-metadata.json");
 	}
 
 }

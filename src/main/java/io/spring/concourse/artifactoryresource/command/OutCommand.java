@@ -16,7 +16,7 @@
 
 package io.spring.concourse.artifactoryresource.command;
 
-import io.spring.concourse.artifactoryresource.payload.OutRequest;
+import io.spring.concourse.artifactoryresource.command.payload.OutRequest;
 import io.spring.concourse.artifactoryresource.system.SystemInputJson;
 
 import org.springframework.boot.ApplicationArguments;

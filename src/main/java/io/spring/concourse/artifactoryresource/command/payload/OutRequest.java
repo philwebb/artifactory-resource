@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.payload;
+package io.spring.concourse.artifactoryresource.command.payload;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -23,34 +27,25 @@ import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 
 /**
- * Request to the {@code "/opt/resource/in"} script.
+ * Request to the {@code "/opt/resource/out"} script.
  */
-public class InRequest {
+public class OutRequest {
 
 	private final Source source;
-
-	private final Version version;
 
 	private final Params params;
 
 	@JsonCreator
-	public InRequest(@JsonProperty("source") Source source,
-			@JsonProperty("version") Version version,
+	public OutRequest(@JsonProperty("source") Source source,
 			@JsonProperty("params") Params params) {
 		Assert.notNull(source, "Source must not be null");
-		Assert.notNull(version, "Version must not be null");
 		Assert.notNull(params, "Params must not be null");
 		this.source = source;
-		this.version = version;
 		this.params = params;
 	}
 
 	public Source getSource() {
 		return this.source;
-	}
-
-	public Version getVersion() {
-		return this.version;
 	}
 
 	public Params getParams() {
@@ -60,36 +55,44 @@ public class InRequest {
 	@Override
 	public String toString() {
 		return new ToStringCreator(this).append("source", this.source)
-				.append("version", this.version).append("params", this.params).toString();
+				.append("params", this.params).toString();
 	}
 
 	public static class Params {
 
 		private final String buildNumber;
 
-		private final boolean generateMavenMetadata;
+		private final List<String> exclude;
+
+		private final String buildUri;
 
 		@JsonCreator
 		public Params(@JsonProperty("build_number") String buildNumber,
-				@JsonProperty("generate_maven_metadata") Boolean generateMavenMetadata) {
+				@JsonProperty("exclude") List<String> exclude,
+				@JsonProperty("build_uri") String buildUri) {
 			Assert.hasText(buildNumber, "Build Number must not be empty");
 			this.buildNumber = buildNumber;
-			this.generateMavenMetadata = (generateMavenMetadata == null ? true
-					: generateMavenMetadata);
+			this.exclude = (exclude == null ? Collections.emptyList()
+					: Collections.unmodifiableList(new ArrayList<>(exclude)));
+			this.buildUri = buildUri;
 		}
 
 		public String getBuildNumber() {
 			return this.buildNumber;
 		}
 
-		public boolean isGenerateMavenMetadata() {
-			return this.generateMavenMetadata;
+		public List<String> getExclude() {
+			return this.exclude;
+		}
+
+		public String getBuildUrl() {
+			return this.buildUri;
 		}
 
 		@Override
 		public String toString() {
 			return new ToStringCreator(this).append("buildNumber", this.buildNumber)
-					.append("generateMavenMetadata", this.generateMavenMetadata)
+					.append("exclude", this.exclude).append("buildUri", this.buildUri)
 					.toString();
 		}
 

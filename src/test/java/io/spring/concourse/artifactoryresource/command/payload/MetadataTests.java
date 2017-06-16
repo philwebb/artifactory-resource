@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.payload;
-
-import java.util.ArrayList;
-import java.util.List;
+package io.spring.concourse.artifactoryresource.command.payload;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,39 +29,29 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link OutResponse}.
+ * Tests for {@link Metadata}.
  */
 @RunWith(SpringRunner.class)
 @JsonTest
-public class OutResponseTests {
+public class MetadataTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Autowired
-	private JacksonTester<OutResponse> json;
+	private JacksonTester<Metadata> json;
 
 	@Test
-	public void createWhenVersionIsNullShouldThrowException() throws Exception {
+	public void createWhenMisstingNameShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Version must not be null");
-		new InResponse(null, null);
+		this.thrown.expectMessage("Name must not be empty");
+		new Metadata("", "value");
 	}
 
 	@Test
 	public void writeShouldSerialize() throws Exception {
-		List<Metadata> metadata = new ArrayList<>();
-		metadata.add(new Metadata("foo", "bar"));
-		metadata.add(new Metadata("bin", "bag"));
-		OutResponse response = new OutResponse(new Version("1234"), metadata);
-		assertThat(this.json.write(response)).isEqualToJson("out-response.json");
-	}
-
-	@Test
-	public void writeWhenMetadataIsNullShouldSerialize() throws Exception {
-		OutResponse response = new OutResponse(new Version("1234"), null);
-		assertThat(this.json.write(response))
-				.isEqualToJson("out-response-without-metadata.json");
+		assertThat(this.json.write(new Metadata("foo", "bar")))
+				.isEqualToJson("metadata.json");
 	}
 
 }

@@ -66,6 +66,9 @@ public class SystemStreams {
 	}
 
 	public static SystemStreams instance() {
+		if (instance == null) {
+			instance = new SystemStreams(System.in, System.out);
+		}
 		return instance;
 	}
 

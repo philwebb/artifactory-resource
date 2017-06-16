@@ -14,43 +14,47 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.payload;
+package io.spring.concourse.artifactoryresource.command.payload;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 
 /**
- * Request to the {@code "/opt/resource/check"} script.
+ * Response from the {@code "/opt/resource/out"} script.
  */
-public class CheckRequest {
-
-	private final Source source;
+public class OutResponse {
 
 	private final Version version;
 
-	@JsonCreator
-	public CheckRequest(@JsonProperty("source") Source source,
-			@JsonProperty("version") Version version) {
-		Assert.notNull(source, "Source must not be null");
-		this.source = source;
-		this.version = version;
+	private final List<Metadata> metadata;
+
+	public OutResponse(Version version) {
+		this(version, null);
 	}
 
-	public Source getSource() {
-		return this.source;
+	public OutResponse(Version version, List<Metadata> metadata) {
+		Assert.notNull(version, "Version must not be null");
+		this.version = version;
+		this.metadata = (metadata == null ? Collections.emptyList()
+				: Collections.unmodifiableList(new ArrayList<>(metadata)));
 	}
 
 	public Version getVersion() {
 		return this.version;
 	}
 
+	public List<Metadata> getMetadata() {
+		return this.metadata;
+	}
+
 	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("source", this.source)
-				.append("version", this.version).toString();
+		return new ToStringCreator(this).append("version", this.version)
+				.append("metadata", this.metadata).toString();
 	}
 
 }
