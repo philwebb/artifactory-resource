@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
@@ -28,6 +29,7 @@ import org.springframework.util.Assert;
  * {@link ApplicationRunner} to delegate incoming requests to commands.
  */
 @Component
+@Profile("!test")
 public class CommandProcessor implements ApplicationRunner {
 
 	private final List<Command> commands;

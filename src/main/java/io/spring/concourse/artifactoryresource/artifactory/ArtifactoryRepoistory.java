@@ -14,24 +14,12 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.command;
-
-import org.junit.Test;
-
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.DefaultApplicationArguments;
+package io.spring.concourse.artifactoryresource.artifactory;
 
 /**
- * Tests for {@link CheckCommand}.
  */
-public class CheckCommandTests {
+public interface ArtifactoryRepoistory {
 
-	private ApplicationArguments args = new DefaultApplicationArguments(
-			new String[] { "check" });
-
-	@Test
-	public void testName() throws Exception {
-
-	}
+	void deploy(Artifact artifact);
 
 }

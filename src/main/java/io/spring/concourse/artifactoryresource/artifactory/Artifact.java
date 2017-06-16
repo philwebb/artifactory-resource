@@ -16,18 +16,21 @@
 
 package io.spring.concourse.artifactoryresource.artifactory;
 
-/**
- * Interface providing access to Artifactory.
- */
-public interface Artifactory {
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
 
-	/**
-	 * Return an {@link ArtifactoryServer} for the specified connection details.
-	 * @param uri the server URI
-	 * @param username the connection username
-	 * @param password the connection password
-	 * @return an {@link ArtifactoryServer}
-	 */
-	ArtifactoryServer server(String uri, String username, String password);
+/**
+ * A single artifact that can be deployed.
+ */
+public interface Artifact {
+
+	String getPath();
+
+	InputStream getContent() throws IOException;
+
+	Map<String, String> getProperties();
+
+	Checksums getChecksums() throws IOException;
 
 }

@@ -21,30 +21,28 @@ import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.connection.waiting.HealthChecks;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
-import org.junit.Test;
 
-public class ApplicationIT {
+public abstract class AbstractArtifactoryIT {
 
 	@ClassRule
 	public static DockerComposeRule docker = DockerComposeRule.builder()
 			.file("src/integration/resources/docker-compose.yml")
-			.waitingForService("artifactory",
-					HealthChecks.toRespondOverHttp(8081, ApplicationIT::rootUrl))
+			.waitingForService("artifactory", HealthChecks.toRespond2xxOverHttp(8081,
+					AbstractArtifactoryIT::artifactoryUri))
 			.build();
 
-	private static DockerPort port;
+	public static DockerPort port;
 
 	@BeforeClass
 	public static void initialize() {
 		port = docker.containers().container("artifactory").port(8081);
 	}
 
-	@Test
-	public void testName() throws Exception {
-		System.out.println(rootUrl(port));
+	public static String artifactoryUri() {
+		return artifactoryUri(port);
 	}
 
-	private static String rootUrl(DockerPort port) {
-		return port.inFormat("http://$HOST:$EXTERNAL_PORT");
+	private static String artifactoryUri(DockerPort port) {
+		return port.inFormat("http://$HOST:$EXTERNAL_PORT/artifactory");
 	}
 }

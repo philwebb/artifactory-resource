@@ -32,6 +32,10 @@ public class OutResponse {
 
 	private final List<Metadata> metadata;
 
+	public OutResponse(Version version) {
+		this(version, null);
+	}
+
 	public OutResponse(Version version, List<Metadata> metadata) {
 		Assert.notNull(version, "Version must not be null");
 		this.version = version;

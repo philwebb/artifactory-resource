@@ -20,6 +20,7 @@ import io.spring.concourse.artifactoryresource.system.SystemStreams;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 
 /**
  * Main Application entry point.
@@ -27,12 +28,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class Application {
 
+	@Bean
+	public SystemStreams systemStreams() {
+		return SystemStreams.instance();
+	}
+
 	public static void main(String[] args) {
-		SystemStreams systemStreams = SystemStreams.reconfigureSystem();
-		SpringApplication application = new SpringApplication(Application.class);
-		application.addInitializers((c) -> c.getBeanFactory()
-				.registerSingleton("systemStreams", systemStreams));
-		application.run(args);
+		SystemStreams.reconfigureSystem();
+		SpringApplication.run(Application.class, args);
 	}
 
 }

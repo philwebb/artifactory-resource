@@ -17,17 +17,15 @@
 package io.spring.concourse.artifactoryresource.artifactory;
 
 /**
- * Interface providing access to Artifactory.
+ * Interface providing access to a specific Artifactory server.
  */
-public interface Artifactory {
+public interface ArtifactoryServer {
 
 	/**
-	 * Return an {@link ArtifactoryServer} for the specified connection details.
-	 * @param uri the server URI
-	 * @param username the connection username
-	 * @param password the connection password
-	 * @return an {@link ArtifactoryServer}
+	 * Access a specific repository from the server.
+	 * @param name the name of the repository
+	 * @return the artifactory repository
 	 */
-	ArtifactoryServer server(String uri, String username, String password);
+	ArtifactoryRepoistory repository(String name);
 
 }

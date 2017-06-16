@@ -42,8 +42,6 @@ public class InCommand implements Command {
 		System.out.println(directory);
 		System.out.println(request);
 
-		// Connection connection = artifactoy.connect(args.getSource().get...);
-
 	}
 
 }

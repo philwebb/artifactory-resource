@@ -25,6 +25,8 @@ import java.io.PrintStream;
  */
 public class SystemStreams {
 
+	private static SystemStreams instance;
+
 	private final InputStream in;
 
 	private final PrintStream out;
@@ -59,7 +61,12 @@ public class SystemStreams {
 	public static SystemStreams reconfigureSystem() {
 		PrintStream out = System.out;
 		System.setOut(System.err);
-		return new SystemStreams(System.in, out);
+		instance = new SystemStreams(System.in, out);
+		return instance;
+	}
+
+	public static SystemStreams instance() {
+		return instance;
 	}
 
 }
