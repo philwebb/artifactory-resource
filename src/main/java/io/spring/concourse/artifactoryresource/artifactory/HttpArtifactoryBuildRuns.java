@@ -16,6 +16,16 @@
 
 package io.spring.concourse.artifactoryresource.artifactory;
 
+import java.net.URI;
+import java.util.Date;
+import java.util.List;
+
+import io.spring.concourse.artifactoryresource.artifactory.payload.BuildInfo;
+import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
+import io.spring.concourse.artifactoryresource.artifactory.payload.ContinuousIntegrationAgent;
+
+import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -26,8 +36,34 @@ import org.springframework.web.util.UriComponentsBuilder;
  */
 public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 
-	public HttpArtifactoryBuildRuns(RestTemplate build, UriComponentsBuilder uri,
+	private static final Object[] NO_VARIABLES = {};
+
+	private final RestTemplate restTemplate;
+
+	private final UriComponentsBuilder uri;
+
+	private final String buildName;
+
+	public HttpArtifactoryBuildRuns(RestTemplate restTemplate, UriComponentsBuilder uri,
 			String buildName) {
+		this.restTemplate = restTemplate;
+		this.uri = uri;
+		this.buildName = buildName;
+	}
+
+	@Override
+	public void add(String buildNumber, String buildUri,
+			ContinuousIntegrationAgent continuousIntegrationAgent,
+			List<BuildModule> modules) {
+		add(new BuildInfo(this.buildName, buildNumber, continuousIntegrationAgent,
+				new Date(), buildUri, modules));
+	}
+
+	private void add(BuildInfo buildInfo) {
+		URI uri = this.uri.path("api/build").build(NO_VARIABLES);
+		RequestEntity<BuildInfo> request = RequestEntity.put(uri)
+				.contentType(MediaType.APPLICATION_JSON).body(buildInfo);
+		this.restTemplate.exchange(request, Void.class);
 	}
 
 }

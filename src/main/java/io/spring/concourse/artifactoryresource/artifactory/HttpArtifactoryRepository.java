@@ -30,11 +30,11 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
- * Default {@link ArtifactoryRepoistory} implementation communicating over HTTP.
+ * Default {@link ArtifactoryRepository} implementation communicating over HTTP.
  *
  * @author Phillip Webb
  */
-class HttpArtifactoryRepoistory implements ArtifactoryRepoistory {
+class HttpArtifactoryRepository implements ArtifactoryRepository {
 
 	private static final MediaType BINARY_OCTET_STREAM = MediaType
 			.parseMediaType("binary/octet-stream");
@@ -47,7 +47,7 @@ class HttpArtifactoryRepoistory implements ArtifactoryRepoistory {
 
 	private final String repositoryName;
 
-	public HttpArtifactoryRepoistory(RestTemplate restTemplate, UriComponentsBuilder uri,
+	public HttpArtifactoryRepository(RestTemplate restTemplate, UriComponentsBuilder uri,
 			String repositoryName) {
 		this.restTemplate = restTemplate;
 		this.uri = uri;

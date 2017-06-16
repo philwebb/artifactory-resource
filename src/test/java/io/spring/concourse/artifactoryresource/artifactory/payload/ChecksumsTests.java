@@ -31,9 +31,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ChecksumsTests {
 
-	private static final String SHA1 = "A9993E364706816ABA3E25717850C26C9CD0D89D";
+	private static final String SHA1 = "a9993e364706816aba3e25717850c26c9cd0d89d";
 
-	private static final String MD5 = "900150983CD24FB0D6963F7D28E17F72";
+	private static final String MD5 = "900150983cd24fb0d6963f7d28e17f72";
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();

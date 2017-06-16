@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public abstract class AbstractArtifactTests {
+public abstract class AbstractDeployableArtifactTests {
 
 	private static final byte[] CONTENT = "abc".getBytes();
 
@@ -45,9 +45,9 @@ public abstract class AbstractArtifactTests {
 	public void createWhenChecksumIsNullShouldCalculateChecksums() throws Exception {
 		AbstractDeployableArtifact artifact = create("foo", CONTENT, null, null);
 		assertThat(artifact.getChecksums().getSha1())
-				.isEqualTo("A9993E364706816ABA3E25717850C26C9CD0D89D");
+				.isEqualTo("a9993e364706816aba3e25717850c26c9cd0d89d");
 		assertThat(artifact.getChecksums().getMd5())
-				.isEqualTo("900150983CD24FB0D6963F7D28E17F72");
+				.isEqualTo("900150983cd24fb0d6963f7d28e17f72");
 	}
 
 	@Test
@@ -59,8 +59,8 @@ public abstract class AbstractArtifactTests {
 
 	@Test
 	public void getChecksumShouldReturnChecksum() throws Exception {
-		Checksums checksums = new Checksums("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-				"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+		Checksums checksums = new Checksums("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+				"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 		AbstractDeployableArtifact artifact = create("foo", CONTENT, null, checksums);
 		assertThat(artifact.getChecksums()).isEqualTo(checksums);
 	}

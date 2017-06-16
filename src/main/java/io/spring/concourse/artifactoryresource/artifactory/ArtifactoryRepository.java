@@ -14,17 +14,31 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.artifactory.payload;
+package io.spring.concourse.artifactoryresource.artifactory;
 
-import java.util.List;
+import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
 
 /**
+ * Access to an artifactory repository.
+ *
  * @author Phillip Webb
  */
-public class Module {
+public interface ArtifactoryRepository {
 
-	private String id;
+	/**
+	 * Deploy the specified artifacts to the repository.
+	 * @param artifacts the artifacts to deploy
+	 */
+	default void deploy(Iterable<DeployableArtifact> artifacts) {
+		for (DeployableArtifact artifact : artifacts) {
+			deploy(artifact);
+		}
+	}
 
-	private List<BuildArtifact> artifacts;
+	/**
+	 * Deploy the specified artifact to the repository.
+	 * @param artifact the artifact to deploy
+	 */
+	void deploy(DeployableArtifact artifact);
 
 }

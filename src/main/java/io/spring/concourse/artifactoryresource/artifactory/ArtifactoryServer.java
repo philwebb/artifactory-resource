@@ -28,7 +28,7 @@ public interface ArtifactoryServer {
 	 * @param repositoryName the name of the repository
 	 * @return the artifactory repository
 	 */
-	ArtifactoryRepoistory repository(String repositoryName);
+	ArtifactoryRepository repository(String repositoryName);
 
 	/**
 	 * Access specific builds runs from the server.

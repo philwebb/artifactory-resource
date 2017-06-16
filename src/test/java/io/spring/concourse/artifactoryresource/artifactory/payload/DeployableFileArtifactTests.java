@@ -32,7 +32,7 @@ import org.springframework.util.FileCopyUtils;
  *
  * @author Phillip Webb
  */
-public class FileArtifactTests extends AbstractArtifactTests {
+public class DeployableFileArtifactTests extends AbstractDeployableArtifactTests {
 
 	@Rule
 	public TemporaryFolder temp = new TemporaryFolder();

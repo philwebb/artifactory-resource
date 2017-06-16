@@ -37,8 +37,8 @@ class HttpArtifactoryServer implements ArtifactoryServer {
 	}
 
 	@Override
-	public ArtifactoryRepoistory repository(String repositoryName) {
-		return new HttpArtifactoryRepoistory(this.restTemplateBuilder.build(), this.uri,
+	public ArtifactoryRepository repository(String repositoryName) {
+		return new HttpArtifactoryRepository(this.restTemplateBuilder.build(), this.uri,
 				repositoryName);
 	}
 

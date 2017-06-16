@@ -19,6 +19,7 @@ package io.spring.concourse.artifactoryresource.artifactory;
 import com.palantir.docker.compose.DockerComposeRule;
 import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.connection.waiting.HealthChecks;
+import io.spring.concourse.artifactoryresource.artifactory.payload.ContinuousIntegrationAgent;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableByteArrayArtifact;
 import org.junit.BeforeClass;
@@ -58,12 +59,22 @@ public class HttpArtifactoryIT {
 	private Artifactory artifactory;
 
 	@Test
-	public void deployArtifact() throws Exception {
-		ArtifactoryRepoistory repository = this.artifactory
-				.server(artifactoryUri(), "admin", "password")
-				.repository("example-repo-local");
-		DeployableArtifact artifact = new DeployableByteArrayArtifact("foo/bar", "foo".getBytes());
+	public void repositoryDeploy() throws Exception {
+		ArtifactoryRepository repository = server().repository("example-repo-local");
+		DeployableArtifact artifact = new DeployableByteArrayArtifact("foo/bar",
+				"foo".getBytes());
 		repository.deploy(artifact);
+	}
+
+	@Test
+	public void testName() throws Exception {
+		ArtifactoryBuildRuns buildRuns = server().buildRuns("my-build");
+		buildRuns.add("1234", "ci.example.com",
+				new ContinuousIntegrationAgent("Concourse", null), null);
+	}
+
+	private ArtifactoryServer server() {
+		return this.artifactory.server(artifactoryUri(), "admin", "password");
 	}
 
 	public static String artifactoryUri() {

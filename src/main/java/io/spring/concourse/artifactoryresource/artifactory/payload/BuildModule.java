@@ -16,55 +16,41 @@
 
 package io.spring.concourse.artifactoryresource.artifactory.payload;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.springframework.util.Assert;
 
 /**
- * A single build artifact included in {@link BuildInfo}.
+ * A single module included in {@link BuildInfo}.
  *
  * @author Phillip Webb
- * @see BuildInfo
  */
-public class BuildArtifact {
+public class BuildModule {
 
-	private final String type;
+	private final String id;
 
-	private final String sha1;
-
-	private final String md5;
-
-	private final String name;
+	private final List<BuildArtifact> artifacts;
 
 	@JsonCreator
-	public BuildArtifact(@JsonProperty("type") String type,
-			@JsonProperty("sha1") String sha1, @JsonProperty("md5") String md5,
-			@JsonProperty("name") String name) {
-		Assert.hasText(type, "Type must not be empty");
-		Assert.hasText(sha1, "SHA1 must not be empty");
-		Assert.hasText(md5, "MD5 must not be empty");
-		Assert.hasText(name, "Name must not be empty");
-		this.type = type;
-		this.sha1 = sha1;
-		this.md5 = md5;
-		this.name = name;
+	public BuildModule(@JsonProperty("id") String id,
+			@JsonProperty("artifacts") List<BuildArtifact> artifacts) {
+		Assert.hasText(id, "ID must not be empty");
+		this.id = id;
+		this.artifacts = (artifacts == null ? Collections.emptyList()
+				: Collections.unmodifiableList(new ArrayList<>(artifacts)));
 	}
 
-	public String getType() {
-		return this.type;
+	public String getId() {
+		return this.id;
 	}
 
-	public String getSha1() {
-		return this.sha1;
-	}
-
-	public String getMd5() {
-		return this.md5;
-	}
-
-	public String getName() {
-		return this.name;
+	public List<BuildArtifact> getArtifacts() {
+		return this.artifacts;
 	}
 
 }

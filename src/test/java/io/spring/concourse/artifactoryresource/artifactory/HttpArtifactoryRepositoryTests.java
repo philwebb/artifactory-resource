@@ -30,13 +30,13 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 /**
- * Tests for {@link HttpArtifactoryRepoistory}.
+ * Tests for {@link HttpArtifactoryRepository}.
  *
  * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
 @RestClientTest(HttpArtifactory.class)
-public class HttpArtifactoryRepoistoryTests {
+public class HttpArtifactoryRepositoryTests {
 
 	@Autowired
 	private MockRestServiceServer server;
@@ -46,7 +46,7 @@ public class HttpArtifactoryRepoistoryTests {
 
 	@Test
 	public void test() {
-		ArtifactoryRepoistory repository = this.artifactory
+		ArtifactoryRepository repository = this.artifactory
 				.server("http://repo.example.com", "admin", "password")
 				.repository("libs-snapshot-local");
 		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar", "foo".getBytes());

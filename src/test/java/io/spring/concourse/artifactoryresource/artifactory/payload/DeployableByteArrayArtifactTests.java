@@ -28,7 +28,7 @@ import org.junit.rules.ExpectedException;
  *
  * @author Phillip Webb
  */
-public class ByteArrayArtifactTests extends AbstractArtifactTests {
+public class DeployableByteArrayArtifactTests extends AbstractDeployableArtifactTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();

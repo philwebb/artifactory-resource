@@ -81,9 +81,7 @@ public final class Checksums {
 			DigestInputStream md5 = new DigestInputStream(sha1,
 					MessageDigest.getInstance("MD5"));
 			StreamUtils.drain(md5);
-			return new Checksums(
-					DatatypeConverter.printHexBinary(sha1.getMessageDigest().digest()),
-					DatatypeConverter.printHexBinary(md5.getMessageDigest().digest()));
+			return new Checksums(getDigestHex(sha1), getDigestHex(md5));
 		}
 		catch (Exception ex) {
 			throw new RuntimeException(ex);
@@ -91,6 +89,11 @@ public final class Checksums {
 		finally {
 			content.close();
 		}
+	}
+
+	private static String getDigestHex(DigestInputStream sha1) {
+		return DatatypeConverter.printHexBinary(sha1.getMessageDigest().digest())
+				.toLowerCase();
 	}
 
 }

@@ -16,13 +16,36 @@
 
 package io.spring.concourse.artifactoryresource.artifactory.payload;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import org.springframework.util.Assert;
+
 /**
+ * The CI agent information included in {@link BuildInfo}.
+ *
  * @author Phillip Webb
  */
-public class Agent {
+public class ContinuousIntegrationAgent {
 
-	private String name;
+	private final String name;
 
-	private String version;
+	private final String version;
+
+	@JsonCreator
+	public ContinuousIntegrationAgent(@JsonProperty("name") String name,
+			@JsonProperty("version") String version) {
+		Assert.hasText(name, "Name must not be empty");
+		this.name = name;
+		this.version = version;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public String getVersion() {
+		return this.version;
+	}
 
 }
