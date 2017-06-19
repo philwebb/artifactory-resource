@@ -16,17 +16,27 @@
 
 package io.spring.concourse.artifactoryresource.artifactory;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableByteArrayArtifact;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 
+import static org.springframework.http.HttpMethod.PUT;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 /**
@@ -45,16 +55,58 @@ public class HttpArtifactoryRepositoryTests {
 	private Artifactory artifactory;
 
 	@Test
-	public void test() {
-		ArtifactoryRepository repository = this.artifactory
+	public void deployShouldUploadTheDeployableArtifact() throws IOException {
+		ArtifactoryRepoistory repository = this.artifactory
 				.server("http://repo.example.com", "admin", "password")
 				.repository("libs-snapshot-local");
 		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar", "foo".getBytes());
 		this.server
 				.expect(requestTo(
 						"http://repo.example.com/libs-snapshot-local/foo/bar.jar"))
+				.andExpect(method(PUT))
+				.andExpect(header("X-Checksum-Deploy", "true"))
+				.andExpect(header("X-Checksum-Sha1", artifact.getChecksums().getSha1()))
+				.andRespond(withStatus(HttpStatus.NOT_FOUND));
+		this.server
+				.expect(requestTo(
+						"http://repo.example.com/libs-snapshot-local/foo/bar.jar"))
 				.andRespond(withSuccess());
 		repository.deploy(artifact);
+		this.server.verify();
+	}
+
+	@Test
+	public void deployShouldUploadTheDeployableArtifactWithMatrixParameters() {
+		ArtifactoryRepoistory repository = this.artifactory
+				.server("http://repo.example.com", "admin", "password")
+				.repository("libs-snapshot-local");
+		Map<String, String> properties = new HashMap<>();
+		properties.put("buildNumber", "1");
+		properties.put("revision", "123");
+		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar", "foo".getBytes(), properties);
+		this.server
+				.expect(requestTo(
+						"http://repo.example.com/libs-snapshot-local/foo/bar.jar;buildNumber=1;revision=123"))
+				.andRespond(withSuccess());
+		repository.deploy(artifact);
+		this.server.verify();
+	}
+
+	@Test
+	public void deployWhenChecksumMatchesShouldNotUpload() throws Exception {
+		ArtifactoryRepoistory repository = this.artifactory
+				.server("http://repo.example.com", "admin", "password")
+				.repository("libs-snapshot-local");
+		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar", "foo".getBytes());
+		this.server
+				.expect(requestTo(
+						"http://repo.example.com/libs-snapshot-local/foo/bar.jar"))
+				.andExpect(method(PUT))
+				.andExpect(header("X-Checksum-Deploy", "true"))
+				.andExpect(header("X-Checksum-Sha1", artifact.getChecksums().getSha1()))
+				.andRespond(withSuccess());
+		repository.deploy(artifact);
+		this.server.verify();
 	}
 
 }

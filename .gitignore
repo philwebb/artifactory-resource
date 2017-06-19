@@ -3,3 +3,9 @@
 .project
 .settings
 target
+*.iml
+*.ipr
+*.iws
+.idea
+*.jar
+.DS_Store

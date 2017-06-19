@@ -17,15 +17,19 @@
 package io.spring.concourse.artifactoryresource.artifactory;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.util.Map;
 
-import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
 import io.spring.concourse.artifactoryresource.artifactory.payload.Checksums;
+import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
 
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.util.Assert;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -58,21 +62,42 @@ class HttpArtifactoryRepository implements ArtifactoryRepository {
 	public void deploy(DeployableArtifact artifact) {
 		try {
 			Assert.notNull(artifact, "Artifact must not be null");
-			URI deployUri = this.uri.path(this.repositoryName).path(artifact.getPath())
+			Map<String, String> properties = artifact.getProperties();
+			URI deployUri = this.uri.path(this.repositoryName).path(artifact.getPath()).path(buildMatrixParams(properties))
 					.build(NO_VARIABLES);
 			Checksums checksums = artifact.getChecksums();
-			RequestEntity<Resource> request = RequestEntity.put(deployUri)
+			RequestEntity checksumRequest = RequestEntity.put(deployUri)
 					.contentType(BINARY_OCTET_STREAM)
 					.header("X-Checksum-Sha1", checksums.getSha1())
-					.header("X-Checksum-Md5", checksums.getMd5())
-					.body(artifact.getContent());
-			// FIXME "X-Checksum-Deploy", "true" (based on min size 10240)
-			this.restTemplate.exchange(request, Void.class);
+					.header("X-Checksum-Deploy", "true").build();
+			try {
+				this.restTemplate.exchange(checksumRequest, Void.class);
+			} catch (HttpClientErrorException ex) {
+				if (ex.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+					RequestEntity<Resource> request = RequestEntity.put(deployUri)
+							.contentType(BINARY_OCTET_STREAM)
+							.header("X-Checksum-Sha1", checksums.getSha1())
+							.header("X-Checksum-Md5", checksums.getMd5())
+							.body(artifact.getContent());
+					this.restTemplate.exchange(request, Void.class);
+				}
+			}
 		}
 		catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
 
+	}
+
+	private String buildMatrixParams(Map<String, String> matrixParams) throws UnsupportedEncodingException {
+		StringBuilder matrix = new StringBuilder();
+		if (matrixParams != null && !matrixParams.isEmpty()) {
+			for (Map.Entry<String, String> property : matrixParams.entrySet()) {
+				matrix.append(";").append(property.getKey())
+						.append("=").append(property.getValue());
+			}
+		}
+		return matrix.toString();
 	}
 
 }

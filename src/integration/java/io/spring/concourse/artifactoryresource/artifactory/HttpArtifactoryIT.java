@@ -16,6 +16,9 @@
 
 package io.spring.concourse.artifactoryresource.artifactory;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.palantir.docker.compose.DockerComposeRule;
 import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.connection.waiting.HealthChecks;
@@ -61,8 +64,10 @@ public class HttpArtifactoryIT {
 	@Test
 	public void repositoryDeploy() throws Exception {
 		ArtifactoryRepository repository = server().repository("example-repo-local");
-		DeployableArtifact artifact = new DeployableByteArrayArtifact("foo/bar",
-				"foo".getBytes());
+		Map<String, String> properties = new HashMap<>();
+		properties.put("buildNumber", "1");
+		properties.put("revision", "123");
+		DeployableArtifact artifact = new DeployableByteArrayArtifact("foo/bar", "foo".getBytes(), properties);
 		repository.deploy(artifact);
 	}
 
