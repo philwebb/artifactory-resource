@@ -64,7 +64,7 @@ public class InResponseTests {
 
 	@Test
 	public void writeWhenMetadataIsNullShouldSerialize() throws Exception {
-		InResponse response = new InResponse(new Version("1234"), null);
+		InResponse response = new InResponse(new Version("5678"), null);
 		assertThat(this.json.write(response))
 				.isEqualToJson("in-response-without-metadata.json");
 	}

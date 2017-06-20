@@ -30,7 +30,7 @@ public interface DeployableArtifact {
 
 	/**
 	 * Return the path of the artifact starting with {@code /}, for example
-	 * {@code /libs-snapshot-local/com/example/foo/1.0.0-SNAPSHOT/bar.jar}.
+	 * {@code /com/example/foo/1.0.0-SNAPSHOT/bar.jar}.
 	 * @return the path of the artifact
 	 */
 	String getPath();

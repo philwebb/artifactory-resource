@@ -58,7 +58,7 @@ public class SystemStreams {
 	 * Return a {@link SystemStreams} instance following reconfiguration of the standard
 	 * {@link System} {@code in} and {@code err} streams. The {@code System.out} stream is
 	 * redirected to {@code System.err}.
-	 * @return the sytem streams instance
+	 * @return the system streams instance
 	 */
 	public static SystemStreams reconfigureSystem() {
 		PrintStream out = System.out;

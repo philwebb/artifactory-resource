@@ -20,6 +20,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 
@@ -34,7 +37,8 @@ public class InResponse {
 
 	private final List<Metadata> metadata;
 
-	public InResponse(Version version, List<Metadata> metadata) {
+	@JsonCreator
+	public InResponse(@JsonProperty("version") Version version, @JsonProperty("metadata") List<Metadata> metadata) {
 		Assert.notNull(version, "Version must not be null");
 		this.version = version;
 		this.metadata = (metadata == null ? Collections.emptyList()

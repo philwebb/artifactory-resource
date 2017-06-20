@@ -72,14 +72,6 @@ public class InRequestTests {
 	}
 
 	@Test
-	public void createParamsWhenBuildNumberIsEmptyShouldThrowException()
-			throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Build Number must not be empty");
-		new InRequest.Params("", true);
-	}
-
-	@Test
 	public void readShouldDeserialize() throws Exception {
 		InRequest request = this.json.readObject("in-request.json");
 		assertThat(request.getSource().getUri()).isEqualTo("http://repo.example.com");
@@ -87,7 +79,6 @@ public class InRequestTests {
 		assertThat(request.getSource().getPassword()).isEqualTo("password");
 		assertThat(request.getSource().getRepo()).isEqualTo("libs-snapshot-local");
 		assertThat(request.getVersion().getBuildNumber()).isEqualTo("5678");
-		assertThat(request.getParams().getBuildNumber()).isEqualTo("1234");
 		assertThat(request.getParams().isGenerateMavenMetadata()).isFalse();
 	}
 

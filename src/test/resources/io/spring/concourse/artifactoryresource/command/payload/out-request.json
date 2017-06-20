@@ -6,14 +6,11 @@
 		"repo": "libs-snapshot-local",
 		"build_name": "my-build"
 	},
-	"version": {
-		"build_number": "5678"
-	},
 	"params": {
 		"build_number": "1234",
 		"folder": "dist",
 		"include": [
-			"*"
+			"**"
 		],
 		"exclude": [
 			"foo",

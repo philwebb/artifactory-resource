@@ -16,15 +16,21 @@
 
 package io.spring.concourse.artifactoryresource.artifactory;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.palantir.docker.compose.DockerComposeRule;
 import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.connection.waiting.HealthChecks;
+import io.spring.concourse.artifactoryresource.artifactory.payload.BuildArtifact;
+import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
+import io.spring.concourse.artifactoryresource.artifactory.payload.BuildRuns;
 import io.spring.concourse.artifactoryresource.artifactory.payload.ContinuousIntegrationAgent;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableByteArrayArtifact;
+import io.spring.concourse.artifactoryresource.artifactory.payload.FetchedArtifact;
+import io.spring.concourse.artifactoryresource.artifactory.payload.FetchResults;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -74,8 +80,24 @@ public class HttpArtifactoryIT {
 	@Test
 	public void testName() throws Exception {
 		ArtifactoryBuildRuns buildRuns = server().buildRuns("my-build");
-		buildRuns.add("1234", "ci.example.com",
-				new ContinuousIntegrationAgent("Concourse", null), null);
+		BuildArtifact artifact = new BuildArtifact("test", null, null, "bar");
+		BuildModule modules = new BuildModule("foo-test", Collections.singletonList(artifact));
+		buildRuns.add("1", "ci.example.com",
+				new ContinuousIntegrationAgent("Concourse", null), Collections.singletonList(modules));
+	}
+
+	@Test
+	public void getBuildRuns() throws Exception {
+		ArtifactoryBuildRuns buildRuns = server().buildRuns("my-build");
+		BuildRuns runs = buildRuns.getAll();
+	}
+
+	@Test
+	public void fetchArtifacts() throws Exception {
+		FetchResults results = server().repository("libs-snapshot-local").fetchAll("spring-boot-dependencies", "1497125213592");
+		for (FetchedArtifact artifact : results.getResults()) {
+			server().repository("libs-snapshot-local").fetch("/" + artifact.getPath() + "/" + artifact.getName(), "/tmp/helloworld");
+		}
 	}
 
 	private ArtifactoryServer server() {

@@ -37,6 +37,7 @@ public class Source {
 
 	private final String repo;
 
+	@JsonProperty("build_name")
 	private final String buildName;
 
 	@JsonCreator

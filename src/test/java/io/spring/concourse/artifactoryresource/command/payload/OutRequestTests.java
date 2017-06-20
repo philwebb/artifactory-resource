@@ -87,9 +87,9 @@ public class OutRequestTests {
 		assertThat(request.getSource().getRepo()).isEqualTo("libs-snapshot-local");
 		assertThat(request.getParams().getBuildNumber()).isEqualTo("1234");
 		assertThat(request.getParams().getFolder()).isEqualTo("dist");
-		assertThat(request.getParams().getInclude()).containsExactly("*");
+		assertThat(request.getParams().getInclude()).containsExactly("**");
 		assertThat(request.getParams().getExclude()).containsExactly("foo", "bar");
-		assertThat(request.getParams().getBuildUrl()).isEqualTo("http://ci.example.com");
+		assertThat(request.getParams().getBuildUri()).isEqualTo("http://ci.example.com");
 	}
 
 }

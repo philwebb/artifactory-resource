@@ -19,6 +19,7 @@ package io.spring.concourse.artifactoryresource.artifactory;
 import java.util.List;
 
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
+import io.spring.concourse.artifactoryresource.artifactory.payload.BuildRuns;
 import io.spring.concourse.artifactoryresource.artifactory.payload.ContinuousIntegrationAgent;
 
 /**
@@ -31,5 +32,7 @@ public interface ArtifactoryBuildRuns {
 	void add(String buildNumber, String buildUri,
 			ContinuousIntegrationAgent continuousIntegrationAgent,
 			List<BuildModule> modules);
+
+	BuildRuns getAll();
 
 }

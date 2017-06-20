@@ -27,7 +27,7 @@ import java.io.PrintStream;
  */
 public class MockSystemStreams extends SystemStreams {
 
-	protected MockSystemStreams(String in) {
+	public MockSystemStreams(String in) {
 		super(new ByteArrayInputStream(in.getBytes()), new ByteArrayPrintStream());
 	}
 

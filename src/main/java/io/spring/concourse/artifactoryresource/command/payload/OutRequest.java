@@ -62,6 +62,7 @@ public class OutRequest {
 
 	public static class Params {
 
+		@JsonProperty("build_number")
 		private final String buildNumber;
 
 		private final String folder;
@@ -70,6 +71,7 @@ public class OutRequest {
 
 		private final List<String> exclude;
 
+		@JsonProperty("build_uri")
 		private final String buildUri;
 
 		@JsonCreator
@@ -105,7 +107,7 @@ public class OutRequest {
 			return this.exclude;
 		}
 
-		public String getBuildUrl() {
+		public String getBuildUri() {
 			return this.buildUri;
 		}
 

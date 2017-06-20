@@ -17,22 +17,33 @@
 package io.spring.concourse.artifactoryresource.artifactory;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableByteArrayArtifact;
 import org.junit.After;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
+import org.springframework.boot.test.web.client.MockServerRestTemplateCustomizer;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -43,6 +54,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * Tests for {@link HttpArtifactoryRepository}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 @RunWith(SpringRunner.class)
 @RestClientTest(HttpArtifactory.class)
@@ -52,11 +64,22 @@ public class HttpArtifactoryRepositoryTests {
 	private MockRestServiceServer server;
 
 	@Autowired
+	private MockServerRestTemplateCustomizer customizer;
+
+	@Autowired
 	private Artifactory artifactory;
+
+	@ClassRule
+	public static final TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+	@After
+	public void tearDown() throws Exception {
+		this.customizer.getExpectationManagers().clear();
+	}
 
 	@Test
 	public void deployShouldUploadTheDeployableArtifact() throws IOException {
-		ArtifactoryRepoistory repository = this.artifactory
+		ArtifactoryRepository repository = this.artifactory
 				.server("http://repo.example.com", "admin", "password")
 				.repository("libs-snapshot-local");
 		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar", "foo".getBytes());
@@ -77,7 +100,7 @@ public class HttpArtifactoryRepositoryTests {
 
 	@Test
 	public void deployShouldUploadTheDeployableArtifactWithMatrixParameters() {
-		ArtifactoryRepoistory repository = this.artifactory
+		ArtifactoryRepository repository = this.artifactory
 				.server("http://repo.example.com", "admin", "password")
 				.repository("libs-snapshot-local");
 		Map<String, String> properties = new HashMap<>();
@@ -94,7 +117,7 @@ public class HttpArtifactoryRepositoryTests {
 
 	@Test
 	public void deployWhenChecksumMatchesShouldNotUpload() throws Exception {
-		ArtifactoryRepoistory repository = this.artifactory
+		ArtifactoryRepository repository = this.artifactory
 				.server("http://repo.example.com", "admin", "password")
 				.repository("libs-snapshot-local");
 		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar", "foo".getBytes());
@@ -109,4 +132,43 @@ public class HttpArtifactoryRepositoryTests {
 		this.server.verify();
 	}
 
+	@Test
+	public void fetchAllShouldFetchArtifactsCorrespondingToBuildAndRepo() throws Exception {
+		ArtifactoryRepository repository = this.artifactory
+				.server("http://repo.example.com", "admin", "password")
+				.repository("libs-snapshot-local");
+		this.server
+				.expect(requestTo(
+						"http://repo.example.com/api/search/aql"))
+				.andExpect(method(POST))
+				.andExpect(content().contentType(MediaType.TEXT_PLAIN))
+				.andExpect(content().string(getContent()))
+				.andRespond(withSuccess());
+		repository.fetchAll("my-build", "1234");
+		this.server.verify();
+	}
+
+	@Test
+	public void fetchShouldFetchArtifactAndWriteToFile() throws Exception {
+		ArtifactoryRepository repository = this.artifactory
+				.server("http://repo.example.com", "admin", "password")
+				.repository("libs-snapshot-local");
+		this.server
+				.expect(requestTo(
+						"http://repo.example.com/libs-snapshot-local/foo/bar.jar"))
+				.andExpect(method(GET))
+				.andRespond(withSuccess(new ByteArrayResource(new byte[]{}), MediaType.APPLICATION_OCTET_STREAM));
+		String path = temporaryFolder.getRoot().toString();
+		repository.fetch("/foo/bar.jar", path);
+		assertThat(Files.exists(Paths.get(path + "/foo/bar.jar")));
+		this.server.verify();
+	}
+
+	private String getContent() {
+		return "items.find({" +
+				"\"repo\": \"libs-snapshot-local\", \n" +
+				"\"@build.name\": \"my-build\"," +
+				"\"@build.number\": \"1234\"" +
+				"})";
+	}
 }

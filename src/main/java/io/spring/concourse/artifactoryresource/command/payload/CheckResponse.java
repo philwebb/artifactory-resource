@@ -19,6 +19,7 @@ package io.spring.concourse.artifactoryresource.command.payload;
 import java.util.Collections;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 import org.springframework.core.style.ToStringCreator;
@@ -34,6 +35,7 @@ public class CheckResponse {
 	@JsonValue
 	private final List<Version> versions;
 
+	@JsonCreator
 	public CheckResponse(List<Version> versions) {
 		Assert.notNull(versions, "Versions must not be null");
 		this.versions = Collections.unmodifiableList(versions);

@@ -16,7 +16,18 @@
 
 package io.spring.concourse.artifactoryresource.command;
 
+import java.util.List;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryRepository;
+import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryServer;
+import io.spring.concourse.artifactoryresource.artifactory.HttpArtifactory;
+import io.spring.concourse.artifactoryresource.artifactory.payload.FetchedArtifact;
+import io.spring.concourse.artifactoryresource.artifactory.payload.FetchResults;
 import io.spring.concourse.artifactoryresource.command.payload.InRequest;
+import io.spring.concourse.artifactoryresource.command.payload.InResponse;
+import io.spring.concourse.artifactoryresource.command.payload.Source;
+import io.spring.concourse.artifactoryresource.command.payload.Version;
 import io.spring.concourse.artifactoryresource.system.SystemInputJson;
 
 import org.springframework.boot.ApplicationArguments;
@@ -32,17 +43,35 @@ public class InCommand implements Command {
 
 	private final SystemInputJson inputJson;
 
-	public InCommand(SystemInputJson inputJson) {
+	private final HttpArtifactory artifactory;
+
+	public InCommand(SystemInputJson inputJson, HttpArtifactory artifactory) {
 		this.inputJson = inputJson;
+		this.artifactory = artifactory;
 	}
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
 		InRequest request = this.inputJson.read(InRequest.class);
 		Directory directory = Directory.fromArgs(args);
-		System.out.println(directory);
-		System.out.println(request);
+		Source source = request.getSource();
+		ArtifactoryServer server = this.artifactory.server(source.getUri(), source.getUsername(),
+				source.getPassword());
+		ArtifactoryRepository repository = server.repository(source.getRepo());
+		fetchArtifacts(request, directory, source, repository);
+		Version version = new Version(request.getVersion().getBuildNumber());
+		InResponse response = new InResponse(version, null); //FIXME for metadata
+		String output = new ObjectMapper().writeValueAsString(response);
+		this.inputJson.getSystemStreams().out().print(output);
+	}
 
+	private void fetchArtifacts(InRequest request, Directory directory, Source source, ArtifactoryRepository repository) {
+		FetchResults fetchResults = repository.fetchAll(source.getBuildName(), request.getVersion().getBuildNumber());
+		List<FetchedArtifact> artifacts = fetchResults.getResults();
+		for (FetchedArtifact artifact: artifacts) {
+			String path = "/" + artifact.getPath() + "/" + artifact.getName();
+			repository.fetch(path, directory.toString());
+		}
 	}
 
 }

@@ -10,7 +10,6 @@
 		"build_number": "5678"
 	},
 	"params": {
-		"build_number": "1234",
 		"generate_maven_metadata": false
 	}
 }

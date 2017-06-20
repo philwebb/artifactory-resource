@@ -57,6 +57,10 @@ public class SystemInputJson {
 		this.timeout = timeout;
 	}
 
+	public SystemStreams getSystemStreams() {
+		return this.systemStreams;
+	}
+
 	public <T> T read(Class<T> type) throws IOException {
 		BufferedReader in = new BufferedReader(
 				new InputStreamReader(this.systemStreams.in()));

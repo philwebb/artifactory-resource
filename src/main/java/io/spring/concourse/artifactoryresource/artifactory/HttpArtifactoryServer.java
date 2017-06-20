@@ -17,6 +17,7 @@
 package io.spring.concourse.artifactoryresource.artifactory;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
@@ -28,23 +29,23 @@ class HttpArtifactoryServer implements ArtifactoryServer {
 
 	private final UriComponentsBuilder uri;
 
-	private final RestTemplateBuilder restTemplateBuilder;
+	private final RestTemplate restTemplate;
 
 	public HttpArtifactoryServer(UriComponentsBuilder uri,
 			RestTemplateBuilder restTemplateBuilder) {
 		this.uri = uri;
-		this.restTemplateBuilder = restTemplateBuilder;
+		this.restTemplate = restTemplateBuilder.build();
 	}
 
 	@Override
 	public ArtifactoryRepository repository(String repositoryName) {
-		return new HttpArtifactoryRepository(this.restTemplateBuilder.build(), this.uri,
+		return new HttpArtifactoryRepository(this.restTemplate, this.uri,
 				repositoryName);
 	}
 
 	@Override
 	public ArtifactoryBuildRuns buildRuns(String buildName) {
-		return new HttpArtifactoryBuildRuns(this.restTemplateBuilder.build(), this.uri,
+		return new HttpArtifactoryBuildRuns(this.restTemplate, this.uri,
 				buildName);
 	}
 

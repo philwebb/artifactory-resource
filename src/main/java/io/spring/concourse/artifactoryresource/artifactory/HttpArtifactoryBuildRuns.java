@@ -22,10 +22,12 @@ import java.util.List;
 
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildInfo;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
+import io.spring.concourse.artifactoryresource.artifactory.payload.BuildRuns;
 import io.spring.concourse.artifactoryresource.artifactory.payload.ContinuousIntegrationAgent;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -59,11 +61,18 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 				new Date(), buildUri, modules));
 	}
 
+	@Override
+	public BuildRuns getAll() {
+		URI uri = this.uri.path("api/build/{buildName}").build(this.buildName);
+		return this.restTemplate.getForObject(uri, BuildRuns.class);
+	}
+
 	private void add(BuildInfo buildInfo) {
 		URI uri = this.uri.path("api/build").build(NO_VARIABLES);
 		RequestEntity<BuildInfo> request = RequestEntity.put(uri)
 				.contentType(MediaType.APPLICATION_JSON).body(buildInfo);
-		this.restTemplate.exchange(request, Void.class);
+		ResponseEntity<Void> exchange = this.restTemplate.exchange(request, Void.class);
+		exchange.getBody();
 	}
 
 }

@@ -67,21 +67,13 @@ public class InRequest {
 
 	public static class Params {
 
-		private final String buildNumber;
-
 		private final boolean generateMavenMetadata;
 
 		@JsonCreator
 		public Params(@JsonProperty("build_number") String buildNumber,
 				@JsonProperty("generate_maven_metadata") Boolean generateMavenMetadata) {
-			Assert.hasText(buildNumber, "Build Number must not be empty");
-			this.buildNumber = buildNumber;
 			this.generateMavenMetadata = (generateMavenMetadata == null ? true
 					: generateMavenMetadata);
-		}
-
-		public String getBuildNumber() {
-			return this.buildNumber;
 		}
 
 		public boolean isGenerateMavenMetadata() {
@@ -90,8 +82,7 @@ public class InRequest {
 
 		@Override
 		public String toString() {
-			return new ToStringCreator(this).append("buildNumber", this.buildNumber)
-					.append("generateMavenMetadata", this.generateMavenMetadata)
+			return new ToStringCreator(this).append("generateMavenMetadata", this.generateMavenMetadata)
 					.toString();
 		}
 

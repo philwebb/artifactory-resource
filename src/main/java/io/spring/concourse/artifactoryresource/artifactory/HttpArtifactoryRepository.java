@@ -19,17 +19,24 @@ package io.spring.concourse.artifactoryresource.artifactory;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 import io.spring.concourse.artifactoryresource.artifactory.payload.Checksums;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
+import io.spring.concourse.artifactoryresource.artifactory.payload.FetchResults;
 
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -87,6 +94,38 @@ class HttpArtifactoryRepository implements ArtifactoryRepository {
 			throw new RuntimeException(ex);
 		}
 
+	}
+
+	@Override
+	public FetchResults fetchAll(String buildName, String buildNumber) {
+		Assert.notNull(buildNumber, "Build number must not be null");
+		URI fetchUri = this.uri.path("/api/search/aql").build(NO_VARIABLES);
+		RequestEntity request = RequestEntity.post(fetchUri)
+				.contentType(MediaType.TEXT_PLAIN)
+				.body(buildFetchBody(buildName, buildNumber));
+		ResponseEntity<FetchResults> entity = this.restTemplate.exchange(request, FetchResults.class);
+		return entity.getBody();
+	}
+
+	@Override
+	public void fetch(String artifactName, String path) {
+		Assert.notNull(artifactName, "Artifact name must not be null");
+		URI fetchUri = this.uri.path(this.repositoryName).path(artifactName).build(NO_VARIABLES);
+		ResponseExtractor<Void> responseExtractor = response -> {
+			Path fullPath = Paths.get(path + artifactName);
+			Files.createDirectories(fullPath.getParent());
+			Files.copy(response.getBody(), fullPath);
+			return null;
+		};
+		this.restTemplate.execute(fetchUri, HttpMethod.GET, null, responseExtractor);
+	}
+
+	private String buildFetchBody(String buildName, String buildNumber) {
+		return String.format("items.find({" +
+				"\"repo\": \"%s\", \n" +
+				"\"@build.name\": \"%s\"," +
+				"\"@build.number\": \"%s\"" +
+				"})", this.repositoryName, buildName, buildNumber);
 	}
 
 	private String buildMatrixParams(Map<String, String> matrixParams) throws UnsupportedEncodingException {

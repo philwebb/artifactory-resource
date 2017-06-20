@@ -17,6 +17,7 @@
 package io.spring.concourse.artifactoryresource.artifactory;
 
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
+import io.spring.concourse.artifactoryresource.artifactory.payload.FetchResults;
 
 /**
  * Access to an artifactory repository.
@@ -40,5 +41,9 @@ public interface ArtifactoryRepository {
 	 * @param artifact the artifact to deploy
 	 */
 	void deploy(DeployableArtifact artifact);
+
+	FetchResults fetchAll(String buildName, String buildNumber);
+
+	void fetch(String artifactName, String path);
 
 }
