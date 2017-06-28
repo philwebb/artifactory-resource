@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import io.spring.concourse.artifactoryresource.util.ArtifactoryDateFormat;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

@@ -16,16 +16,16 @@
 
 package io.spring.concourse.artifactoryresource.artifactory;
 
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableByteArrayArtifact;
 import org.junit.After;
-import org.junit.ClassRule;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
@@ -41,9 +41,7 @@ import org.springframework.test.web.client.MockRestServiceServer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -69,8 +67,18 @@ public class HttpArtifactoryRepositoryTests {
 	@Autowired
 	private Artifactory artifactory;
 
-	@ClassRule
-	public static final TemporaryFolder temporaryFolder = new TemporaryFolder();
+	private ArtifactoryRepository artifactoryRepository;
+
+	@Rule
+	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+	@Before
+	public void setup() {
+		this.artifactoryRepository = this.artifactory
+				.server("http://repo.example.com", "admin", "password")
+				.repository("libs-snapshot-local");
+
+	}
 
 	@After
 	public void tearDown() throws Exception {
@@ -79,93 +87,54 @@ public class HttpArtifactoryRepositoryTests {
 
 	@Test
 	public void deployShouldUploadTheDeployableArtifact() throws IOException {
-		ArtifactoryRepository repository = this.artifactory
-				.server("http://repo.example.com", "admin", "password")
-				.repository("libs-snapshot-local");
 		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar",
 				"foo".getBytes());
-		this.server
-				.expect(requestTo(
-						"http://repo.example.com/libs-snapshot-local/foo/bar.jar"))
-				.andExpect(method(PUT)).andExpect(header("X-Checksum-Deploy", "true"))
+		String url = "http://repo.example.com/libs-snapshot-local/foo/bar.jar";
+		this.server.expect(requestTo(url)).andExpect(method(PUT))
+				.andExpect(header("X-Checksum-Deploy", "true"))
 				.andExpect(header("X-Checksum-Sha1", artifact.getChecksums().getSha1()))
 				.andRespond(withStatus(HttpStatus.NOT_FOUND));
-		this.server
-				.expect(requestTo(
-						"http://repo.example.com/libs-snapshot-local/foo/bar.jar"))
-				.andRespond(withSuccess());
-		repository.deploy(artifact);
+		this.server.expect(requestTo(url)).andRespond(withSuccess());
+		this.artifactoryRepository.deploy(artifact);
 		this.server.verify();
 	}
 
 	@Test
 	public void deployShouldUploadTheDeployableArtifactWithMatrixParameters() {
-		ArtifactoryRepository repository = this.artifactory
-				.server("http://repo.example.com", "admin", "password")
-				.repository("libs-snapshot-local");
 		Map<String, String> properties = new HashMap<>();
 		properties.put("buildNumber", "1");
 		properties.put("revision", "123");
 		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar",
 				"foo".getBytes(), properties);
-		this.server
-				.expect(requestTo(
-						"http://repo.example.com/libs-snapshot-local/foo/bar.jar;buildNumber=1;revision=123"))
-				.andRespond(withSuccess());
-		repository.deploy(artifact);
+		String url = "http://repo.example.com/libs-snapshot-local/foo/bar.jar;buildNumber=1;revision=123";
+		this.server.expect(requestTo(url)).andRespond(withSuccess());
+		this.artifactoryRepository.deploy(artifact);
 		this.server.verify();
 	}
 
 	@Test
 	public void deployWhenChecksumMatchesShouldNotUpload() throws Exception {
-		ArtifactoryRepository repository = this.artifactory
-				.server("http://repo.example.com", "admin", "password")
-				.repository("libs-snapshot-local");
 		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar",
 				"foo".getBytes());
-		this.server
-				.expect(requestTo(
-						"http://repo.example.com/libs-snapshot-local/foo/bar.jar"))
-				.andExpect(method(PUT)).andExpect(header("X-Checksum-Deploy", "true"))
+		String url = "http://repo.example.com/libs-snapshot-local/foo/bar.jar";
+		this.server.expect(requestTo(url)).andExpect(method(PUT))
+				.andExpect(header("X-Checksum-Deploy", "true"))
 				.andExpect(header("X-Checksum-Sha1", artifact.getChecksums().getSha1()))
 				.andRespond(withSuccess());
-		repository.deploy(artifact);
+		this.artifactoryRepository.deploy(artifact);
 		this.server.verify();
 	}
 
 	@Test
-	public void fetchAllShouldFetchArtifactsCorrespondingToBuildAndRepo()
-			throws Exception {
-		ArtifactoryRepository repository = this.artifactory
-				.server("http://repo.example.com", "admin", "password")
-				.repository("libs-snapshot-local");
-		this.server.expect(requestTo("http://repo.example.com/api/search/aql"))
-				.andExpect(method(POST))
-				.andExpect(content().contentType(MediaType.TEXT_PLAIN))
-				.andExpect(content().string(getContent())).andRespond(withSuccess());
-		repository.getDeployedArtifacts("my-build", "1234");
-		this.server.verify();
-	}
-
-	@Test
-	public void fetchShouldFetchArtifactAndWriteToFile() throws Exception {
-		ArtifactoryRepository repository = this.artifactory
-				.server("http://repo.example.com", "admin", "password")
-				.repository("libs-snapshot-local");
-		this.server
-				.expect(requestTo(
-						"http://repo.example.com/libs-snapshot-local/foo/bar.jar"))
-				.andExpect(method(GET))
+	public void downloadShouldFetchArtifactAndWriteToFile() throws Exception {
+		String url = "http://repo.example.com/libs-snapshot-local/foo/bar.jar";
+		this.server.expect(requestTo(url)).andExpect(method(GET))
 				.andRespond(withSuccess(new ByteArrayResource(new byte[] {}),
 						MediaType.APPLICATION_OCTET_STREAM));
-		String path = temporaryFolder.getRoot().toString();
-		repository.download("/foo/bar.jar", path);
-		assertThat(Files.exists(Paths.get(path + "/foo/bar.jar")));
+		File destination = this.temporaryFolder.newFolder();
+		this.artifactoryRepository.download("foo/bar.jar", destination);
+		assertThat(new File(new File(destination, "foo"), "bar.jar")).exists().isFile();
 		this.server.verify();
 	}
 
-	private String getContent() {
-		return "items.find({" + "\"repo\": \"libs-snapshot-local\", \n"
-				+ "\"@build.name\": \"my-build\"," + "\"@build.number\": \"1234\"" + "})";
-	}
 }

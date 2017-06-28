@@ -16,10 +16,9 @@
 
 package io.spring.concourse.artifactoryresource.artifactory;
 
-import java.util.List;
+import java.io.File;
 
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
-import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifact;
 
 /**
  * Access to an artifactory repository.
@@ -45,10 +44,11 @@ public interface ArtifactoryRepository {
 	 */
 	void deploy(DeployableArtifact artifact);
 
-	// FIXME DC
-	List<DeployedArtifact> getDeployedArtifacts(String buildName, String buildNumber);
-
-	// FIXME use File for dest?
-	void download(DeployedArtifact artifact, String destination);
+	/**
+	 * Download the specified artifact to the given destination.
+	 * @param path the path of the artifact to download
+	 * @param destination the destination folder.
+	 */
+	void download(String path, File destination);
 
 }

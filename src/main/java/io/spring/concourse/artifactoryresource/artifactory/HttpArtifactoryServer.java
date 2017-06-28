@@ -18,7 +18,6 @@ package io.spring.concourse.artifactoryresource.artifactory;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * Default {@link ArtifactoryServer} implementation communicating over HTTP.
@@ -28,12 +27,11 @@ import org.springframework.web.util.UriComponentsBuilder;
  */
 class HttpArtifactoryServer implements ArtifactoryServer {
 
-	private final UriComponentsBuilder uri;
+	private final String uri;
 
 	private final RestTemplate restTemplate;
 
-	public HttpArtifactoryServer(UriComponentsBuilder uri,
-			RestTemplateBuilder restTemplateBuilder) {
+	public HttpArtifactoryServer(String uri, RestTemplateBuilder restTemplateBuilder) {
 		this.uri = uri;
 		this.restTemplate = restTemplateBuilder.build();
 	}

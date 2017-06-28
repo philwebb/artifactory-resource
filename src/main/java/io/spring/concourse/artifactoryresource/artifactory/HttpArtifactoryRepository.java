@@ -16,19 +16,16 @@
 
 package io.spring.concourse.artifactoryresource.artifactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
 import java.util.Map;
 
 import io.spring.concourse.artifactoryresource.artifactory.payload.Checksums;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
-import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifact;
-import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifactQueryResponse;
 
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpMethod;
@@ -57,11 +54,11 @@ class HttpArtifactoryRepository implements ArtifactoryRepository {
 
 	private final RestTemplate restTemplate;
 
-	private final UriComponentsBuilder uri;
+	private final String uri;
 
 	private final String repositoryName;
 
-	public HttpArtifactoryRepository(RestTemplate restTemplate, UriComponentsBuilder uri,
+	public HttpArtifactoryRepository(RestTemplate restTemplate, String uri,
 			String repositoryName) {
 		this.restTemplate = restTemplate;
 		this.uri = uri;
@@ -100,7 +97,8 @@ class HttpArtifactoryRepository implements ArtifactoryRepository {
 	}
 
 	private BodyBuilder deployRequest(DeployableArtifact artifact) throws IOException {
-		URI uri = this.uri.path(this.repositoryName).path(artifact.getPath())
+		URI uri = UriComponentsBuilder.fromUriString(this.uri)
+				.path(this.repositoryName).path(artifact.getPath())
 				.path(buildMatrixParams(artifact.getProperties())).build(NO_VARIABLES);
 		Checksums checksums = artifact.getChecksums();
 		return RequestEntity.put(uri).contentType(BINARY_OCTET_STREAM)
@@ -120,35 +118,17 @@ class HttpArtifactoryRepository implements ArtifactoryRepository {
 	}
 
 	@Override
-	public List<DeployedArtifact> getDeployedArtifacts(String buildName,
-			String buildNumber) {
-		Assert.notNull(buildNumber, "Build number must not be null");
-		URI fetchUri = this.uri.path("/api/search/aql").build(NO_VARIABLES);
-		RequestEntity<String> request = RequestEntity.post(fetchUri)
-				.contentType(MediaType.TEXT_PLAIN)
-				.body(buildFetchQuery(buildName, buildNumber));
-		return this.restTemplate.exchange(request, DeployedArtifactQueryResponse.class)
-				.getBody().getResults();
-	}
-
-	private String buildFetchQuery(String buildName, String buildNumber) {
-		return "items.find({\"repo\": \"" + this.repositoryName
-				+ "\", \n\"@build.name\": \"" + buildName + "\",\"@build.number\": \""
-				+ buildNumber + "\"" + "})";
-	}
-
-	@Override
-	public void download(DeployedArtifact artifact, String destination) {
-		Assert.notNull(artifact, "Artifact name must not be null");
-		String path = "/" + artifact.getPath() + "/" + artifact.getName();
-		URI fetchUri = this.uri.path(this.repositoryName).path(path).build(NO_VARIABLES);
+	public void download(String path, File destination) {
+		Assert.hasLength(path, "Path must not be empty");
+		URI uri = UriComponentsBuilder.fromUriString(this.uri)
+				.path(this.repositoryName).path("/" + path).build(NO_VARIABLES);
 		ResponseExtractor<Void> responseExtractor = (response) -> {
-			Path fullPath = Paths.get(destination + artifact);
+			Path fullPath = destination.toPath().resolve(path);
 			Files.createDirectories(fullPath.getParent());
 			Files.copy(response.getBody(), fullPath);
 			return null;
 		};
-		this.restTemplate.execute(fetchUri, HttpMethod.GET, null, responseExtractor);
+		this.restTemplate.execute(uri, HttpMethod.GET, null, responseExtractor);
 	}
 
 }

@@ -16,11 +16,15 @@
 
 package io.spring.concourse.artifactoryresource.artifactory;
 
+import java.util.Date;
 import java.util.List;
 
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildRun;
 import io.spring.concourse.artifactoryresource.artifactory.payload.ContinuousIntegrationAgent;
+import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifact;
+
+import org.springframework.util.Assert;
 
 /**
  * Access to artifactory build runs.
@@ -34,11 +38,35 @@ public interface ArtifactoryBuildRuns {
 	 * Add a new build run.
 	 * @param buildNumber the build number
 	 * @param buildUri the build URL
+	 * @param modules the modules for the build run
+	 */
+	default void add(String buildNumber, String buildUri, List<BuildModule> modules) {
+		add(buildNumber, buildUri, null, new Date(), modules);
+	}
+
+	/**
+	 * Add a new build run.
+	 * @param buildNumber the build number
+	 * @param buildUri the build URL
 	 * @param continuousIntegrationAgent The CI Agent
 	 * @param modules the modules for the build run
 	 */
-	void add(String buildNumber, String buildUri,
+	default void add(String buildNumber, String buildUri,
 			ContinuousIntegrationAgent continuousIntegrationAgent,
+			List<BuildModule> modules) {
+		add(buildNumber, buildUri, continuousIntegrationAgent, new Date(), modules);
+	}
+
+	/**
+	 * Add a new build run.
+	 * @param buildNumber the build number
+	 * @param buildUri the build URL
+	 * @param continuousIntegrationAgent The CI Agent
+	 * @param started the date the build was started
+	 * @param modules the modules for the build run
+	 */
+	void add(String buildNumber, String buildUri,
+			ContinuousIntegrationAgent continuousIntegrationAgent, Date started,
 			List<BuildModule> modules);
 
 	/**
@@ -46,5 +74,22 @@ public interface ArtifactoryBuildRuns {
 	 * @return the build runs
 	 */
 	List<BuildRun> getAll();
+
+	/**
+	 * Return all artifacts that were deployed for the specified build run.
+	 * @param buildRun the build run
+	 * @return the deployed artifacts
+	 */
+	default List<DeployedArtifact> getDeployedArtifacts(BuildRun buildRun) {
+		Assert.notNull(buildRun, "BuildRun must not be null");
+		return getDeployedArtifacts(buildRun.getBuildNumber());
+	}
+
+	/**
+	 * Return all artifacts that were deployed for the specified build number.
+	 * @param buildNumber the build number
+	 * @return the deployed artifacts
+	 */
+	List<DeployedArtifact> getDeployedArtifacts(String buildNumber);
 
 }

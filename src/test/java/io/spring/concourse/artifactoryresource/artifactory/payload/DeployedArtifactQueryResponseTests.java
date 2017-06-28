@@ -1,5 +1,6 @@
 package io.spring.concourse.artifactoryresource.artifactory.payload;
 
+import io.spring.concourse.artifactoryresource.util.ArtifactoryDateFormat;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -31,7 +32,7 @@ public class DeployedArtifactQueryResponseTests {
 	@Test
 	public void readShouldDeserialize() throws Exception {
 		DeployedArtifactQueryResponse response = this.json
-				.readObject("fetch-artifacts.json");
+				.readObject("deployed-artifacts.json");
 		assertThat(response.getResults()).hasSize(1);
 		DeployedArtifact artifact = response.getResults().get(0);
 		assertThat(artifact.getRepo()).isEqualTo("libs-release-local");

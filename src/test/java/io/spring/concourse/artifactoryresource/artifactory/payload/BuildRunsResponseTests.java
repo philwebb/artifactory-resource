@@ -1,5 +1,6 @@
 package io.spring.concourse.artifactoryresource.artifactory.payload;
 
+import io.spring.concourse.artifactoryresource.util.ArtifactoryDateFormat;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -30,7 +31,7 @@ public class BuildRunsResponseTests {
 
 	@Test
 	public void readShouldDeserialize() throws Exception {
-		BuildRunsResponse response = this.json.readObject("build-runs.json");
+		BuildRunsResponse response = this.json.readObject("build-runs-response.json");
 		assertThat(response.getUri())
 				.isEqualTo("http://localhost:8081/artifactory/api/build/my-build");
 		assertThat(response.getBuildsRuns()).hasSize(2);

@@ -25,10 +25,13 @@ import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildRun;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildRunsResponse;
 import io.spring.concourse.artifactoryresource.artifactory.payload.ContinuousIntegrationAgent;
+import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifact;
+import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifactQueryResponse;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -44,11 +47,11 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 
 	private final RestTemplate restTemplate;
 
-	private final UriComponentsBuilder uri;
+	private final String uri;
 
 	private final String buildName;
 
-	public HttpArtifactoryBuildRuns(RestTemplate restTemplate, UriComponentsBuilder uri,
+	public HttpArtifactoryBuildRuns(RestTemplate restTemplate, String uri,
 			String buildName) {
 		this.restTemplate = restTemplate;
 		this.uri = uri;
@@ -57,14 +60,15 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 
 	@Override
 	public void add(String buildNumber, String buildUri,
-			ContinuousIntegrationAgent continuousIntegrationAgent,
+			ContinuousIntegrationAgent continuousIntegrationAgent, Date started,
 			List<BuildModule> modules) {
 		add(new BuildInfo(this.buildName, buildNumber, continuousIntegrationAgent,
-				new Date(), buildUri, modules));
+				started, buildUri, modules));
 	}
 
 	private void add(BuildInfo buildInfo) {
-		URI uri = this.uri.path("api/build").build(NO_VARIABLES);
+		URI uri = UriComponentsBuilder.fromUriString(this.uri).path("api/build")
+				.build(NO_VARIABLES);
 		RequestEntity<BuildInfo> request = RequestEntity.put(uri)
 				.contentType(MediaType.APPLICATION_JSON).body(buildInfo);
 		ResponseEntity<Void> exchange = this.restTemplate.exchange(request, Void.class);
@@ -73,8 +77,27 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 
 	@Override
 	public List<BuildRun> getAll() {
-		URI uri = this.uri.path("api/build/{buildName}").build(this.buildName);
-		return this.restTemplate.getForObject(uri, BuildRunsResponse.class).getBuildsRuns();
+		URI uri = UriComponentsBuilder.fromUriString(this.uri)
+				.path("api/build/{buildName}").build(this.buildName);
+		return this.restTemplate.getForObject(uri, BuildRunsResponse.class)
+				.getBuildsRuns();
+	}
+
+	@Override
+	public List<DeployedArtifact> getDeployedArtifacts(String buildNumber) {
+		Assert.notNull(buildNumber, "Build number must not be null");
+		URI uri = UriComponentsBuilder.fromUriString(this.uri)
+				.path("/api/search/aql").build(NO_VARIABLES);
+		RequestEntity<String> request = RequestEntity.post(uri)
+				.contentType(MediaType.TEXT_PLAIN)
+				.body(buildFetchQuery(this.buildName, buildNumber));
+		return this.restTemplate.exchange(request, DeployedArtifactQueryResponse.class)
+				.getBody().getResults();
+	}
+
+	private String buildFetchQuery(String buildName, String buildNumber) {
+		return "items.find({\"@build.name\": \"" + buildName + "\",\"@build.number\": \""
+				+ buildNumber + "\"" + "})";
 	}
 
 }

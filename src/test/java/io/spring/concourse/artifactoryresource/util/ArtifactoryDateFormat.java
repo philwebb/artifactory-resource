@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.artifactory.payload;
+package io.spring.concourse.artifactoryresource.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -25,7 +25,7 @@ import java.util.Date;
  *
  * @author Phillip Webb
  */
-final class ArtifactoryDateFormat {
+public final class ArtifactoryDateFormat {
 
 	private ArtifactoryDateFormat() {
 	}

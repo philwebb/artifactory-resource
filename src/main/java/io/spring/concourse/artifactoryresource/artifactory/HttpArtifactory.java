@@ -18,7 +18,6 @@ package io.spring.concourse.artifactoryresource.artifactory;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * Default {@link Artifactory} implementation communicating over HTTP.
@@ -40,7 +39,7 @@ public class HttpArtifactory implements Artifactory {
 		if (!uri.endsWith("/")) {
 			uri += '/';
 		}
-		return new HttpArtifactoryServer(UriComponentsBuilder.fromUriString(uri),
+		return new HttpArtifactoryServer(uri,
 				this.restTemplateBuilder.basicAuthorization(username, password));
 	}
 
