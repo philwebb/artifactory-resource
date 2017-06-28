@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link BuildArtifact}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 @RunWith(SpringRunner.class)
 @JsonTest
@@ -83,7 +84,6 @@ public class BuildArtifactTests {
 	public void writeShouldSerialize() throws Exception {
 		BuildArtifact artifact = new BuildArtifact(TYPE, SHA1, MD5, NAME);
 		assertThat(this.json.write(artifact)).isEqualToJson("build-artifact.json");
-
 	}
 
 }

@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ContinuousIntegrationAgent}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 @RunWith(SpringRunner.class)
 @JsonTest

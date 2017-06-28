@@ -34,7 +34,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  */
 @Component
-public class SystemInputJson {
+public class SystemInput {
 
 	private static final long TIMEOUT = TimeUnit.SECONDS.toMillis(1);
 
@@ -45,20 +45,16 @@ public class SystemInputJson {
 	private final long timeout;
 
 	@Autowired
-	public SystemInputJson(SystemStreams systemStreams, ObjectMapper objectMapper) {
+	public SystemInput(SystemStreams systemStreams, ObjectMapper objectMapper) {
 		this(systemStreams, objectMapper, TIMEOUT);
 
 	}
 
-	protected SystemInputJson(SystemStreams systemStreams, ObjectMapper objectMapper,
+	protected SystemInput(SystemStreams systemStreams, ObjectMapper objectMapper,
 			long timeout) {
 		this.systemStreams = systemStreams;
 		this.objectMapper = objectMapper;
 		this.timeout = timeout;
-	}
-
-	public SystemStreams getSystemStreams() {
-		return this.systemStreams;
 	}
 
 	public <T> T read(Class<T> type) throws IOException {

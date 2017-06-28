@@ -16,37 +16,27 @@
 
 package io.spring.concourse.artifactoryresource.artifactory.payload;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import org.springframework.util.Assert;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
- * The CI agent information included in {@link BuildInfo}.
+ * Test utility for dealing with artifactory date formats.
  *
  * @author Phillip Webb
- * @author Madhura Bhave
  */
-public class ContinuousIntegrationAgent {
+final class ArtifactoryDateFormat {
 
-	private final String name;
-
-	private final String version;
-
-	@JsonCreator
-	public ContinuousIntegrationAgent(@JsonProperty("name") String name,
-			@JsonProperty("version") String version) {
-		Assert.hasText(name, "Name must not be empty");
-		this.name = name;
-		this.version = version;
+	private ArtifactoryDateFormat() {
 	}
 
-	public String getName() {
-		return this.name;
-	}
-
-	public String getVersion() {
-		return this.version;
+	public static Date parse(String date) {
+		try {
+			return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").parse(date);
+		}
+		catch (ParseException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 }

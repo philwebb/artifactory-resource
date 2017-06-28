@@ -31,6 +31,7 @@ import org.springframework.util.FileCopyUtils;
  * Tests for {@link DeployableFileArtifact}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public class DeployableFileArtifactTests extends AbstractDeployableArtifactTests {
 

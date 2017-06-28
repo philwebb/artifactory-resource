@@ -20,6 +20,7 @@ package io.spring.concourse.artifactoryresource.artifactory;
  * Interface providing access to a specific artifactory server.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public interface ArtifactoryServer {
 

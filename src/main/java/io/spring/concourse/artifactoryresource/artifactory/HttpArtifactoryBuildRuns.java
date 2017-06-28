@@ -22,7 +22,8 @@ import java.util.List;
 
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildInfo;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
-import io.spring.concourse.artifactoryresource.artifactory.payload.BuildRuns;
+import io.spring.concourse.artifactoryresource.artifactory.payload.BuildRun;
+import io.spring.concourse.artifactoryresource.artifactory.payload.BuildRunsResponse;
 import io.spring.concourse.artifactoryresource.artifactory.payload.ContinuousIntegrationAgent;
 
 import org.springframework.http.MediaType;
@@ -35,6 +36,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  * Default {@link ArtifactoryBuildRuns} implementation communicating over HTTP.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 
@@ -61,18 +63,18 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 				new Date(), buildUri, modules));
 	}
 
-	@Override
-	public BuildRuns getAll() {
-		URI uri = this.uri.path("api/build/{buildName}").build(this.buildName);
-		return this.restTemplate.getForObject(uri, BuildRuns.class);
-	}
-
 	private void add(BuildInfo buildInfo) {
 		URI uri = this.uri.path("api/build").build(NO_VARIABLES);
 		RequestEntity<BuildInfo> request = RequestEntity.put(uri)
 				.contentType(MediaType.APPLICATION_JSON).body(buildInfo);
 		ResponseEntity<Void> exchange = this.restTemplate.exchange(request, Void.class);
 		exchange.getBody();
+	}
+
+	@Override
+	public List<BuildRun> getAll() {
+		URI uri = this.uri.path("api/build/{buildName}").build(this.buildName);
+		return this.restTemplate.getForObject(uri, BuildRunsResponse.class).getBuildsRuns();
 	}
 
 }

@@ -16,42 +16,47 @@
 
 package io.spring.concourse.artifactoryresource.artifactory.payload;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import org.springframework.util.Assert;
-
 /**
- * A single module included in {@link BuildInfo}.
+ * A reference to a build that has already run.
  *
- * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Phillip Webb
  */
-public class BuildModule {
+public class BuildRun implements Comparable<BuildRun> {
 
-	private final String id;
+	private String uri;
 
-	private final List<BuildArtifact> artifacts;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+	private Date started;
 
 	@JsonCreator
-	public BuildModule(@JsonProperty("id") String id,
-			@JsonProperty("artifacts") List<BuildArtifact> artifacts) {
-		Assert.hasText(id, "ID must not be empty");
-		this.id = id;
-		this.artifacts = (artifacts == null ? Collections.emptyList()
-				: Collections.unmodifiableList(new ArrayList<>(artifacts)));
+	public BuildRun(@JsonProperty("uri") String uri,
+			@JsonProperty("started") Date started) {
+		this.uri = uri;
+		this.started = started;
 	}
 
-	public String getId() {
-		return this.id;
+	public String getBuildNumber() {
+		return this.uri.substring(1);
 	}
 
-	public List<BuildArtifact> getArtifacts() {
-		return this.artifacts;
+	public String getUri() {
+		return this.uri;
+	}
+
+	public Date getStarted() {
+		return this.started;
+	}
+
+	@Override
+	public int compareTo(BuildRun other) {
+		return this.started.compareTo(other.started);
 	}
 
 }

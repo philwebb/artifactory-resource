@@ -6,21 +6,26 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
+ * A single response from an Artifactory Query Language request for deployed artifacts.
+ *
  * @author Madhura Bhave
+ * @author Phillip Webb
  */
-public class FetchResults {
+public class DeployedArtifactQueryResponse {
 
-	private List<FetchedArtifact> results;
+	private List<DeployedArtifact> results;
 
 	private Range range;
 
 	@JsonCreator
-	public FetchResults(@JsonProperty("results") List<FetchedArtifact> results, @JsonProperty("range") Range range) {
+	public DeployedArtifactQueryResponse(
+			@JsonProperty("results") List<DeployedArtifact> results,
+			@JsonProperty("range") Range range) {
 		this.results = results;
 		this.range = range;
 	}
 
-	public List<FetchedArtifact> getResults() {
+	public List<DeployedArtifact> getResults() {
 		return this.results;
 	}
 
@@ -30,16 +35,15 @@ public class FetchResults {
 
 	public static class Range {
 
-		@JsonProperty("start_pos")
 		private int startPos;
 
-		@JsonProperty("end_pos")
 		private int endPos;
 
 		private int total;
 
 		@JsonCreator
-		public Range(@JsonProperty("start_pos") int startPos, @JsonProperty("end_pos")int endPos, @JsonProperty("total")int total) {
+		public Range(@JsonProperty("start_pos") int startPos,
+				@JsonProperty("end_pos") int endPos, @JsonProperty("total") int total) {
 			this.startPos = startPos;
 			this.endPos = endPos;
 			this.total = total;
@@ -56,5 +60,7 @@ public class FetchResults {
 		public int getTotal() {
 			return this.total;
 		}
+
 	}
+
 }

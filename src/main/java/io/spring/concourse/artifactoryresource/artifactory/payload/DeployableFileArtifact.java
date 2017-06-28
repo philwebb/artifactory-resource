@@ -28,6 +28,7 @@ import org.springframework.util.Assert;
  * {@link DeployableArtifact} backed by a {@link File}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public class DeployableFileArtifact extends AbstractDeployableArtifact {
 
@@ -37,7 +38,8 @@ public class DeployableFileArtifact extends AbstractDeployableArtifact {
 		this(parent, file, null);
 	}
 
-	public DeployableFileArtifact(File parent, File file, Map<String, String> properties) {
+	public DeployableFileArtifact(File parent, File file,
+			Map<String, String> properties) {
 		this(parent, file, properties, null);
 	}
 

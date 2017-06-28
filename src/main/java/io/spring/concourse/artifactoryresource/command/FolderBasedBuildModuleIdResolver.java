@@ -15,6 +15,6 @@ public class FolderBasedBuildModuleIdResolver implements BuildModuleIdResolver {
 
 	@Override
 	public String getBuildModuleId() {
-		return null;   //FIXME
+		return null; // FIXME
 	}
 }

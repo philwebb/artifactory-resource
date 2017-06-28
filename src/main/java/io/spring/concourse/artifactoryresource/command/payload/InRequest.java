@@ -82,7 +82,8 @@ public class InRequest {
 
 		@Override
 		public String toString() {
-			return new ToStringCreator(this).append("generateMavenMetadata", this.generateMavenMetadata)
+			return new ToStringCreator(this)
+					.append("generateMavenMetadata", this.generateMavenMetadata)
 					.toString();
 		}
 

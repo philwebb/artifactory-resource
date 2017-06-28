@@ -31,6 +31,7 @@ import org.springframework.util.Assert;
  * Build information for artifactory.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public class BuildInfo {
 

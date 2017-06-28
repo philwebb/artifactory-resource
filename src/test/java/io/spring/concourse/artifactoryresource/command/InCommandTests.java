@@ -7,10 +7,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryRepository;
 import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryServer;
 import io.spring.concourse.artifactoryresource.artifactory.HttpArtifactory;
-import io.spring.concourse.artifactoryresource.artifactory.payload.FetchResults;
+import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifactQueryResponse;
 import io.spring.concourse.artifactoryresource.command.payload.InResponse;
 import io.spring.concourse.artifactoryresource.system.MockSystemStreams;
-import io.spring.concourse.artifactoryresource.system.SystemInputJson;
+import io.spring.concourse.artifactoryresource.system.SystemInput;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -53,9 +53,11 @@ public class InCommandTests {
 	public void setUp() throws Exception {
 		this.artifactoryServer = mock(ArtifactoryServer.class);
 		this.repository = mock(ArtifactoryRepository.class);
-		given(this.artifactory.server("http://repo.example.com", "admin", "password")).willReturn(this.artifactoryServer);
-		given(this.artifactoryServer.repository("libs-snapshot-local")).willReturn(this.repository);
-		given(this.repository.fetchAll("my-build", "5678")).willReturn(getAllArtifacts());
+		given(this.artifactory.server("http://repo.example.com", "admin", "password"))
+				.willReturn(this.artifactoryServer);
+		given(this.artifactoryServer.repository("libs-snapshot-local"))
+				.willReturn(this.repository);
+		given(this.repository.getDeployedArtifacts("my-build", "5678")).willReturn(getAllArtifacts());
 	}
 
 	@Test
@@ -63,11 +65,11 @@ public class InCommandTests {
 		String path = getPath();
 		String requestJson = getJson(COMMAND_RESOURCE_PATH + "/in-request.json");
 		MockSystemStreams systemStreams = new MockSystemStreams(requestJson);
-		SystemInputJson inputJson = new SystemInputJson(
-				systemStreams, new ObjectMapper());
+		SystemInput inputJson = new SystemInput(systemStreams,
+				new ObjectMapper());
 		InCommand inCommand = new InCommand(inputJson, this.artifactory);
-		inCommand.run(new DefaultApplicationArguments(new String[] {"in", path}));
-		verify(this.repository).fetch("/org/jfrog/artifactory/artifactory.war", path);
+		inCommand.run(new DefaultApplicationArguments(new String[] { "in", path }));
+		verify(this.repository).download("/org/jfrog/artifactory/artifactory.war", path);
 		verifyOutput(systemStreams);
 	}
 
@@ -77,9 +79,10 @@ public class InCommandTests {
 		return path;
 	}
 
-	private FetchResults getAllArtifacts() throws Exception {
-		String fetchArtifactsJson = getJson("/io/spring/concourse/artifactoryresource/artifactory/payload/fetch-artifacts.json");
-		return new ObjectMapper().readValue(fetchArtifactsJson, FetchResults.class);
+	private DeployedArtifactQueryResponse getAllArtifacts() throws Exception {
+		String fetchArtifactsJson = getJson(
+				"/io/spring/concourse/artifactoryresource/artifactory/payload/fetch-artifacts.json");
+		return new ObjectMapper().readValue(fetchArtifactsJson, DeployedArtifactQueryResponse.class);
 	}
 
 	private String getJson(String name) throws Exception {
@@ -88,12 +91,14 @@ public class InCommandTests {
 	}
 
 	private void verifyOutput(MockSystemStreams systemStreams) throws IOException {
-		InputStream stream = this.getClass().getResourceAsStream(COMMAND_RESOURCE_PATH + "/in-response-without-metadata.json");
+		InputStream stream = this.getClass().getResourceAsStream(
+				COMMAND_RESOURCE_PATH + "/in-response-without-metadata.json");
 		String response = IOUtils.toString(stream);
 		byte[] outBytes = systemStreams.getOutBytes();
 		assertThat(outBytes).isNotEmpty();
 		InResponse expected = this.mapper.readValue(response, InResponse.class);
 		InResponse actual = this.mapper.readValue(new String(outBytes), InResponse.class);
-		assertThat(actual.getVersion().getBuildNumber()).isEqualTo(expected.getVersion().getBuildNumber());
+		assertThat(actual.getVersion().getBuildNumber())
+				.isEqualTo(expected.getVersion().getBuildNumber());
 	}
 }

@@ -15,7 +15,7 @@ import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
 import io.spring.concourse.artifactoryresource.artifactory.payload.ContinuousIntegrationAgent;
 import io.spring.concourse.artifactoryresource.command.payload.OutRequest;
 import io.spring.concourse.artifactoryresource.system.MockSystemStreams;
-import io.spring.concourse.artifactoryresource.system.SystemInputJson;
+import io.spring.concourse.artifactoryresource.system.SystemInput;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -65,40 +65,49 @@ public class OutCommandTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void runWhenIncludeSpecifiedShouldDeployIncluded() throws Exception {
-		SystemInputJson inputJson = setUp(COMMAND_RESOURCE_PATH + "/out-request.json");
-		new OutCommand(inputJson, this.artifactory).run(new DefaultApplicationArguments(new String[] {"out"}));
-		ArgumentCaptor<ContinuousIntegrationAgent> agentCaptor = ArgumentCaptor.forClass(ContinuousIntegrationAgent.class);
-		ArgumentCaptor<List<BuildModule>> buildModuleCaptor = ArgumentCaptor.forClass(List.class);
-		verify(this.buildRuns).add("1234", "http://ci.example.com", agentCaptor.capture(), buildModuleCaptor.capture());
+		SystemInput inputJson = setUp(COMMAND_RESOURCE_PATH + "/out-request.json");
+		new OutCommand(inputJson, this.artifactory)
+				.run(new DefaultApplicationArguments(new String[] { "out" }));
+		ArgumentCaptor<ContinuousIntegrationAgent> agentCaptor = ArgumentCaptor
+				.forClass(ContinuousIntegrationAgent.class);
+		ArgumentCaptor<List<BuildModule>> buildModuleCaptor = ArgumentCaptor
+				.forClass(List.class);
+		verify(this.buildRuns).add("1234", "http://ci.example.com", agentCaptor.capture(),
+				buildModuleCaptor.capture());
 		assertThat(agentCaptor.getValue().getName()).isEqualTo("Concourse");
 		assertThat(buildModuleCaptor.getValue().size()).isEqualTo(2);
 	}
 
 	@Test
 	public void runWhenExcludeSpecifiedShouldNotDeployExcluded() throws Exception {
-		SystemInputJson inputJson = setUp(COMMAND_RESOURCE_PATH + "/out-request.json");
-		new OutCommand(inputJson, this.artifactory).run(new DefaultApplicationArguments(new String[] {"out"}));
+		SystemInput inputJson = setUp(COMMAND_RESOURCE_PATH + "/out-request.json");
+		new OutCommand(inputJson, this.artifactory)
+				.run(new DefaultApplicationArguments(new String[] { "out" }));
 	}
 
 	@Test
 	public void runWhenBuildUriSpecifiedShouldAddBuildUri() throws Exception {
-		SystemInputJson inputJson = setUp(COMMAND_RESOURCE_PATH + "/out-request.json");
-		new OutCommand(inputJson, this.artifactory).run(new DefaultApplicationArguments(new String[] {"out"}));
+		SystemInput inputJson = setUp(COMMAND_RESOURCE_PATH + "/out-request.json");
+		new OutCommand(inputJson, this.artifactory)
+				.run(new DefaultApplicationArguments(new String[] { "out" }));
 	}
 
-	private SystemInputJson setUp(String request) throws Exception {
+	private SystemInput setUp(String request) throws Exception {
 		String requestJson = getJson(request);
 		OutRequest outRequest = this.mapper.readValue(requestJson, OutRequest.class);
 		OutRequest.Params params = outRequest.getParams();
 		OutRequest.Params newParams = new OutRequest.Params(params.getBuildNumber(),
-				temporaryFolder.getRoot().toString() + "/" + params.getFolder(), params.getInclude(), params.getExclude(), params.getBuildUri());
+				temporaryFolder.getRoot().toString() + "/" + params.getFolder(),
+				params.getInclude(), params.getExclude(), params.getBuildUri());
 		outRequest = new OutRequest(outRequest.getSource(), newParams);
-		MockSystemStreams systemStreams = new MockSystemStreams(this.mapper.writeValueAsString(outRequest));
-		SystemInputJson inputJson = new SystemInputJson(
-				systemStreams, new ObjectMapper());
+		MockSystemStreams systemStreams = new MockSystemStreams(
+				this.mapper.writeValueAsString(outRequest));
+		SystemInput inputJson = new SystemInput(systemStreams,
+				new ObjectMapper());
 		createFolderToDeploy();
 		ArtifactoryServer artifactoryServer = mock(ArtifactoryServer.class);
-		given(this.artifactory.server("http://repo.example.com", "admin", "password")).willReturn(artifactoryServer);
+		given(this.artifactory.server("http://repo.example.com", "admin", "password"))
+				.willReturn(artifactoryServer);
 		given(artifactoryServer.repository("libs-snapshot-local")).willReturn(repository);
 		given(artifactoryServer.buildRuns("my-build")).willReturn(buildRuns);
 		return inputJson;

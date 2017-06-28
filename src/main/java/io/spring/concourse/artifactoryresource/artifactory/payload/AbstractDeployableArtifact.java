@@ -28,6 +28,7 @@ import org.springframework.util.StringUtils;
  * Abstract {@link DeployableArtifact} implementation.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public abstract class AbstractDeployableArtifact implements DeployableArtifact {
 

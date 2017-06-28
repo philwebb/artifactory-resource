@@ -7,8 +7,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildArtifact;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildInfo;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
-import io.spring.concourse.artifactoryresource.artifactory.payload.BuildRuns;
-import io.spring.concourse.artifactoryresource.artifactory.payload.BuildRuns.BuildNumber;
+import io.spring.concourse.artifactoryresource.artifactory.payload.BuildRun;
+import io.spring.concourse.artifactoryresource.artifactory.payload.BuildRunsResponse;
 import io.spring.concourse.artifactoryresource.artifactory.payload.ContinuousIntegrationAgent;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -62,17 +62,21 @@ public class HttpArtifactoryBuildRunsTests {
 
 	@Test
 	public void addShouldAddBuildInfo() throws Exception {
-		ContinuousIntegrationAgent agent = new ContinuousIntegrationAgent("Concourse", null);
+		ContinuousIntegrationAgent agent = new ContinuousIntegrationAgent("Concourse",
+				null);
 		ArtifactoryBuildRuns buildRuns = this.artifactory
 				.server("http://repo.example.com", "admin", "password")
 				.buildRuns("my-build");
-		List<BuildArtifact> artifacts = Collections.singletonList(new BuildArtifact("file", "sha-1", "md5", "my-artifact"));
-		List<BuildModule> modules = Collections.singletonList(new BuildModule("artifact-id", artifacts));
-		BuildInfo expected = new BuildInfo("my-build", "1234", agent, null, "ci.build.io", modules);
+		List<BuildArtifact> artifacts = Collections
+				.singletonList(new BuildArtifact("file", "sha-1", "md5", "my-artifact"));
+		List<BuildModule> modules = Collections
+				.singletonList(new BuildModule("artifact-id", artifacts));
+		BuildInfo expected = new BuildInfo("my-build", "1234", agent, null, "ci.build.io",
+				modules);
 		this.server.expect(requestTo("http://repo.example.com/api/build"))
-				.andExpect(content().contentType(APPLICATION_JSON))
-				.andExpect(method(PUT))
-				.andExpect(content().string(Matchers.containsString(this.mapper.writeValueAsString(expected))))
+				.andExpect(content().contentType(APPLICATION_JSON)).andExpect(method(PUT))
+				.andExpect(content().string(Matchers
+						.containsString(this.mapper.writeValueAsString(expected))))
 				.andRespond(withSuccess());
 		buildRuns.add("1234", "ci.build.io", agent, modules);
 		this.server.verify();
@@ -83,13 +87,14 @@ public class HttpArtifactoryBuildRunsTests {
 		ArtifactoryBuildRuns buildRuns = this.artifactory
 				.server("http://repo.example.com", "admin", "password")
 				.buildRuns("my-build");
-		List<BuildNumber> buildsNumbers = Collections.singletonList(new BuildNumber("/1234", null));
-		BuildRuns runs = new BuildRuns("http://my-build-run.com", buildsNumbers);
+		List<BuildRun> buildsNumbers = Collections
+				.singletonList(new BuildRun("/1234", null));
+		BuildRunsResponse runs = new BuildRunsResponse("http://my-build-run.com", buildsNumbers);
 		this.server.expect(requestTo("http://repo.example.com/api/build/my-build"))
-				.andExpect(method(GET))
-				.andRespond(withSuccess(this.mapper.writeValueAsString(runs), APPLICATION_JSON));
-		BuildRuns all = buildRuns.getAll();
+				.andExpect(method(GET)).andRespond(withSuccess(
+						this.mapper.writeValueAsString(runs), APPLICATION_JSON));
+		BuildRunsResponse all = buildRuns.getAll();
 		assertThat(all.getUri()).isEqualTo("http://my-build-run.com");
-		assertThat(all.getBuildsNumbers().get(0).getUri()).isEqualTo("/1234");
+		assertThat(all.getBuildsRuns().get(0).getUri()).isEqualTo("/1234");
 	}
 }

@@ -19,20 +19,32 @@ package io.spring.concourse.artifactoryresource.artifactory;
 import java.util.List;
 
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
-import io.spring.concourse.artifactoryresource.artifactory.payload.BuildRuns;
+import io.spring.concourse.artifactoryresource.artifactory.payload.BuildRun;
 import io.spring.concourse.artifactoryresource.artifactory.payload.ContinuousIntegrationAgent;
 
 /**
  * Access to artifactory build runs.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public interface ArtifactoryBuildRuns {
 
+	/**
+	 * Add a new build run.
+	 * @param buildNumber the build number
+	 * @param buildUri the build URL
+	 * @param continuousIntegrationAgent The CI Agent
+	 * @param modules the modules for the build run
+	 */
 	void add(String buildNumber, String buildUri,
 			ContinuousIntegrationAgent continuousIntegrationAgent,
 			List<BuildModule> modules);
 
-	BuildRuns getAll();
+	/**
+	 * Return all previous build runs.
+	 * @return the build runs
+	 */
+	List<BuildRun> getAll();
 
 }

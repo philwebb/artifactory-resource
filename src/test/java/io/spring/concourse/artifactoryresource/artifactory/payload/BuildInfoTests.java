@@ -16,8 +16,6 @@
 
 package io.spring.concourse.artifactoryresource.artifactory.payload;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -38,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link BuildInfo}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 @RunWith(SpringRunner.class)
 @JsonTest
@@ -50,7 +49,8 @@ public class BuildInfoTests {
 	private static final ContinuousIntegrationAgent CI_AGENT = new ContinuousIntegrationAgent(
 			"Concourse", "3.0.0");
 
-	private static final Date STARTED = parseDate("2014-09-30T12:00:19.893+0000");
+	private static final Date STARTED = ArtifactoryDateFormat
+			.parse("2014-09-30T12:00:19.893+0000");
 
 	private static final String BUILD_URI = "http://ci.example.com";
 
@@ -94,15 +94,6 @@ public class BuildInfoTests {
 		BuildInfo buildInfo = new BuildInfo(BUILD_NAME, BUILD_NUMBER, CI_AGENT, STARTED,
 				BUILD_URI, MODULES);
 		assertThat(this.json.write(buildInfo)).isEqualToJson("build-info.json");
-	}
-
-	private static Date parseDate(String date) {
-		try {
-			return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").parse(date);
-		}
-		catch (ParseException ex) {
-			throw new RuntimeException(ex);
-		}
 	}
 
 }

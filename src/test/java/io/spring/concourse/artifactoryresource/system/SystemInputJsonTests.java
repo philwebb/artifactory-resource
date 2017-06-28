@@ -24,7 +24,7 @@ import org.junit.rules.ExpectedException;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SystemInputJson}.
+ * Tests for {@link SystemInput}.
  *
  * @author Phillip Webb
  */
@@ -35,7 +35,7 @@ public class SystemInputJsonTests {
 
 	@Test
 	public void readWhenNoDataShouldTimeout() throws Exception {
-		SystemInputJson inputJson = new SystemInputJson(new MockSystemStreams(""),
+		SystemInput inputJson = new SystemInput(new MockSystemStreams(""),
 				new ObjectMapper(), 10);
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("Timeout waiting for input");
@@ -44,7 +44,7 @@ public class SystemInputJsonTests {
 
 	@Test
 	public void readShouldDeserialize() throws Exception {
-		SystemInputJson inputJson = new SystemInputJson(
+		SystemInput inputJson = new SystemInput(
 				new MockSystemStreams("[\"foo\",\"bar\"]"), new ObjectMapper());
 		String[] result = inputJson.read(String[].class);
 		assertThat(result).containsExactly("foo", "bar");

@@ -22,13 +22,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryRepository;
 import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryServer;
 import io.spring.concourse.artifactoryresource.artifactory.HttpArtifactory;
-import io.spring.concourse.artifactoryresource.artifactory.payload.FetchedArtifact;
-import io.spring.concourse.artifactoryresource.artifactory.payload.FetchResults;
+import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifact;
 import io.spring.concourse.artifactoryresource.command.payload.InRequest;
 import io.spring.concourse.artifactoryresource.command.payload.InResponse;
 import io.spring.concourse.artifactoryresource.command.payload.Source;
 import io.spring.concourse.artifactoryresource.command.payload.Version;
-import io.spring.concourse.artifactoryresource.system.SystemInputJson;
+import io.spring.concourse.artifactoryresource.system.SystemInput;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.stereotype.Component;
@@ -41,11 +40,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class InCommand implements Command {
 
-	private final SystemInputJson inputJson;
+	private final SystemInput inputJson;
 
 	private final HttpArtifactory artifactory;
 
-	public InCommand(SystemInputJson inputJson, HttpArtifactory artifactory) {
+	public InCommand(SystemInput inputJson, HttpArtifactory artifactory) {
 		this.inputJson = inputJson;
 		this.artifactory = artifactory;
 	}
@@ -55,22 +54,22 @@ public class InCommand implements Command {
 		InRequest request = this.inputJson.read(InRequest.class);
 		Directory directory = Directory.fromArgs(args);
 		Source source = request.getSource();
-		ArtifactoryServer server = this.artifactory.server(source.getUri(), source.getUsername(),
-				source.getPassword());
+		ArtifactoryServer server = this.artifactory.server(source.getUri(),
+				source.getUsername(), source.getPassword());
 		ArtifactoryRepository repository = server.repository(source.getRepo());
 		fetchArtifacts(request, directory, source, repository);
 		Version version = new Version(request.getVersion().getBuildNumber());
-		InResponse response = new InResponse(version, null); //FIXME for metadata
+		InResponse response = new InResponse(version, null); // FIXME for metadata
 		String output = new ObjectMapper().writeValueAsString(response);
 		this.inputJson.getSystemStreams().out().print(output);
 	}
 
-	private void fetchArtifacts(InRequest request, Directory directory, Source source, ArtifactoryRepository repository) {
-		FetchResults fetchResults = repository.fetchAll(source.getBuildName(), request.getVersion().getBuildNumber());
-		List<FetchedArtifact> artifacts = fetchResults.getResults();
-		for (FetchedArtifact artifact: artifacts) {
-			String path = "/" + artifact.getPath() + "/" + artifact.getName();
-			repository.fetch(path, directory.toString());
+	private void fetchArtifacts(InRequest request, Directory directory, Source source,
+			ArtifactoryRepository repository) {
+		List<DeployedArtifact> artifacts = repository.getDeployedArtifacts(
+				source.getBuildName(), request.getVersion().getBuildNumber());
+		for (DeployedArtifact artifact : artifacts) {
+			repository.download(artifact, directory.toString());
 		}
 	}
 

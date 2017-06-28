@@ -22,18 +22,20 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
 
 import io.spring.concourse.artifactoryresource.artifactory.payload.Checksums;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
-import io.spring.concourse.artifactoryresource.artifactory.payload.FetchResults;
+import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifact;
+import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifactQueryResponse;
 
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.RequestEntity.BodyBuilder;
 import org.springframework.util.Assert;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResponseExtractor;
@@ -44,6 +46,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  * Default {@link ArtifactoryRepository} implementation communicating over HTTP.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 class HttpArtifactoryRepository implements ArtifactoryRepository {
 
@@ -69,24 +72,12 @@ class HttpArtifactoryRepository implements ArtifactoryRepository {
 	public void deploy(DeployableArtifact artifact) {
 		try {
 			Assert.notNull(artifact, "Artifact must not be null");
-			Map<String, String> properties = artifact.getProperties();
-			URI deployUri = this.uri.path(this.repositoryName).path(artifact.getPath()).path(buildMatrixParams(properties))
-					.build(NO_VARIABLES);
-			Checksums checksums = artifact.getChecksums();
-			RequestEntity checksumRequest = RequestEntity.put(deployUri)
-					.contentType(BINARY_OCTET_STREAM)
-					.header("X-Checksum-Sha1", checksums.getSha1())
-					.header("X-Checksum-Deploy", "true").build();
 			try {
-				this.restTemplate.exchange(checksumRequest, Void.class);
-			} catch (HttpClientErrorException ex) {
+				deployUsingChecksum(artifact);
+			}
+			catch (HttpClientErrorException ex) {
 				if (ex.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
-					RequestEntity<Resource> request = RequestEntity.put(deployUri)
-							.contentType(BINARY_OCTET_STREAM)
-							.header("X-Checksum-Sha1", checksums.getSha1())
-							.header("X-Checksum-Md5", checksums.getMd5())
-							.body(artifact.getContent());
-					this.restTemplate.exchange(request, Void.class);
+					deployUsingContent(artifact);
 				}
 			}
 		}
@@ -96,47 +87,68 @@ class HttpArtifactoryRepository implements ArtifactoryRepository {
 
 	}
 
-	@Override
-	public FetchResults fetchAll(String buildName, String buildNumber) {
-		Assert.notNull(buildNumber, "Build number must not be null");
-		URI fetchUri = this.uri.path("/api/search/aql").build(NO_VARIABLES);
-		RequestEntity request = RequestEntity.post(fetchUri)
-				.contentType(MediaType.TEXT_PLAIN)
-				.body(buildFetchBody(buildName, buildNumber));
-		ResponseEntity<FetchResults> entity = this.restTemplate.exchange(request, FetchResults.class);
-		return entity.getBody();
+	private void deployUsingChecksum(DeployableArtifact artifact) throws IOException {
+		RequestEntity<Void> request = deployRequest(artifact)
+				.header("X-Checksum-Deploy", "true").build();
+		this.restTemplate.exchange(request, Void.class);
+	}
+
+	private void deployUsingContent(DeployableArtifact artifact) throws IOException {
+		RequestEntity<Resource> request = deployRequest(artifact)
+				.body(artifact.getContent());
+		this.restTemplate.exchange(request, Void.class);
+	}
+
+	private BodyBuilder deployRequest(DeployableArtifact artifact) throws IOException {
+		URI uri = this.uri.path(this.repositoryName).path(artifact.getPath())
+				.path(buildMatrixParams(artifact.getProperties())).build(NO_VARIABLES);
+		Checksums checksums = artifact.getChecksums();
+		return RequestEntity.put(uri).contentType(BINARY_OCTET_STREAM)
+				.header("X-Checksum-Sha1", checksums.getSha1())
+				.header("X-Checksum-Md5", checksums.getMd5());
+	}
+
+	private String buildMatrixParams(Map<String, String> matrixParams)
+			throws UnsupportedEncodingException {
+		StringBuilder matrix = new StringBuilder();
+		if (matrixParams != null && !matrixParams.isEmpty()) {
+			for (Map.Entry<String, String> entry : matrixParams.entrySet()) {
+				matrix.append(";" + entry.getKey() + "=" + entry.getValue());
+			}
+		}
+		return matrix.toString();
 	}
 
 	@Override
-	public void fetch(String artifactName, String path) {
-		Assert.notNull(artifactName, "Artifact name must not be null");
-		URI fetchUri = this.uri.path(this.repositoryName).path(artifactName).build(NO_VARIABLES);
-		ResponseExtractor<Void> responseExtractor = response -> {
-			Path fullPath = Paths.get(path + artifactName);
+	public List<DeployedArtifact> getDeployedArtifacts(String buildName,
+			String buildNumber) {
+		Assert.notNull(buildNumber, "Build number must not be null");
+		URI fetchUri = this.uri.path("/api/search/aql").build(NO_VARIABLES);
+		RequestEntity<String> request = RequestEntity.post(fetchUri)
+				.contentType(MediaType.TEXT_PLAIN)
+				.body(buildFetchQuery(buildName, buildNumber));
+		return this.restTemplate.exchange(request, DeployedArtifactQueryResponse.class)
+				.getBody().getResults();
+	}
+
+	private String buildFetchQuery(String buildName, String buildNumber) {
+		return "items.find({\"repo\": \"" + this.repositoryName
+				+ "\", \n\"@build.name\": \"" + buildName + "\",\"@build.number\": \""
+				+ buildNumber + "\"" + "})";
+	}
+
+	@Override
+	public void download(DeployedArtifact artifact, String destination) {
+		Assert.notNull(artifact, "Artifact name must not be null");
+		String path = "/" + artifact.getPath() + "/" + artifact.getName();
+		URI fetchUri = this.uri.path(this.repositoryName).path(path).build(NO_VARIABLES);
+		ResponseExtractor<Void> responseExtractor = (response) -> {
+			Path fullPath = Paths.get(destination + artifact);
 			Files.createDirectories(fullPath.getParent());
 			Files.copy(response.getBody(), fullPath);
 			return null;
 		};
 		this.restTemplate.execute(fetchUri, HttpMethod.GET, null, responseExtractor);
-	}
-
-	private String buildFetchBody(String buildName, String buildNumber) {
-		return String.format("items.find({" +
-				"\"repo\": \"%s\", \n" +
-				"\"@build.name\": \"%s\"," +
-				"\"@build.number\": \"%s\"" +
-				"})", this.repositoryName, buildName, buildNumber);
-	}
-
-	private String buildMatrixParams(Map<String, String> matrixParams) throws UnsupportedEncodingException {
-		StringBuilder matrix = new StringBuilder();
-		if (matrixParams != null && !matrixParams.isEmpty()) {
-			for (Map.Entry<String, String> property : matrixParams.entrySet()) {
-				matrix.append(";").append(property.getKey())
-						.append("=").append(property.getValue());
-			}
-		}
-		return matrix.toString();
 	}
 
 }

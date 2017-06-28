@@ -36,7 +36,7 @@ import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableFil
 import io.spring.concourse.artifactoryresource.command.payload.OutRequest;
 import io.spring.concourse.artifactoryresource.command.payload.OutRequest.Params;
 import io.spring.concourse.artifactoryresource.command.payload.Source;
-import io.spring.concourse.artifactoryresource.system.SystemInputJson;
+import io.spring.concourse.artifactoryresource.system.SystemInput;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.core.io.FileSystemResource;
@@ -56,11 +56,11 @@ import org.springframework.util.MultiValueMap;
 @Component
 public class OutCommand implements Command {
 
-	private final SystemInputJson inputJson;
+	private final SystemInput inputJson;
 
 	private final HttpArtifactory artifactory;
 
-	public OutCommand(SystemInputJson inputJson, HttpArtifactory artifactory) {
+	public OutCommand(SystemInput inputJson, HttpArtifactory artifactory) {
 		this.inputJson = inputJson;
 		this.artifactory = artifactory;
 	}
@@ -70,10 +70,12 @@ public class OutCommand implements Command {
 		OutRequest request = this.inputJson.read(OutRequest.class);
 		Source source = request.getSource();
 		Params params = request.getParams();
-		ArtifactoryServer server = this.artifactory.server(source.getUri(), source.getUsername(), source.getPassword());
+		ArtifactoryServer server = this.artifactory.server(source.getUri(),
+				source.getUsername(), source.getPassword());
 		ArtifactoryRepository repository = server.repository(source.getRepo());
 		List<Resource> resourcesToDeploy = getResourcesToDeploy(request);
-		MultiValueMap<String, BuildArtifact> buildArtifacts = deployAndGetBuildArtifacts(source, params, repository, resourcesToDeploy);
+		MultiValueMap<String, BuildArtifact> buildArtifacts = deployAndGetBuildArtifacts(
+				source, params, repository, resourcesToDeploy);
 		addBuildInfo(source, params, server, buildArtifacts);
 		System.out.println(request);
 	}
@@ -95,31 +97,38 @@ public class OutCommand implements Command {
 		return includeResources;
 	}
 
-	private void getResources(String folder, List<Resource> includeResources, String include) throws IOException {
+	private void getResources(String folder, List<Resource> includeResources,
+			String include) throws IOException {
 		ResourceLoader resourceLoader = getResourceLoader();
-		PathMatchingResourcePatternResolver patternResolver = new PathMatchingResourcePatternResolver(resourceLoader);
+		PathMatchingResourcePatternResolver patternResolver = new PathMatchingResourcePatternResolver(
+				resourceLoader);
 		String locationPattern = folder + "/" + include;
-		includeResources.addAll(Arrays.asList(patternResolver.getResources(locationPattern)));
+		includeResources
+				.addAll(Arrays.asList(patternResolver.getResources(locationPattern)));
 	}
 
 	private ResourceLoader getResourceLoader() {
 		return new FileSystemResourceLoader() {
-				@Override
-				protected Resource getResourceByPath(String path) {
-					return new FileSystemResource(path);
-				}
-			};
+			@Override
+			protected Resource getResourceByPath(String path) {
+				return new FileSystemResource(path);
+			}
+		};
 	}
 
-	private MultiValueMap<String, BuildArtifact> deployAndGetBuildArtifacts(Source source, Params params, ArtifactoryRepository repository, List<Resource> resourcesToDeploy) throws IOException {
+	private MultiValueMap<String, BuildArtifact> deployAndGetBuildArtifacts(Source source,
+			Params params, ArtifactoryRepository repository,
+			List<Resource> resourcesToDeploy) throws IOException {
 		MultiValueMap<String, BuildArtifact> artifacts = new LinkedMultiValueMap<>();
 		Map<String, String> properties = getProperties(source, params);
 		for (Resource resource : resourcesToDeploy) {
 			File file = resource.getFile();
 			if (file.exists() && !file.isDirectory()) {
 				Checksums checksum = Checksums.calculate(resource);
-				DeployableArtifact deployableArtifact = new DeployableFileArtifact(file.getParentFile(), file, properties, checksum);
-				BuildArtifact buildArtifact = new BuildArtifact("file", checksum.getSha1(), checksum.getMd5(), resource.getFilename());
+				DeployableArtifact deployableArtifact = new DeployableFileArtifact(
+						file.getParentFile(), file, properties, checksum);
+				BuildArtifact buildArtifact = new BuildArtifact("file",
+						checksum.getSha1(), checksum.getMd5(), resource.getFilename());
 				artifacts.add(file.getParentFile().getName(), buildArtifact);
 				repository.deploy(deployableArtifact);
 			}
@@ -134,14 +143,17 @@ public class OutCommand implements Command {
 		return properties;
 	}
 
-	private void addBuildInfo(Source source, Params params, ArtifactoryServer server, MultiValueMap<String, BuildArtifact> artifacts) {
+	private void addBuildInfo(Source source, Params params, ArtifactoryServer server,
+			MultiValueMap<String, BuildArtifact> artifacts) {
 		List<BuildModule> buildModules = new ArrayList<>();
 		for (String id : artifacts.keySet()) {
 			BuildModule module = new BuildModule(id, artifacts.get(id));
 			buildModules.add(module);
 		}
-		ContinuousIntegrationAgent agent = new ContinuousIntegrationAgent("Concourse", null);
-		server.buildRuns(source.getBuildName()).add(params.getBuildNumber(), params.getBuildUri(), agent, buildModules);
+		ContinuousIntegrationAgent agent = new ContinuousIntegrationAgent("Concourse",
+				null);
+		server.buildRuns(source.getBuildName()).add(params.getBuildNumber(),
+				params.getBuildUri(), agent, buildModules);
 	}
 
 }

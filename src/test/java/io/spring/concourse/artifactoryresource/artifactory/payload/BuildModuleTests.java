@@ -32,8 +32,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link BuildModule}.
- * 
+ *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 @RunWith(SpringRunner.class)
 @JsonTest

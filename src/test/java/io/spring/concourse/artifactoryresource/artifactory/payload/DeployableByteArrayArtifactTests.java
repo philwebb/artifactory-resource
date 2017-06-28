@@ -27,6 +27,7 @@ import org.junit.rules.ExpectedException;
  * Tests for {@link DeployableByteArrayArtifact}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public class DeployableByteArrayArtifactTests extends AbstractDeployableArtifactTests {
 

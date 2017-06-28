@@ -82,12 +82,12 @@ public class HttpArtifactoryRepositoryTests {
 		ArtifactoryRepository repository = this.artifactory
 				.server("http://repo.example.com", "admin", "password")
 				.repository("libs-snapshot-local");
-		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar", "foo".getBytes());
+		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar",
+				"foo".getBytes());
 		this.server
 				.expect(requestTo(
 						"http://repo.example.com/libs-snapshot-local/foo/bar.jar"))
-				.andExpect(method(PUT))
-				.andExpect(header("X-Checksum-Deploy", "true"))
+				.andExpect(method(PUT)).andExpect(header("X-Checksum-Deploy", "true"))
 				.andExpect(header("X-Checksum-Sha1", artifact.getChecksums().getSha1()))
 				.andRespond(withStatus(HttpStatus.NOT_FOUND));
 		this.server
@@ -106,7 +106,8 @@ public class HttpArtifactoryRepositoryTests {
 		Map<String, String> properties = new HashMap<>();
 		properties.put("buildNumber", "1");
 		properties.put("revision", "123");
-		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar", "foo".getBytes(), properties);
+		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar",
+				"foo".getBytes(), properties);
 		this.server
 				.expect(requestTo(
 						"http://repo.example.com/libs-snapshot-local/foo/bar.jar;buildNumber=1;revision=123"))
@@ -120,12 +121,12 @@ public class HttpArtifactoryRepositoryTests {
 		ArtifactoryRepository repository = this.artifactory
 				.server("http://repo.example.com", "admin", "password")
 				.repository("libs-snapshot-local");
-		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar", "foo".getBytes());
+		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar",
+				"foo".getBytes());
 		this.server
 				.expect(requestTo(
 						"http://repo.example.com/libs-snapshot-local/foo/bar.jar"))
-				.andExpect(method(PUT))
-				.andExpect(header("X-Checksum-Deploy", "true"))
+				.andExpect(method(PUT)).andExpect(header("X-Checksum-Deploy", "true"))
 				.andExpect(header("X-Checksum-Sha1", artifact.getChecksums().getSha1()))
 				.andRespond(withSuccess());
 		repository.deploy(artifact);
@@ -133,18 +134,16 @@ public class HttpArtifactoryRepositoryTests {
 	}
 
 	@Test
-	public void fetchAllShouldFetchArtifactsCorrespondingToBuildAndRepo() throws Exception {
+	public void fetchAllShouldFetchArtifactsCorrespondingToBuildAndRepo()
+			throws Exception {
 		ArtifactoryRepository repository = this.artifactory
 				.server("http://repo.example.com", "admin", "password")
 				.repository("libs-snapshot-local");
-		this.server
-				.expect(requestTo(
-						"http://repo.example.com/api/search/aql"))
+		this.server.expect(requestTo("http://repo.example.com/api/search/aql"))
 				.andExpect(method(POST))
 				.andExpect(content().contentType(MediaType.TEXT_PLAIN))
-				.andExpect(content().string(getContent()))
-				.andRespond(withSuccess());
-		repository.fetchAll("my-build", "1234");
+				.andExpect(content().string(getContent())).andRespond(withSuccess());
+		repository.getDeployedArtifacts("my-build", "1234");
 		this.server.verify();
 	}
 
@@ -157,18 +156,16 @@ public class HttpArtifactoryRepositoryTests {
 				.expect(requestTo(
 						"http://repo.example.com/libs-snapshot-local/foo/bar.jar"))
 				.andExpect(method(GET))
-				.andRespond(withSuccess(new ByteArrayResource(new byte[]{}), MediaType.APPLICATION_OCTET_STREAM));
+				.andRespond(withSuccess(new ByteArrayResource(new byte[] {}),
+						MediaType.APPLICATION_OCTET_STREAM));
 		String path = temporaryFolder.getRoot().toString();
-		repository.fetch("/foo/bar.jar", path);
+		repository.download("/foo/bar.jar", path);
 		assertThat(Files.exists(Paths.get(path + "/foo/bar.jar")));
 		this.server.verify();
 	}
 
 	private String getContent() {
-		return "items.find({" +
-				"\"repo\": \"libs-snapshot-local\", \n" +
-				"\"@build.name\": \"my-build\"," +
-				"\"@build.number\": \"1234\"" +
-				"})";
+		return "items.find({" + "\"repo\": \"libs-snapshot-local\", \n"
+				+ "\"@build.name\": \"my-build\"," + "\"@build.number\": \"1234\"" + "})";
 	}
 }

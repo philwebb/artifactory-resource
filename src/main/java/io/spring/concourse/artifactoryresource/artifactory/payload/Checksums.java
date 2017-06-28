@@ -32,6 +32,7 @@ import org.springframework.util.StreamUtils;
  * SHA1 and MD5 Checksums supported by artifactory.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public final class Checksums {
 

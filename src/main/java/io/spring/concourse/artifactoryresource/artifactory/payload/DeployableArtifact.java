@@ -25,6 +25,7 @@ import org.springframework.core.io.Resource;
  * A single artifact that can be deployed.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public interface DeployableArtifact {
 

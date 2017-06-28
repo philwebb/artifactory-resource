@@ -7,9 +7,12 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
+ * Details of an already deployed artifact.
+ *
  * @author Madhura Bhave
+ * @author Phillip Webb
  */
-public class FetchedArtifact {
+public class DeployedArtifact {
 
 	private String repo;
 
@@ -19,7 +22,7 @@ public class FetchedArtifact {
 
 	private String name;
 
-	private String size;
+	private long size;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
 	private Date created;
@@ -37,12 +40,14 @@ public class FetchedArtifact {
 	private Date updated;
 
 	@JsonCreator
-	public FetchedArtifact(@JsonProperty("repo") String repo,
-			@JsonProperty("name") String name,
-			@JsonProperty("path") String path,
-			@JsonProperty("type") String type, @JsonProperty("size") String size, @JsonProperty("created") Date created,
-			@JsonProperty("created_by") String createdBy, @JsonProperty("modified") Date modified,
-			@JsonProperty("modified_by") String modifiedBy, @JsonProperty("updated") Date updated) {
+	public DeployedArtifact(@JsonProperty("repo") String repo,
+			@JsonProperty("name") String name, @JsonProperty("path") String path,
+			@JsonProperty("type") String type, @JsonProperty("size") long size,
+			@JsonProperty("created") Date created,
+			@JsonProperty("created_by") String createdBy,
+			@JsonProperty("modified") Date modified,
+			@JsonProperty("modified_by") String modifiedBy,
+			@JsonProperty("updated") Date updated) {
 		this.repo = repo;
 		this.path = path;
 		this.type = type;
@@ -54,7 +59,6 @@ public class FetchedArtifact {
 		this.modifiedBy = modifiedBy;
 		this.updated = updated;
 	}
-
 
 	public String getRepo() {
 		return this.repo;
@@ -91,4 +95,9 @@ public class FetchedArtifact {
 	public Date getUpdated() {
 		return this.updated;
 	}
+
+	public long getSize() {
+		return this.size;
+	}
+
 }

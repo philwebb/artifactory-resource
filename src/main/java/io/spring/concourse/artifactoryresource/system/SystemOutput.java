@@ -14,24 +14,19 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.artifactory;
+package io.spring.concourse.artifactoryresource.system;
 
 /**
- * Interface providing access to Artifactory.
- *
- * @author Phillip Webb
- * @author Madhura Bhave
- * @see HttpArtifactory
+ * @author pwebb
  */
-public interface Artifactory {
+public class SystemOutput {
 
 	/**
-	 * Return an {@link ArtifactoryServer} for the specified connection details.
-	 * @param uri the server URI
-	 * @param username the connection username
-	 * @param password the connection password
-	 * @return an {@link ArtifactoryServer}
+	 * @param response
 	 */
-	ArtifactoryServer server(String uri, String username, String password);
+	public <T> void write(T response) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Auto-generated method stub");
+	}
 
 }

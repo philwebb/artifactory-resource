@@ -27,6 +27,7 @@ import org.springframework.util.Assert;
  * {@link DeployableArtifact} backed by a byte array.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public class DeployableByteArrayArtifact extends AbstractDeployableArtifact {
 
@@ -41,8 +42,8 @@ public class DeployableByteArrayArtifact extends AbstractDeployableArtifact {
 		this(path, content, properties, null);
 	}
 
-	public DeployableByteArrayArtifact(String path, byte[] content, Map<String, String> properties,
-			Checksums checksums) {
+	public DeployableByteArrayArtifact(String path, byte[] content,
+			Map<String, String> properties, Checksums checksums) {
 		super(path, properties, checksums);
 		Assert.notNull(content, "Content must not be null");
 		this.content = content;

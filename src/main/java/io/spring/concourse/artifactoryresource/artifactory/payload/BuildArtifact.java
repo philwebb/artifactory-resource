@@ -25,6 +25,7 @@ import org.springframework.util.Assert;
  * A single build artifact included in {@link BuildInfo}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  * @see BuildInfo
  */
 public class BuildArtifact {

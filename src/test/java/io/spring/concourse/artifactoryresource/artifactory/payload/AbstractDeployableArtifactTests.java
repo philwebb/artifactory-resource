@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link AbstractDeployableArtifact}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public abstract class AbstractDeployableArtifactTests {
 

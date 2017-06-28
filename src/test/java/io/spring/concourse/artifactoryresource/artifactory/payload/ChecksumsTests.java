@@ -28,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link Checksums}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public class ChecksumsTests {
 

@@ -16,13 +16,16 @@
 
 package io.spring.concourse.artifactoryresource.artifactory;
 
+import java.util.List;
+
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
-import io.spring.concourse.artifactoryresource.artifactory.payload.FetchResults;
+import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifact;
 
 /**
  * Access to an artifactory repository.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public interface ArtifactoryRepository {
 
@@ -42,8 +45,10 @@ public interface ArtifactoryRepository {
 	 */
 	void deploy(DeployableArtifact artifact);
 
-	FetchResults fetchAll(String buildName, String buildNumber);
+	// FIXME DC
+	List<DeployedArtifact> getDeployedArtifacts(String buildName, String buildNumber);
 
-	void fetch(String artifactName, String path);
+	// FIXME use File for dest?
+	void download(DeployedArtifact artifact, String destination);
 
 }
