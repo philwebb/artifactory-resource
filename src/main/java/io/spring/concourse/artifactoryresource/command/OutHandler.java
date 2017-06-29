@@ -16,8 +16,20 @@
 
 package io.spring.concourse.artifactoryresource.command;
 
+import java.io.File;
+import java.util.Collections;
+import java.util.List;
+
+import io.spring.concourse.artifactoryresource.artifactory.Artifactory;
+import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryBuildRuns;
+import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryRepository;
+import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryServer;
+import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
 import io.spring.concourse.artifactoryresource.command.payload.OutRequest;
+import io.spring.concourse.artifactoryresource.command.payload.OutRequest.Params;
 import io.spring.concourse.artifactoryresource.command.payload.OutResponse;
+import io.spring.concourse.artifactoryresource.command.payload.Source;
+import io.spring.concourse.artifactoryresource.command.payload.Version;
 
 import org.springframework.stereotype.Component;
 
@@ -30,11 +42,33 @@ import org.springframework.stereotype.Component;
 @Component
 public class OutHandler {
 
-	public OutResponse handle(OutRequest request, Directory directory) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
+	private final Artifactory artifactory;
+
+	public OutHandler(Artifactory artifactory) {
+		this.artifactory = artifactory;
 	}
 
+	public OutResponse handle(OutRequest request, Directory directory) {
+		Source source = request.getSource();
+		Params params = request.getParams();
+		String buildNumber = params.getBuildNumber();
+		ArtifactoryServer artifactoryServer = getArtifactoryServer(source);
+		ArtifactoryRepository artifactoryRepository = artifactoryServer
+				.repository(params.getRepo());
+		ArtifactoryBuildRuns artifactoryBuildRuns = artifactoryServer
+				.buildRuns(source.getBuildName());
+		List<File> files = directory.subFolder(params.getFolder())
+				.scan(params.getInclude(), params.getExclude());
+		List<BuildModule> modules = Collections.emptyList();
+		artifactoryBuildRuns.add(buildNumber, params.getBuildUri(), modules);
+		return new OutResponse(new Version(buildNumber));
+	}
+
+	private ArtifactoryServer getArtifactoryServer(Source source) {
+		return this.artifactory.server(source.getUri(), source.getUsername(),
+				source.getPassword());
+	}
+	//
 	// @Override
 	// public void run(ApplicationArguments args) throws Exception {
 	// OutRequest request = this.inputJson.read(OutRequest.class);
@@ -48,44 +82,6 @@ public class OutHandler {
 	// source, params, repository, resourcesToDeploy);
 	// addBuildInfo(source, params, server, buildArtifacts);
 	// System.out.println(request);
-	// }
-	//
-	// private List<Resource> getResourcesToDeploy(OutRequest request) throws IOException
-	// {
-	// Params params = request.getParams();
-	// List<String> excludes = params.getExclude();
-	// List<String> includes = params.getInclude();
-	// String folder = params.getFolder();
-	// List<Resource> includeResources = new ArrayList<>();
-	// for (String include : includes) {
-	// getResources(folder, includeResources, include);
-	// }
-	// List<Resource> excludeResources = new ArrayList<>();
-	// for (String exclude : excludes) {
-	// getResources(folder, excludeResources, exclude);
-	// }
-	// includeResources.removeAll(excludeResources);
-	// return includeResources;
-	// }
-	//
-	// private void getResources(String folder, List<Resource> includeResources,
-	// String include) throws IOException {
-	// ResourceLoader resourceLoader = getResourceLoader();
-	// PathMatchingResourcePatternResolver patternResolver = new
-	// PathMatchingResourcePatternResolver(
-	// resourceLoader);
-	// String locationPattern = folder + "/" + include;
-	// includeResources
-	// .addAll(Arrays.asList(patternResolver.getResources(locationPattern)));
-	// }
-	//
-	// private ResourceLoader getResourceLoader() {
-	// return new FileSystemResourceLoader() {
-	// @Override
-	// protected Resource getResourceByPath(String path) {
-	// return new FileSystemResource(path);
-	// }
-	// };
 	// }
 	//
 	// private MultiValueMap<String, BuildArtifact> deployAndGetBuildArtifacts(Source

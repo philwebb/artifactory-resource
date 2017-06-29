@@ -1,4 +1,4 @@
-package io.spring.concourse.artifactoryresource.command;
+n  package io.spring.concourse.artifactoryresource.command;
 
 import org.junit.runner.RunWith;
 
