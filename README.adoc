@@ -32,7 +32,6 @@ resource_types:
 * `username`: *Required.* The artifactory username
 * `password`: *Required.* The artifactory password
 * `build_name`: *Required.* The name of the build
-* `repo`: *Required.* The artifact repository
 
 [source,yaml]
 .Source configuration
@@ -69,6 +68,7 @@ resources:
 
 ### `out`: Saves build artifacts
 
+* `repo`: *Required.* The artifact repository
 * `build_number`: *Required.* The build number to save
 * `folder`: *Required.* The folder to save
 * `include`: A list of file patterns to include

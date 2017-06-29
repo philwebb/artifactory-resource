@@ -27,6 +27,7 @@ import org.springframework.util.Assert;
  * Response from the {@code "/opt/resource/out"} script.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public class OutResponse {
 

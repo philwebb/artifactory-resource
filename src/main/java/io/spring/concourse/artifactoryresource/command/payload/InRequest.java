@@ -26,6 +26,7 @@ import org.springframework.util.Assert;
  * Request to the {@code "/opt/resource/in"} script.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public class InRequest {
 
@@ -70,7 +71,7 @@ public class InRequest {
 		private final boolean generateMavenMetadata;
 
 		@JsonCreator
-		public Params(@JsonProperty("build_number") String buildNumber,
+		public Params(
 				@JsonProperty("generate_maven_metadata") Boolean generateMavenMetadata) {
 			this.generateMavenMetadata = (generateMavenMetadata == null ? true
 					: generateMavenMetadata);

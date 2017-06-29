@@ -1,28 +1,29 @@
 package io.spring.concourse.artifactoryresource.command;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.File;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryRepository;
-import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryServer;
-import io.spring.concourse.artifactoryresource.artifactory.HttpArtifactory;
-import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifactQueryResponse;
+import io.spring.concourse.artifactoryresource.command.payload.InRequest;
 import io.spring.concourse.artifactoryresource.command.payload.InResponse;
-import io.spring.concourse.artifactoryresource.system.MockSystemStreams;
 import io.spring.concourse.artifactoryresource.system.SystemInput;
-import org.apache.commons.io.IOUtils;
+import io.spring.concourse.artifactoryresource.system.SystemOutput;
 import org.junit.Before;
-import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.DefaultApplicationArguments;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -31,74 +32,58 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link InCommand}.
  *
  * @author Madhura Bhave
+ * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
 public class InCommandTests {
 
-	@ClassRule
-	public static final TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@Rule
+	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-	@MockBean
-	HttpArtifactory artifactory;
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
-	private final String COMMAND_RESOURCE_PATH = "/io/spring/concourse/artifactoryresource/command/payload";
+	@Mock
+	private SystemInput systemInput;
 
-	private final ObjectMapper mapper = new ObjectMapper();
+	@Mock
+	private SystemOutput systemOutput;
 
-	private ArtifactoryServer artifactoryServer;
+	@Mock
+	private InHandler handler;
 
-	private ArtifactoryRepository repository;
+	@Captor
+	private ArgumentCaptor<Directory> directoryCaptor;
+
+	private InCommand command;
 
 	@Before
-	public void setUp() throws Exception {
-		this.artifactoryServer = mock(ArtifactoryServer.class);
-		this.repository = mock(ArtifactoryRepository.class);
-		given(this.artifactory.server("http://repo.example.com", "admin", "password"))
-				.willReturn(this.artifactoryServer);
-		given(this.artifactoryServer.repository("libs-snapshot-local"))
-				.willReturn(this.repository);
-		given(this.repository.getDeployedArtifacts("my-build", "5678")).willReturn(getAllArtifacts());
+	public void setup() {
+		MockitoAnnotations.initMocks(this);
+		this.command = new InCommand(this.systemInput, this.systemOutput, this.handler);
 	}
 
 	@Test
-	public void runWithoutMetadataShouldFetch() throws Exception {
-		String path = getPath();
-		String requestJson = getJson(COMMAND_RESOURCE_PATH + "/in-request.json");
-		MockSystemStreams systemStreams = new MockSystemStreams(requestJson);
-		SystemInput inputJson = new SystemInput(systemStreams,
-				new ObjectMapper());
-		InCommand inCommand = new InCommand(inputJson, this.artifactory);
-		inCommand.run(new DefaultApplicationArguments(new String[] { "in", path }));
-		verify(this.repository).download("/org/jfrog/artifactory/artifactory.war", path);
-		verifyOutput(systemStreams);
+	public void runShouldCallHandler() throws Exception {
+		InRequest request = mock(InRequest.class);
+		InResponse response = mock(InResponse.class);
+		given(this.systemInput.read(InRequest.class)).willReturn(request);
+		given(this.handler.handle(eq(request), any())).willReturn(response);
+		File tempFolder = this.temporaryFolder.newFolder();
+		String dir = StringUtils.cleanPath(tempFolder.getPath());
+		this.command.run(new DefaultApplicationArguments(new String[] { dir }));
+		verify(this.handler).handle(eq(request), this.directoryCaptor.capture());
+		verify(this.systemOutput).write(response);
+		assertThat(this.directoryCaptor.getValue().getFile()).isEqualTo(tempFolder);
 	}
 
-	private String getPath() throws Exception {
-		temporaryFolder.create();
-		String path = temporaryFolder.getRoot().toString();
-		return path;
+	@Test
+	public void runWhenFolderArgIsMissingShouldThrowException() throws Exception {
+		InRequest request = mock(InRequest.class);
+		given(this.systemInput.read(InRequest.class)).willReturn(request);
+		this.thrown.expect(IllegalStateException.class);
+		this.thrown.expectMessage("No directory argument specified");
+		this.command.run(new DefaultApplicationArguments(new String[] {}));
 	}
 
-	private DeployedArtifactQueryResponse getAllArtifacts() throws Exception {
-		String fetchArtifactsJson = getJson(
-				"/io/spring/concourse/artifactoryresource/artifactory/payload/fetch-artifacts.json");
-		return new ObjectMapper().readValue(fetchArtifactsJson, DeployedArtifactQueryResponse.class);
-	}
-
-	private String getJson(String name) throws Exception {
-		InputStream stream = this.getClass().getResourceAsStream(name);
-		return IOUtils.toString(stream);
-	}
-
-	private void verifyOutput(MockSystemStreams systemStreams) throws IOException {
-		InputStream stream = this.getClass().getResourceAsStream(
-				COMMAND_RESOURCE_PATH + "/in-response-without-metadata.json");
-		String response = IOUtils.toString(stream);
-		byte[] outBytes = systemStreams.getOutBytes();
-		assertThat(outBytes).isNotEmpty();
-		InResponse expected = this.mapper.readValue(response, InResponse.class);
-		InResponse actual = this.mapper.readValue(new String(outBytes), InResponse.class);
-		assertThat(actual.getVersion().getBuildNumber())
-				.isEqualTo(expected.getVersion().getBuildNumber());
-	}
 }

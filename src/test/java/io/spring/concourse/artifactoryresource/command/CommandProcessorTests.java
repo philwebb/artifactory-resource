@@ -35,6 +35,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link CommandProcessor}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public class CommandProcessorTests {
 

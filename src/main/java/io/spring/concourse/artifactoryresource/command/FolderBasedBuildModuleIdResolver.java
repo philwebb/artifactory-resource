@@ -4,6 +4,7 @@ import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArt
 
 /**
  * @author Madhura Bhave
+ * @author Phillip Webb
  */
 public class FolderBasedBuildModuleIdResolver implements BuildModuleIdResolver {
 

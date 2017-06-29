@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import org.springframework.util.Assert;
+
 /**
  * Details of an already deployed artifact.
  *
@@ -39,6 +41,10 @@ public class DeployedArtifact {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
 	private Date updated;
 
+	public DeployedArtifact(String repo, String name, String path) {
+		this(repo, name, path, null, 0, null, null, null, null, null);
+	}
+
 	@JsonCreator
 	public DeployedArtifact(@JsonProperty("repo") String repo,
 			@JsonProperty("name") String name, @JsonProperty("path") String path,
@@ -48,6 +54,9 @@ public class DeployedArtifact {
 			@JsonProperty("modified") Date modified,
 			@JsonProperty("modified_by") String modifiedBy,
 			@JsonProperty("updated") Date updated) {
+		Assert.hasText(repo, "Repo must not be empty");
+		Assert.hasText(name, "Name must not be empty");
+		Assert.hasText(path, "Path must not be empty");
 		this.repo = repo;
 		this.path = path;
 		this.type = type;

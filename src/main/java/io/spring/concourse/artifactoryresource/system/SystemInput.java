@@ -28,10 +28,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 /**
- * JSON deserializer that uses an {@link ObjectMapper} to read input from
- * {@link SystemStreams#in()} (dealing with timeouts).
+ * Read input from {@link SystemStreams#in()} (dealing with timeouts).
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 @Component
 public class SystemInput {
@@ -47,7 +47,6 @@ public class SystemInput {
 	@Autowired
 	public SystemInput(SystemStreams systemStreams, ObjectMapper objectMapper) {
 		this(systemStreams, objectMapper, TIMEOUT);
-
 	}
 
 	protected SystemInput(SystemStreams systemStreams, ObjectMapper objectMapper,

@@ -24,6 +24,7 @@ import org.springframework.util.Assert;
  * {@link OutResponse}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public class Metadata {
 

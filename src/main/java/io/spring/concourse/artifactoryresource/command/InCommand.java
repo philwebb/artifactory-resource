@@ -16,18 +16,10 @@
 
 package io.spring.concourse.artifactoryresource.command;
 
-import java.util.List;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryRepository;
-import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryServer;
-import io.spring.concourse.artifactoryresource.artifactory.HttpArtifactory;
-import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifact;
 import io.spring.concourse.artifactoryresource.command.payload.InRequest;
 import io.spring.concourse.artifactoryresource.command.payload.InResponse;
-import io.spring.concourse.artifactoryresource.command.payload.Source;
-import io.spring.concourse.artifactoryresource.command.payload.Version;
 import io.spring.concourse.artifactoryresource.system.SystemInput;
+import io.spring.concourse.artifactoryresource.system.SystemOutput;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.stereotype.Component;
@@ -36,41 +28,30 @@ import org.springframework.stereotype.Component;
  * Command to handle requests to the {@code "/opt/resource/in"} script.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 @Component
 public class InCommand implements Command {
 
-	private final SystemInput inputJson;
+	private final SystemInput systemInput;
 
-	private final HttpArtifactory artifactory;
+	private final SystemOutput systemOutput;
 
-	public InCommand(SystemInput inputJson, HttpArtifactory artifactory) {
-		this.inputJson = inputJson;
-		this.artifactory = artifactory;
+	private final InHandler handler;
+
+	public InCommand(SystemInput systemInput, SystemOutput systemOutput,
+			InHandler handler) {
+		this.systemInput = systemInput;
+		this.systemOutput = systemOutput;
+		this.handler = handler;
 	}
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-		InRequest request = this.inputJson.read(InRequest.class);
+		InRequest request = this.systemInput.read(InRequest.class);
 		Directory directory = Directory.fromArgs(args);
-		Source source = request.getSource();
-		ArtifactoryServer server = this.artifactory.server(source.getUri(),
-				source.getUsername(), source.getPassword());
-		ArtifactoryRepository repository = server.repository(source.getRepo());
-		fetchArtifacts(request, directory, source, repository);
-		Version version = new Version(request.getVersion().getBuildNumber());
-		InResponse response = new InResponse(version, null); // FIXME for metadata
-		String output = new ObjectMapper().writeValueAsString(response);
-		this.inputJson.getSystemStreams().out().print(output);
-	}
-
-	private void fetchArtifacts(InRequest request, Directory directory, Source source,
-			ArtifactoryRepository repository) {
-		List<DeployedArtifact> artifacts = repository.getDeployedArtifacts(
-				source.getBuildName(), request.getVersion().getBuildNumber());
-		for (DeployedArtifact artifact : artifacts) {
-			repository.download(artifact, directory.toString());
-		}
+		InResponse response = this.handler.handle(request, directory);
+		this.systemOutput.write(response);
 	}
 
 }

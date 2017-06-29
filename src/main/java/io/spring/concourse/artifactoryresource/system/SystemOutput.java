@@ -16,17 +16,29 @@
 
 package io.spring.concourse.artifactoryresource.system;
 
+import java.io.IOException;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
- * @author pwebb
+ * Write output to {@link SystemStreams#out()}.
+ *
+ * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public class SystemOutput {
 
-	/**
-	 * @param response
-	 */
-	public <T> void write(T response) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
+	private final SystemStreams systemStreams;
+
+	private final ObjectMapper objectMapper;
+
+	public SystemOutput(SystemStreams systemStreams, ObjectMapper objectMapper) {
+		this.systemStreams = systemStreams;
+		this.objectMapper = objectMapper;
+	}
+
+	public <T> void write(T value) throws IOException {
+		this.objectMapper.writeValue(this.systemStreams.out(), value);
 	}
 
 }

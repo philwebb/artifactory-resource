@@ -17,11 +17,8 @@
 package io.spring.concourse.artifactoryresource.system;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 /**
  * Tests for {@link SystemInput}.
@@ -29,26 +26,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class SystemInputJsonTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+public class SystemInputTests {
 
 	@Test
-	public void readWhenNoDataShouldTimeout() throws Exception {
-		SystemInput input = new SystemInput(new MockSystemStreams(""),
-				new ObjectMapper(), 10);
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Timeout waiting for input");
-		input.read(String[].class);
-	}
-
-	@Test
-	public void readShouldDeserialize() throws Exception {
-		SystemInput input = new SystemInput(
-				new MockSystemStreams("[\"foo\",\"bar\"]"), new ObjectMapper());
-		String[] result = input.read(String[].class);
-		assertThat(result).containsExactly("foo", "bar");
+	public void writeShouldSerialize() throws Exception {
+		MockSystemStreams systemStreams = new MockSystemStreams("");
+		SystemOutput output = new SystemOutput(systemStreams, new ObjectMapper());
+		output.write(new String[] { "foo" });
+		String actual = new String(systemStreams.getOutBytes());
+		JSONAssert.assertEquals("[\"foo\"]", actual, false);
 	}
 
 }

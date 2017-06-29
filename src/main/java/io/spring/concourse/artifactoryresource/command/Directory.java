@@ -26,16 +26,24 @@ import org.springframework.util.Assert;
  * A directory passed to a command.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public class Directory {
 
 	private final File file;
 
-	public Directory(String pathname) {
-		this.file = new File(pathname);
-		Assert.state(this.file.exists(), "Path '" + pathname + "' does not exist");
-		Assert.state(this.file.isDirectory(),
-				"Path '" + pathname + "' is not a directory");
+	public Directory(String path) {
+		this(new File(path));
+	}
+
+	public Directory(File file) {
+		Assert.state(file.exists(), "File '" + file + "' does not exist");
+		Assert.state(file.isDirectory(), "File '" + file + "' is not a directory");
+		this.file = file;
+	}
+
+	public File getFile() {
+		return this.file;
 	}
 
 	@Override
@@ -45,8 +53,8 @@ public class Directory {
 
 	public static Directory fromArgs(ApplicationArguments args) {
 		List<String> nonOptionArgs = args.getNonOptionArgs();
-		Assert.state(nonOptionArgs.size() >= 2, "No directory argument specified");
-		return new Directory(nonOptionArgs.get(1));
+		Assert.state(nonOptionArgs.size() >= 1, "No directory argument specified");
+		return new Directory(nonOptionArgs.get(0));
 	}
 
 }

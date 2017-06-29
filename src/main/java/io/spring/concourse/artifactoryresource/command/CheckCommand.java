@@ -33,24 +33,24 @@ import org.springframework.stereotype.Component;
 @Component
 public class CheckCommand implements Command {
 
-	private final SystemInput input;
+	private final SystemInput systemInput;
 
-	private final SystemOutput output;
+	private final SystemOutput systemOutput;
 
-	private final CheckCommandHandler hander;
+	private final CheckHandler handler;
 
 	public CheckCommand(SystemInput systemInput, SystemOutput systemOutput,
-			CheckCommandHandler handler) {
-		this.input = systemInput;
-		this.output = systemOutput;
-		this.hander = handler;
+			CheckHandler handler) {
+		this.systemInput = systemInput;
+		this.systemOutput = systemOutput;
+		this.handler = handler;
 	}
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-		CheckRequest request = this.input.read(CheckRequest.class);
-		CheckResponse response = this.hander.handle(request);
-		this.output.write(response);
+		CheckRequest request = this.systemInput.read(CheckRequest.class);
+		CheckResponse response = this.handler.handle(request);
+		this.systemOutput.write(response);
 	}
 
 }

@@ -32,12 +32,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link Source}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 @RunWith(SpringRunner.class)
 @JsonTest
 public class SourceTests {
-
-	// FIXME I don't think we need the repo
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -49,38 +48,28 @@ public class SourceTests {
 	public void createWhenUriIsEmptyShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("URI must not be empty");
-		new Source("", "username", "password", "libs-snapshot-local", "my-build");
+		new Source("", "username", "password", "my-build");
 	}
 
 	@Test
 	public void createWhenUsernameIsEmptyShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Username must not be empty");
-		new Source("http://repo.example.com", "", "password", "libs-snapshot-local",
-				"my-build");
+		new Source("http://repo.example.com", "", "password", "my-build");
 	}
 
 	@Test
 	public void createWhenPasswordIsEmptyShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Password must not be empty");
-		new Source("http://repo.example.com", "username", "", "libs-snapshot-local",
-				"my-build");
-	}
-
-	@Test
-	public void createWhenRepoIsEmptyShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Repo must not be empty");
-		new Source("http://repo.example.com", "username", "password", "", "my-build");
+		new Source("http://repo.example.com", "username", "", "my-build");
 	}
 
 	@Test
 	public void createWhenBuildNameIsEmptyShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Build Name must not be empty");
-		new Source("http://repo.example.com", "username", "password",
-				"libs-local-snapshot", "");
+		new Source("http://repo.example.com", "username", "password", "");
 	}
 
 	@Test
@@ -89,7 +78,6 @@ public class SourceTests {
 		assertThat(source.getUri()).isEqualTo("http://repo.example.com");
 		assertThat(source.getUsername()).isEqualTo("admin");
 		assertThat(source.getPassword()).isEqualTo("password");
-		assertThat(source.getRepo()).isEqualTo("libs-snapshot-local");
 		assertThat(source.getBuildName()).isEqualTo("my-build");
 	}
 

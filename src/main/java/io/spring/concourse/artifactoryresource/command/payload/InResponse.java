@@ -30,12 +30,17 @@ import org.springframework.util.Assert;
  * Response from the {@code "/opt/resource/in"} script.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public class InResponse {
 
 	private final Version version;
 
 	private final List<Metadata> metadata;
+
+	public InResponse(Version version) {
+		this(version, null);
+	}
 
 	@JsonCreator
 	public InResponse(@JsonProperty("version") Version version,

@@ -19,6 +19,7 @@ package io.spring.concourse.artifactoryresource.artifactory;
 import java.io.File;
 
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
+import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifact;
 
 /**
  * Access to an artifactory repository.
@@ -33,9 +34,7 @@ public interface ArtifactoryRepository {
 	 * @param artifacts the artifacts to deploy
 	 */
 	default void deploy(Iterable<DeployableArtifact> artifacts) {
-		for (DeployableArtifact artifact : artifacts) {
-			deploy(artifact);
-		}
+		artifacts.forEach(this::deploy);
 	}
 
 	/**
@@ -43,6 +42,24 @@ public interface ArtifactoryRepository {
 	 * @param artifact the artifact to deploy
 	 */
 	void deploy(DeployableArtifact artifact);
+
+	/**
+	 * Download the specified artifacts to the given destination.
+	 * @param artifacts the artifacts to download
+	 * @param destination the destination folder.
+	 */
+	default void download(Iterable<DeployedArtifact> artifacts, File destination) {
+		artifacts.forEach((a) -> download(a, destination));
+	}
+
+	/**
+	 * Download the specified artifact to the given destination.
+	 * @param artifact the artifacts to download
+	 * @param destination the destination folder.
+	 */
+	default void download(DeployedArtifact artifact, File destination) {
+		download(artifact.getPath(), destination);
+	}
 
 	/**
 	 * Download the specified artifact to the given destination.

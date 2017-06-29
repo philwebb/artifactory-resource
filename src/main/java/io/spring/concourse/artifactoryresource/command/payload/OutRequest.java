@@ -30,6 +30,7 @@ import org.springframework.util.Assert;
  * Request to the {@code "/opt/resource/out"} script.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public class OutRequest {
 
@@ -65,6 +66,8 @@ public class OutRequest {
 		@JsonProperty("build_number")
 		private final String buildNumber;
 
+		private final String repo;
+
 		private final String folder;
 
 		private final List<String> include;
@@ -76,13 +79,15 @@ public class OutRequest {
 
 		@JsonCreator
 		public Params(@JsonProperty("build_number") String buildNumber,
-				@JsonProperty("folder") String folder,
+				@JsonProperty("repo") String repo, @JsonProperty("folder") String folder,
 				@JsonProperty("include ") List<String> include,
 				@JsonProperty("exclude") List<String> exclude,
 				@JsonProperty("build_uri") String buildUri) {
 			Assert.hasText(buildNumber, "Build Number must not be empty");
+			Assert.hasText(repo, "Repo must not be empty");
 			Assert.hasText(folder, "Folder must not be empty");
 			this.buildNumber = buildNumber;
+			this.repo = repo;
 			this.folder = folder;
 			this.include = (include == null ? Collections.emptyList()
 					: Collections.unmodifiableList(new ArrayList<>(include)));
@@ -93,6 +98,10 @@ public class OutRequest {
 
 		public String getBuildNumber() {
 			return this.buildNumber;
+		}
+
+		public String getRepo() {
+			return this.repo;
 		}
 
 		public String getFolder() {

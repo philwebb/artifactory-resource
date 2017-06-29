@@ -27,6 +27,7 @@ import org.springframework.util.Assert;
  * output.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public class Version {
 

@@ -24,6 +24,7 @@ import java.io.PrintStream;
  * {@code System.err} to prevent accidental log output.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public class SystemStreams {
 

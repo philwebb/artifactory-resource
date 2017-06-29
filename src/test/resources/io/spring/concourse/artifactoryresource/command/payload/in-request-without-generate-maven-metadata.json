@@ -3,13 +3,11 @@
 		"uri": "http://repo.example.com",
 		"username": "admin",
 		"password": "password",
-		"repo": "libs-snapshot-local",
 		"build_name": "my-build"
 	},
 	"version": {
 		"build_number": "5678"
 	},
 	"params": {
-		"build_number": "1234"
 	}
 }

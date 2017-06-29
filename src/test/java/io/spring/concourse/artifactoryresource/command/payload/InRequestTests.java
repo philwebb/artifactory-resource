@@ -41,11 +41,11 @@ public class InRequestTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	private Source source = new Source("http://localhost:8181", "username", "password",
-			"libs-snapshot-local", "my-build");
+			"my-build");
 
 	private Version version = new Version("1234");
 
-	private InRequest.Params params = new InRequest.Params("1234", false);
+	private InRequest.Params params = new InRequest.Params(false);
 
 	@Autowired
 	private JacksonTester<InRequest> json;
@@ -77,7 +77,6 @@ public class InRequestTests {
 		assertThat(request.getSource().getUri()).isEqualTo("http://repo.example.com");
 		assertThat(request.getSource().getUsername()).isEqualTo("admin");
 		assertThat(request.getSource().getPassword()).isEqualTo("password");
-		assertThat(request.getSource().getRepo()).isEqualTo("libs-snapshot-local");
 		assertThat(request.getVersion().getBuildNumber()).isEqualTo("5678");
 		assertThat(request.getParams().isGenerateMavenMetadata()).isFalse();
 	}

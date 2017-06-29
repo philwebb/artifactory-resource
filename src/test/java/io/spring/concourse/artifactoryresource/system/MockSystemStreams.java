@@ -24,6 +24,7 @@ import java.io.PrintStream;
  * Mock {@link SystemStreams} implementation.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public class MockSystemStreams extends SystemStreams {
 
@@ -37,12 +38,15 @@ public class MockSystemStreams extends SystemStreams {
 
 	private static class ByteArrayPrintStream extends PrintStream {
 
+		private final ByteArrayOutputStream byteArrayOutputStream;
+
 		public ByteArrayPrintStream() {
 			super(new ByteArrayOutputStream());
+			this.byteArrayOutputStream = (ByteArrayOutputStream) this.out;
 		}
 
 		private ByteArrayOutputStream getByteArrayOutputStream() {
-			return (ByteArrayOutputStream) this.out;
+			return this.byteArrayOutputStream;
 		}
 
 	}

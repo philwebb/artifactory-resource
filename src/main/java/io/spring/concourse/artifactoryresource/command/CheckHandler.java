@@ -30,24 +30,29 @@ import io.spring.concourse.artifactoryresource.command.payload.Source;
 import io.spring.concourse.artifactoryresource.command.payload.Version;
 
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 /**
+ * Delegate used to handle operations triggered from the {@link CheckCommand}.
+ *
  * @author Phillip Webb
  * @author Madhura Bhave
  */
 @Component
-public class CheckCommandHandler {
+public class CheckHandler {
 
 	private final Artifactory artifactory;
 
-	public CheckCommandHandler(Artifactory artifactory) {
+	public CheckHandler(Artifactory artifactory) {
 		this.artifactory = artifactory;
 	}
 
 	public CheckResponse handle(CheckRequest request) {
-		List<BuildRun> runs = getArtifactoryServer(request.getSource())
-				.buildRuns(request.getSource().getBuildName()).getAll();
-		if (request.getVersion() == null) {
+		Source source = request.getSource();
+		List<BuildRun> runs = getArtifactoryServer(source)
+				.buildRuns(source.getBuildName()).getAll();
+		if (request.getVersion() == null
+				|| StringUtils.isEmpty(request.getVersion().getBuildNumber())) {
 			return getLatest(runs);
 		}
 		return getAfter(runs, request.getVersion());
@@ -58,16 +63,10 @@ public class CheckCommandHandler {
 				source.getPassword());
 	}
 
-	private CheckResponse getLatest(List<BuildRun> runs) {
-		return new CheckResponse(runs.stream().max(BuildRun::compareTo)
-				.map(this::asVersion).map(Collections::singletonList)
-				.orElseGet(Collections::emptyList));
-	}
-
 	private CheckResponse getAfter(List<BuildRun> runs, Version version) {
 		BuildRun versionRun = findBuildRun(runs, version);
 		if (versionRun == null) {
-			return new CheckResponse(Collections.emptyList());
+			return getLatest(runs);
 		}
 		ArrayList<BuildRun> runsSince = runs.stream()
 				.filter((run) -> run.compareTo(versionRun) >= 0)
@@ -81,6 +80,12 @@ public class CheckCommandHandler {
 		return runs.stream()
 				.filter((run) -> run.getBuildNumber().equals(version.getBuildNumber()))
 				.findFirst().orElse(null);
+	}
+
+	private CheckResponse getLatest(List<BuildRun> runs) {
+		return new CheckResponse(runs.stream().max(BuildRun::compareTo)
+				.map(this::asVersion).map(Collections::singletonList)
+				.orElseGet(Collections::emptyList));
 	}
 
 	private Version asVersion(BuildRun run) {

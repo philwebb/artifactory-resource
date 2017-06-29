@@ -56,7 +56,6 @@ public class CheckRequestTests {
 		assertThat(request.getSource().getUri()).isEqualTo("http://repo.example.com");
 		assertThat(request.getSource().getUsername()).isEqualTo("admin");
 		assertThat(request.getSource().getPassword()).isEqualTo("password");
-		assertThat(request.getSource().getRepo()).isEqualTo("libs-snapshot-local");
 		assertThat(request.getVersion()).isNull();
 	}
 
@@ -66,7 +65,6 @@ public class CheckRequestTests {
 		assertThat(request.getSource().getUri()).isEqualTo("http://repo.example.com");
 		assertThat(request.getSource().getUsername()).isEqualTo("admin");
 		assertThat(request.getSource().getPassword()).isEqualTo("password");
-		assertThat(request.getSource().getRepo()).isEqualTo("libs-snapshot-local");
 		assertThat(request.getVersion().getBuildNumber()).isEqualTo("1234");
 	}
 

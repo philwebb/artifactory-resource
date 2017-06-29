@@ -16,31 +16,16 @@
 
 package io.spring.concourse.artifactoryresource.command;
 
-import org.junit.Test;
-
-import org.springframework.boot.ApplicationArguments;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
- * Tests for {@link Command}.
+ * Generate Maven metadata files for downloaded artifacts.
  *
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class CommandTests {
+public class MavenMetadataGenerator {
 
-	@Test
-	public void getNameShouldUseConvention() throws Exception {
-		assertThat(new ExampleCommand().getName()).isEqualTo("example");
-	}
-
-	private static class ExampleCommand implements Command {
-
-		@Override
-		public void run(ApplicationArguments args) throws Exception {
-		}
-
+	public void generate(Directory directory) {
+		// FIXME
 	}
 
 }

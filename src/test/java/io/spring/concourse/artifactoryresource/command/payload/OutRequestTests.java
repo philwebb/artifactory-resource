@@ -41,10 +41,10 @@ public class OutRequestTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	private Source source = new Source("http://localhost:8181", "username", "password",
-			"libs-snapshot-local", "my-build");
+			"my-build");
 
-	private OutRequest.Params params = new OutRequest.Params("1234", "folder", null, null,
-			null);
+	private OutRequest.Params params = new OutRequest.Params("1234",
+			"libs-snapshot-local", "folder", null, null, null);
 
 	@Autowired
 	private JacksonTester<OutRequest> json;
@@ -68,14 +68,21 @@ public class OutRequestTests {
 			throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Build Number must not be empty");
-		new OutRequest.Params("", "folder", null, null, null);
+		new OutRequest.Params("", "libs-snapshot-local", "folder", null, null, null);
 	}
 
 	@Test
 	public void createParamsWhenFolderIsEmptyShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Folder must not be empty");
-		new OutRequest.Params("1234", "", null, null, null);
+		new OutRequest.Params("1234", "libs-snapshot-local", "", null, null, null);
+	}
+
+	@Test
+	public void createParamsWhenRepoIsEmptyShouldThrowException() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Repo must not be empty");
+		new OutRequest.Params("1234", "", "folder", null, null, null);
 	}
 
 	@Test
@@ -84,8 +91,8 @@ public class OutRequestTests {
 		assertThat(request.getSource().getUri()).isEqualTo("http://repo.example.com");
 		assertThat(request.getSource().getUsername()).isEqualTo("admin");
 		assertThat(request.getSource().getPassword()).isEqualTo("password");
-		assertThat(request.getSource().getRepo()).isEqualTo("libs-snapshot-local");
 		assertThat(request.getParams().getBuildNumber()).isEqualTo("1234");
+		assertThat(request.getParams().getRepo()).isEqualTo("libs-snapshot-local");
 		assertThat(request.getParams().getFolder()).isEqualTo("dist");
 		assertThat(request.getParams().getInclude()).containsExactly("**");
 		assertThat(request.getParams().getExclude()).containsExactly("foo", "bar");

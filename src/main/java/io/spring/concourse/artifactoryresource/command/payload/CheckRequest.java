@@ -26,6 +26,7 @@ import org.springframework.util.Assert;
  * Request to the {@code "/opt/resource/check"} script.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public class CheckRequest {
 
