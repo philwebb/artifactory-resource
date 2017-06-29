@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
@@ -42,18 +43,21 @@ public class SystemInput {
 
 	private final ObjectMapper objectMapper;
 
+	private final Environment environment;
+
 	private final long timeout;
 
 	@Autowired
-	public SystemInput(SystemStreams systemStreams, ObjectMapper objectMapper) {
-		this(systemStreams, objectMapper, TIMEOUT);
+	public SystemInput(SystemStreams systemStreams, ObjectMapper objectMapper, Environment environment) {
+		this(systemStreams, objectMapper, TIMEOUT, environment);
 	}
 
 	protected SystemInput(SystemStreams systemStreams, ObjectMapper objectMapper,
-			long timeout) {
+			long timeout, Environment environment) {
 		this.systemStreams = systemStreams;
 		this.objectMapper = objectMapper;
 		this.timeout = timeout;
+		this.environment = environment;
 	}
 
 	public <T> T read(Class<T> type) throws IOException {
@@ -64,7 +68,17 @@ public class SystemInput {
 			Assert.state(System.currentTimeMillis() - startTime < this.timeout,
 					"Timeout waiting for input");
 		}
-		return this.objectMapper.readValue(in, type);
+		String resolved = resolvePlaceholders(in);
+		return this.objectMapper.readValue(resolved, type);
+	}
+
+	private String resolvePlaceholders(BufferedReader in) throws IOException {
+		StringBuilder inputString = new StringBuilder();
+		String s;
+		while ((s = in.readLine()) != null) {
+			inputString.append(s);
+		}
+		return this.environment.resolvePlaceholders(inputString.toString());
 	}
 
 }
