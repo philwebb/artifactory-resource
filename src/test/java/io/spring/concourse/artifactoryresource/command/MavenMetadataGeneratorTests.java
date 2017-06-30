@@ -16,13 +16,15 @@
 
 package io.spring.concourse.artifactoryresource.command;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 /**
  * @author pwebb
  */
+@Ignore
 public class MavenMetadataGeneratorTests {
 
 	@Test

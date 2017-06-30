@@ -17,7 +17,15 @@
 package io.spring.concourse.artifactoryresource.command;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 /**
  * Utility to scan a {@link Directory} for contents.
@@ -28,52 +36,36 @@ import java.util.List;
 public class DirectoryScanner {
 
 	/**
-	 * @param include
-	 * @param exclude
+	 * Scan the given directory for files, accounting for the include and exclude
+	 * patterns.
+	 * @param directory the source directory
+	 * @param include the include patterns
+	 * @param exclude the exclude patterns
+	 * @return the scanned list of files
 	 */
 	public List<File> scan(Directory directory, List<String> include,
 			List<String> exclude) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
+		try {
+			Path path = directory.getFile().toPath();
+			BiPredicate<Path, BasicFileAttributes> filter = getFilter(include, exclude);
+			List<File> files = Files.find(path, Integer.MAX_VALUE, filter)
+					.map(Path::toFile).collect(Collectors.toCollection(ArrayList::new));
+			Collections.sort(files);
+			return files;
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException(ex);
+		}
 	}
 
-	//
-	// private List<Resource> getResourcesToDeploy(OutRequest request) throws IOException
-	// {
-	// Params params = request.getParams();
-	// List<String> excludes = params.getExclude();
-	// List<String> includes = params.getInclude();
-	// String folder = params.getFolder();
-	// List<Resource> includeResources = new ArrayList<>();
-	// for (String include : includes) {
-	// getResources(folder, includeResources, include);
-	// }
-	// List<Resource> excludeResources = new ArrayList<>();
-	// for (String exclude : excludes) {
-	// getResources(folder, excludeResources, exclude);
-	// }
-	// includeResources.removeAll(excludeResources);
-	// return includeResources;
-	// }
-	//
-	// private void getResources(String folder, List<Resource> includeResources,
-	// String include) throws IOException {
-	// ResourceLoader resourceLoader = getResourceLoader();
-	// PathMatchingResourcePatternResolver patternResolver = new
-	// PathMatchingResourcePatternResolver(
-	// resourceLoader);
-	// String locationPattern = folder + "/" + include;
-	// includeResources
-	// .addAll(Arrays.asList(patternResolver.getResources(locationPattern)));
-	// }
-	//
-	// private ResourceLoader getResourceLoader() {
-	// return new FileSystemResourceLoader() {
-	// @Override
-	// protected Resource getResourceByPath(String path) {
-	// return new FileSystemResource(path);
-	// }
-	// };
-	// }
+	private BiPredicate<Path, BasicFileAttributes> getFilter(List<String> include,
+			List<String> exclude) {
+		return (path, fileAttributes) -> {
+			if (!path.toFile().isFile()) {
+				return false;
+			}
+			return true;
+		};
+	}
 
 }

@@ -16,18 +16,64 @@
 
 package io.spring.concourse.artifactoryresource.command;
 
-import org.junit.Test;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
-import static org.junit.Assert.*;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+
+import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StringUtils;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * @author pwebb
+ * Tests for {@link DirectoryScanner}.
+ *
+ * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public class DirectoryScannerTests {
 
+	private static final byte[] NO_BYTES = {};
+
+	@Rule
+	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+	private DirectoryScanner scanner = new DirectoryScanner();
+
 	@Test
-	public void test() {
-		fail("Not yet implemented");
+	public void scanWhenNoIncludeExcludeShouldReturnAllFiles() throws Exception {
+		Directory directory = createFiles();
+		List<File> files = this.scanner.scan(directory, Collections.emptyList(),
+				Collections.emptyList());
+		assertThat(files).extracting((f) -> relativePath(directory, f)).containsExactly(
+				"/bar/bar.jar", "/bar/bar.pom", "/baz/baz.jar", "/baz/baz.pom");
+	}
+
+	private String relativePath(Directory directory, File file) {
+		String root = StringUtils.cleanPath(directory.getFile().getPath());
+		String path = StringUtils.cleanPath(file.getPath());
+		return path.substring(root.length());
+	}
+
+	private Directory createFiles() throws IOException {
+		File root = this.temporaryFolder.newFolder();
+		File barDir = new File(root, "bar");
+		touch(new File(barDir, "bar.jar"));
+		touch(new File(barDir, "bar.pom"));
+		File bazDir = new File(root, "baz");
+		touch(new File(bazDir, "baz.jar"));
+		touch(new File(bazDir, "baz.pom"));
+		return new Directory(root);
+	}
+
+	private void touch(File file) throws IOException {
+		file.getParentFile().mkdirs();
+		FileCopyUtils.copy(NO_BYTES, file);
 	}
 
 }
