@@ -17,7 +17,6 @@
 package io.spring.concourse.artifactoryresource.artifactory.payload;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Map;
 
 import org.springframework.core.io.FileSystemResource;
@@ -34,34 +33,33 @@ public class DeployableFileArtifact extends AbstractDeployableArtifact {
 
 	private File file;
 
-	public DeployableFileArtifact(File parent, File file) {
-		this(parent, file, null);
+	public DeployableFileArtifact(File root, File file) {
+		this(root, file, null);
 	}
 
-	public DeployableFileArtifact(File parent, File file,
-			Map<String, String> properties) {
-		this(parent, file, properties, null);
+	public DeployableFileArtifact(File root, File file, Map<String, String> properties) {
+		this(root, file, properties, null);
 	}
 
-	public DeployableFileArtifact(File parent, File file, Map<String, String> properties,
+	public DeployableFileArtifact(File root, File file, Map<String, String> properties,
 			Checksums checksums) {
-		super(calculatePath(parent, file), properties, checksums);
+		super(calculatePath(root, file), properties, checksums);
 		Assert.isTrue(file.exists(), "File '" + file + "' does not exist");
 		Assert.isTrue(file.isFile(), "Path '" + file + "' does not refer to a file");
 		this.file = file;
 	}
 
 	@Override
-	public Resource getContent() throws IOException {
+	public Resource getContent() {
 		return new FileSystemResource(this.file);
 	}
 
-	private static String calculatePath(File parent, File file) {
-		String parentPath = parent.getAbsolutePath();
+	private static String calculatePath(File root, File file) {
+		String rootPath = root.getAbsolutePath();
 		String filePath = file.getAbsolutePath();
-		Assert.isTrue(filePath.startsWith(parentPath),
-				"File '" + parent + "' is not a parent of '" + file + "'");
-		return filePath.substring(parentPath.length());
+		Assert.isTrue(filePath.startsWith(rootPath),
+				"File '" + root + "' is not a parent of '" + file + "'");
+		return filePath.substring(rootPath.length());
 	}
 
 }

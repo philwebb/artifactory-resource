@@ -17,15 +17,18 @@
 package io.spring.concourse.artifactoryresource.command;
 
 import java.io.File;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import io.spring.concourse.artifactoryresource.artifactory.Artifactory;
-import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryBuildRuns;
 import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryRepository;
 import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryServer;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
+import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableFileArtifact;
 import io.spring.concourse.artifactoryresource.command.payload.OutRequest;
 import io.spring.concourse.artifactoryresource.command.payload.OutRequest.Params;
 import io.spring.concourse.artifactoryresource.command.payload.OutResponse;
@@ -33,6 +36,7 @@ import io.spring.concourse.artifactoryresource.command.payload.Source;
 import io.spring.concourse.artifactoryresource.command.payload.Version;
 
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -46,11 +50,18 @@ public class OutHandler {
 
 	private final Artifactory artifactory;
 
-	private BuildNumberGenerator buildNumberGenerator;
+	private final BuildNumberGenerator buildNumberGenerator;
 
-	public OutHandler(Artifactory artifactory,
-			BuildNumberGenerator buildNumberGenerator) {
+	private final ModuleLayouts moduleLayouts;
+
+	private final DirectoryScanner directoryScanner;
+
+	public OutHandler(Artifactory artifactory, BuildNumberGenerator buildNumberGenerator,
+			ModuleLayouts moduleLayouts, DirectoryScanner directoryScanner) {
 		this.artifactory = artifactory;
+		this.buildNumberGenerator = buildNumberGenerator;
+		this.moduleLayouts = moduleLayouts;
+		this.directoryScanner = directoryScanner;
 	}
 
 	public OutResponse handle(OutRequest request, Directory directory) {
@@ -58,20 +69,17 @@ public class OutHandler {
 		Params params = request.getParams();
 		String buildNumber = getOrGenerateBuildNumber(params);
 		ArtifactoryServer artifactoryServer = getArtifactoryServer(source);
-		ArtifactoryRepository artifactoryRepository = artifactoryServer
-				.repository(params.getRepo());
-		ArtifactoryBuildRuns artifactoryBuildRuns = artifactoryServer
-				.buildRuns(source.getBuildName());
-		List<File> files = directory.subFolder(params.getFolder())
-				.scan(params.getInclude(), params.getExclude());
-		List<DeployableArtifact> deployableArtifact = getDeployableArtifact(files);
-		List<BuildModule> modules = Collections.emptyList();
-		artifactoryBuildRuns.add(buildNumber, params.getBuildUri(), modules);
+		List<DeployableArtifact> artifacts = getDeployableArtifacts(buildNumber, source,
+				params, directory);
+		Assert.state(artifacts.size() > 0, "No artifacts found to deploy");
+		deployArtifacts(artifactoryServer, params, artifacts);
+		addBuildRun(artifactoryServer, source, params, buildNumber, artifacts);
 		return new OutResponse(new Version(buildNumber));
 	}
 
-	private List<DeployableArtifact> getDeployableArtifact(List<File> files) {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+	private ArtifactoryServer getArtifactoryServer(Source source) {
+		return this.artifactory.server(source.getUri(), source.getUsername(),
+				source.getPassword());
 	}
 
 	private String getOrGenerateBuildNumber(Params params) {
@@ -81,65 +89,40 @@ public class OutHandler {
 		return this.buildNumberGenerator.generateBuildNumber();
 	}
 
-	private ArtifactoryServer getArtifactoryServer(Source source) {
-		return this.artifactory.server(source.getUri(), source.getUsername(),
-				source.getPassword());
+	private List<DeployableArtifact> getDeployableArtifacts(String buildNumber,
+			Source source, Params params, Directory directory) {
+		Directory root = directory.subDirectory(params.getFolder());
+		List<File> files = this.directoryScanner.scan(root, params.getInclude(),
+				params.getExclude());
+		Map<String, String> properties = getDeployableArtifactProperties(buildNumber,
+				source, params);
+		return files.stream().map(
+				(file) -> new DeployableFileArtifact(root.getFile(), file, properties))
+				.collect(Collectors.toCollection(ArrayList::new));
 	}
-	//
-	// @Override
-	// public void run(ApplicationArguments args) throws Exception {
-	// OutRequest request = this.inputJson.read(OutRequest.class);
-	// Source source = request.getSource();
-	// Params params = request.getParams();
-	// ArtifactoryServer server = this.artifactory.server(source.getUri(),
-	// source.getUsername(), source.getPassword());
-	// ArtifactoryRepository repository = server.repository(source.getRepo());
-	// List<Resource> resourcesToDeploy = getResourcesToDeploy(request);
-	// MultiValueMap<String, BuildArtifact> buildArtifacts = deployAndGetBuildArtifacts(
-	// source, params, repository, resourcesToDeploy);
-	// addBuildInfo(source, params, server, buildArtifacts);
-	// System.out.println(request);
-	// }
-	//
-	// private MultiValueMap<String, BuildArtifact> deployAndGetBuildArtifacts(Source
-	// source,
-	// Params params, ArtifactoryRepository repository,
-	// List<Resource> resourcesToDeploy) throws IOException {
-	// MultiValueMap<String, BuildArtifact> artifacts = new LinkedMultiValueMap<>();
-	// Map<String, String> properties = getProperties(source, params);
-	// for (Resource resource : resourcesToDeploy) {
-	// File file = resource.getFile();
-	// if (file.exists() && !file.isDirectory()) {
-	// Checksums checksum = Checksums.calculate(resource);
-	// DeployableArtifact deployableArtifact = new DeployableFileArtifact(
-	// file.getParentFile(), file, properties, checksum);
-	// BuildArtifact buildArtifact = new BuildArtifact("file",
-	// checksum.getSha1(), checksum.getMd5(), resource.getFilename());
-	// artifacts.add(file.getParentFile().getName(), buildArtifact);
-	// repository.deploy(deployableArtifact);
-	// }
-	// }
-	// return artifacts;
-	// }
-	//
-	// private Map<String, String> getProperties(Source source, Params params) {
-	// Map<String, String> properties = new LinkedHashMap<>();
-	// properties.put("build.name", source.getBuildName());
-	// properties.put("build.number", params.getBuildNumber());
-	// return properties;
-	// }
-	//
-	// private void addBuildInfo(Source source, Params params, ArtifactoryServer server,
-	// MultiValueMap<String, BuildArtifact> artifacts) {
-	// List<BuildModule> buildModules = new ArrayList<>();
-	// for (String id : artifacts.keySet()) {
-	// BuildModule module = new BuildModule(id, artifacts.get(id));
-	// buildModules.add(module);
-	// }
-	// ContinuousIntegrationAgent agent = new ContinuousIntegrationAgent("Concourse",
-	// null);
-	// server.buildRuns(source.getBuildName()).add(params.getBuildNumber(),
-	// params.getBuildUri(), agent, buildModules);
-	// }
+
+	private Map<String, String> getDeployableArtifactProperties(String buildNumber,
+			Source source, Params params) {
+		Map<String, String> properties = new LinkedHashMap<>();
+		properties.put("build.name", source.getBuildName());
+		properties.put("build.number", buildNumber);
+		return properties;
+	}
+
+	private void deployArtifacts(ArtifactoryServer artifactoryServer, Params params,
+			List<DeployableArtifact> deployableArtifacts) {
+		ArtifactoryRepository artifactoryRepository = artifactoryServer
+				.repository(params.getRepo());
+		artifactoryRepository.deploy(deployableArtifacts);
+	}
+
+	private void addBuildRun(ArtifactoryServer artifactoryServer, Source source,
+			Params params, String buildNumber, List<DeployableArtifact> artifacts) {
+		List<BuildModule> modules = this.moduleLayouts
+				.getBuildModulesGenerator(params.getModuleLayout())
+				.getBuildModules(artifacts);
+		artifactoryServer.buildRuns(source.getBuildName()).add(buildNumber,
+				params.getBuildUri(), modules);
+	}
 
 }

@@ -16,6 +16,7 @@
 
 package io.spring.concourse.artifactoryresource.artifactory;
 
+import java.util.Collections;
 import java.util.List;
 
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
@@ -29,6 +30,8 @@ import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArt
  * @author Madhura Bhave
  */
 public interface BuildModulesGenerator {
+
+	BuildModulesGenerator NONE = ((a) -> Collections.emptyList());
 
 	List<BuildModule> getBuildModules(List<DeployableArtifact> deployableArtifacts);
 

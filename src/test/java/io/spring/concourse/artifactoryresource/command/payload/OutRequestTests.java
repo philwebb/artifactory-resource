@@ -44,7 +44,7 @@ public class OutRequestTests {
 			"my-build");
 
 	private OutRequest.Params params = new OutRequest.Params("1234",
-			"libs-snapshot-local", "folder", null, null, null);
+			"libs-snapshot-local", "folder", null, null, null, null);
 
 	@Autowired
 	private JacksonTester<OutRequest> json;
@@ -64,25 +64,17 @@ public class OutRequestTests {
 	}
 
 	@Test
-	public void createParamsWhenBuildNumberIsEmptyShouldThrowException()
-			throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Build Number must not be empty");
-		new OutRequest.Params("", "libs-snapshot-local", "folder", null, null, null);
-	}
-
-	@Test
 	public void createParamsWhenFolderIsEmptyShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Folder must not be empty");
-		new OutRequest.Params("1234", "libs-snapshot-local", "", null, null, null);
+		new OutRequest.Params("1234", "libs-snapshot-local", "", null, null, null, null);
 	}
 
 	@Test
 	public void createParamsWhenRepoIsEmptyShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Repo must not be empty");
-		new OutRequest.Params("1234", "", "folder", null, null, null);
+		new OutRequest.Params("1234", "", "folder", null, null, null, null);
 	}
 
 	@Test
@@ -96,6 +88,7 @@ public class OutRequestTests {
 		assertThat(request.getParams().getFolder()).isEqualTo("dist");
 		assertThat(request.getParams().getInclude()).containsExactly("**");
 		assertThat(request.getParams().getExclude()).containsExactly("foo", "bar");
+		assertThat(request.getParams().getModuleLayout()).isEqualTo("maven");
 		assertThat(request.getParams().getBuildUri()).isEqualTo("http://ci.example.com");
 	}
 

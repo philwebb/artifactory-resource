@@ -69,9 +69,14 @@ public final class Checksums {
 				.toString();
 	}
 
-	public static Checksums calculate(Resource content) throws IOException {
-		Assert.notNull(content, "Content must not be null");
-		return calculate(content.getInputStream());
+	public static Checksums calculate(Resource content) {
+		try {
+			Assert.notNull(content, "Content must not be null");
+			return calculate(content.getInputStream());
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException(ex);
+		}
 	}
 
 	public static Checksums calculate(InputStream content) throws IOException {

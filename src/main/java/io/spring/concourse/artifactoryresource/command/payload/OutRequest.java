@@ -74,6 +74,8 @@ public class OutRequest {
 
 		private final List<String> exclude;
 
+		private final String moduleLayout;
+
 		@JsonProperty("build_uri")
 		private final String buildUri;
 
@@ -82,6 +84,7 @@ public class OutRequest {
 				@JsonProperty("repo") String repo, @JsonProperty("folder") String folder,
 				@JsonProperty("include ") List<String> include,
 				@JsonProperty("exclude") List<String> exclude,
+				@JsonProperty("module_layout") String moduleLayout,
 				@JsonProperty("build_uri") String buildUri) {
 			Assert.hasText(repo, "Repo must not be empty");
 			Assert.hasText(folder, "Folder must not be empty");
@@ -92,6 +95,7 @@ public class OutRequest {
 					: Collections.unmodifiableList(new ArrayList<>(include)));
 			this.exclude = (exclude == null ? Collections.emptyList()
 					: Collections.unmodifiableList(new ArrayList<>(exclude)));
+			this.moduleLayout = moduleLayout;
 			this.buildUri = buildUri;
 		}
 
@@ -113,6 +117,10 @@ public class OutRequest {
 
 		public List<String> getExclude() {
 			return this.exclude;
+		}
+
+		public String getModuleLayout() {
+			return this.moduleLayout;
 		}
 
 		public String getBuildUri() {

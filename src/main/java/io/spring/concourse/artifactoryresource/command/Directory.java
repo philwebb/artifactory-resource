@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * A directory passed to a command.
@@ -51,61 +52,11 @@ public class Directory {
 		return this.file.toString();
 	}
 
-	//
-	// private List<Resource> getResourcesToDeploy(OutRequest request) throws IOException
-	// {
-	// Params params = request.getParams();
-	// List<String> excludes = params.getExclude();
-	// List<String> includes = params.getInclude();
-	// String folder = params.getFolder();
-	// List<Resource> includeResources = new ArrayList<>();
-	// for (String include : includes) {
-	// getResources(folder, includeResources, include);
-	// }
-	// List<Resource> excludeResources = new ArrayList<>();
-	// for (String exclude : excludes) {
-	// getResources(folder, excludeResources, exclude);
-	// }
-	// includeResources.removeAll(excludeResources);
-	// return includeResources;
-	// }
-	//
-	// private void getResources(String folder, List<Resource> includeResources,
-	// String include) throws IOException {
-	// ResourceLoader resourceLoader = getResourceLoader();
-	// PathMatchingResourcePatternResolver patternResolver = new
-	// PathMatchingResourcePatternResolver(
-	// resourceLoader);
-	// String locationPattern = folder + "/" + include;
-	// includeResources
-	// .addAll(Arrays.asList(patternResolver.getResources(locationPattern)));
-	// }
-	//
-	// private ResourceLoader getResourceLoader() {
-	// return new FileSystemResourceLoader() {
-	// @Override
-	// protected Resource getResourceByPath(String path) {
-	// return new FileSystemResource(path);
-	// }
-	// };
-	// }
-
-	/**
-	 * @param folder
-	 * @return
-	 */
-	public Directory subFolder(String path) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
-	}
-
-	/**
-	 * @param include
-	 * @param exclude
-	 */
-	public List<File> scan(List<String> include, List<String> exclude) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
+	public Directory subDirectory(String path) {
+		if (StringUtils.hasText(path)) {
+			return new Directory(new File(this.file, StringUtils.cleanPath(path)));
+		}
+		return this;
 	}
 
 	public static Directory fromArgs(ApplicationArguments args) {

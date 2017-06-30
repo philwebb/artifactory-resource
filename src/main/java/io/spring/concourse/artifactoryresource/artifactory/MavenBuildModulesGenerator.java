@@ -16,7 +16,6 @@
 
 package io.spring.concourse.artifactoryresource.artifactory;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -102,18 +101,9 @@ public class MavenBuildModulesGenerator implements BuildModulesGenerator {
 		if (type == null) {
 			return Optional.empty();
 		}
-		Checksums checksums = getChecksums(deployableArtifact);
+		Checksums checksums = deployableArtifact.getChecksums();
 		return Optional.of(new BuildArtifact(type, checksums.getSha1(),
 				checksums.getMd5(), filename));
-	}
-
-	private Checksums getChecksums(DeployableArtifact deployableArtifact) {
-		try {
-			return deployableArtifact.getChecksums();
-		}
-		catch (IOException ex) {
-			throw new IllegalStateException(ex);
-		}
 	}
 
 	private String getType(String name) {

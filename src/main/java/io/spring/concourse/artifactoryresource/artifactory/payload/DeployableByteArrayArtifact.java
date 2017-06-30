@@ -16,7 +16,6 @@
 
 package io.spring.concourse.artifactoryresource.artifactory.payload;
 
-import java.io.IOException;
 import java.util.Map;
 
 import org.springframework.core.io.ByteArrayResource;
@@ -50,7 +49,7 @@ public class DeployableByteArrayArtifact extends AbstractDeployableArtifact {
 	}
 
 	@Override
-	public Resource getContent() throws IOException {
+	public Resource getContent() {
 		return new ByteArrayResource(this.content);
 	}
 

@@ -16,7 +16,6 @@
 
 package io.spring.concourse.artifactoryresource.artifactory.payload;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -64,7 +63,7 @@ public abstract class AbstractDeployableArtifact implements DeployableArtifact {
 	}
 
 	@Override
-	public Checksums getChecksums() throws IOException {
+	public Checksums getChecksums() {
 		if (this.checksums == null) {
 			this.checksums = Checksums.calculate(getContent());
 		}

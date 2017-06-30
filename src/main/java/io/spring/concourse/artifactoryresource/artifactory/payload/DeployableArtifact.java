@@ -16,7 +16,6 @@
 
 package io.spring.concourse.artifactoryresource.artifactory.payload;
 
-import java.io.IOException;
 import java.util.Map;
 
 import org.springframework.core.io.Resource;
@@ -39,9 +38,8 @@ public interface DeployableArtifact {
 	/**
 	 * Return the contents of the underlying artifact file.
 	 * @return the contents of the artifact
-	 * @throws IOException on IO error
 	 */
-	Resource getContent() throws IOException;
+	Resource getContent();
 
 	/**
 	 * Return any property meta-data that is attached to the artifact.
@@ -52,8 +50,7 @@ public interface DeployableArtifact {
 	/**
 	 * Return the checksums (SHA1, MD5) for the artifact.
 	 * @return the checksums
-	 * @throws IOException on IO error
 	 */
-	Checksums getChecksums() throws IOException;
+	Checksums getChecksums();
 
 }
