@@ -47,6 +47,17 @@ public class DirectoryScanner {
 	 * patterns.
 	 * @param directory the source directory
 	 * @param include the include patterns
+	 * @return the scanned list of files
+	 */
+	public List<File> scan(Directory directory, List<String> include) {
+		return this.scan(directory, include, Collections.emptyList());
+	}
+
+	/**
+	 * Scan the given directory for files, accounting for the include and exclude
+	 * patterns.
+	 * @param directory the source directory
+	 * @param include the include patterns
 	 * @param exclude the exclude patterns
 	 * @return the scanned list of files
 	 */

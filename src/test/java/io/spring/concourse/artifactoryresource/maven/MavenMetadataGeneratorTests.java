@@ -17,19 +17,36 @@
 package io.spring.concourse.artifactoryresource.maven;
 
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
-
-import static org.junit.Assert.fail;
+import org.junit.rules.TemporaryFolder;
 
 /**
- * @author pwebb
+ * Tests for {@link MavenMetadataGenerator}.
+ *
+ * @author Phillip Webb
+ * @author Madhura Bhave
  */
 @Ignore
 public class MavenMetadataGeneratorTests {
 
+	@Rule
+	public TemporaryFolder temporaryFolder;
+
 	@Test
-	public void test() {
-		fail("Not yet implemented");
+	public void generateWhenUsingNonSnapshotShouldCreateMetadata() throws Exception {
+
+	}
+
+	@Test
+	public void generateWhenUsingSnapshotShouldCreateMetadata() throws Exception {
+
+	}
+
+	@Test
+	public void generateWhenUsingSnapshotTimestampShouldCreateMetadata()
+			throws Exception {
+
 	}
 
 }
