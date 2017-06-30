@@ -54,6 +54,34 @@ public class DirectoryScannerTests {
 				"/bar/bar.jar", "/bar/bar.pom", "/baz/baz.jar", "/baz/baz.pom");
 	}
 
+	@Test
+	public void scanWhenUsingIncludesShouldFilterFiles() throws Exception {
+		Directory directory = createFiles();
+		List<File> files = this.scanner.scan(directory,
+				Collections.singletonList("**/*.jar"), Collections.emptyList());
+		assertThat(files).extracting((f) -> relativePath(directory, f))
+				.containsExactly("/bar/bar.jar", "/baz/baz.jar");
+	}
+
+	@Test
+	public void scanWhenUsingExcludesShouldFilterFiles() throws Exception {
+		Directory directory = createFiles();
+		List<File> files = this.scanner.scan(directory, Collections.emptyList(),
+				Collections.singletonList("**/*.jar"));
+		assertThat(files).extracting((f) -> relativePath(directory, f))
+				.containsExactly("/bar/bar.pom", "/baz/baz.pom");
+	}
+
+	@Test
+	public void scanWhenUsingIncludesAndExcludesShouldFilterFiles() throws Exception {
+		Directory directory = createFiles();
+		List<File> files = this.scanner.scan(directory,
+				Collections.singletonList("**/*.jar"),
+				Collections.singletonList("**/baz.*"));
+		assertThat(files).extracting((f) -> relativePath(directory, f))
+				.containsExactly("/bar/bar.jar");
+	}
+
 	private String relativePath(Directory directory, File file) {
 		String root = StringUtils.cleanPath(directory.getFile().getPath());
 		String path = StringUtils.cleanPath(file.getPath());

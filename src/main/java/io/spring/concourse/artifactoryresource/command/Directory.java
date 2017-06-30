@@ -34,10 +34,11 @@ public class Directory {
 	private final File file;
 
 	public Directory(String path) {
-		this(new File(path));
+		this(path == null ? (File) null : new File(path));
 	}
 
 	public Directory(File file) {
+		Assert.notNull(file, "File must not be null");
 		Assert.state(file.exists(), "File '" + file + "' does not exist");
 		Assert.state(file.isDirectory(), "File '" + file + "' is not a directory");
 		this.file = file;
@@ -49,10 +50,26 @@ public class Directory {
 
 	@Override
 	public String toString() {
-		return this.file.toString();
+		return StringUtils.cleanPath(this.file.getPath());
 	}
 
-	public Directory subDirectory(String path) {
+	@Override
+	public int hashCode() {
+		return this.file.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		return this.file.equals(((Directory) obj).file);
+	}
+
+	public Directory getSubDirectory(String path) {
 		if (StringUtils.hasText(path)) {
 			return new Directory(new File(this.file, StringUtils.cleanPath(path)));
 		}

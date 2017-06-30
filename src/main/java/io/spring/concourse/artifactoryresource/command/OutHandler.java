@@ -91,7 +91,7 @@ public class OutHandler {
 
 	private List<DeployableArtifact> getDeployableArtifacts(String buildNumber,
 			Source source, Params params, Directory directory) {
-		Directory root = directory.subDirectory(params.getFolder());
+		Directory root = directory.getSubDirectory(params.getFolder());
 		List<File> files = this.directoryScanner.scan(root, params.getInclude(),
 				params.getExclude());
 		Map<String, String> properties = getDeployableArtifactProperties(buildNumber,

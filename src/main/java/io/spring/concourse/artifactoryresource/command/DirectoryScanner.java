@@ -27,6 +27,10 @@ import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
+import org.springframework.util.AntPathMatcher;
+import org.springframework.util.PathMatcher;
+import org.springframework.util.StringUtils;
+
 /**
  * Utility to scan a {@link Directory} for contents.
  *
@@ -47,8 +51,8 @@ public class DirectoryScanner {
 			List<String> exclude) {
 		try {
 			Path path = directory.getFile().toPath();
-			BiPredicate<Path, BasicFileAttributes> filter = getFilter(include, exclude);
-			List<File> files = Files.find(path, Integer.MAX_VALUE, filter)
+			List<File> files = Files
+					.find(path, Integer.MAX_VALUE, getFilter(directory, include, exclude))
 					.map(Path::toFile).collect(Collectors.toCollection(ArrayList::new));
 			Collections.sort(files);
 			return files;
@@ -58,14 +62,29 @@ public class DirectoryScanner {
 		}
 	}
 
-	private BiPredicate<Path, BasicFileAttributes> getFilter(List<String> include,
-			List<String> exclude) {
+	private BiPredicate<Path, BasicFileAttributes> getFilter(Directory root,
+			List<String> include, List<String> exclude) {
+		PathMatcher pathMatcher = new AntPathMatcher();
+		String rootPath = StringUtils.cleanPath(root.getFile().getPath());
 		return (path, fileAttributes) -> {
 			if (!path.toFile().isFile()) {
 				return false;
 			}
-			return true;
+			String relativePath = StringUtils.cleanPath(path.toString())
+					.substring(rootPath.length() + 1);
+			return ((include.isEmpty() || hasMatch(pathMatcher, relativePath, include))
+					&& !hasMatch(pathMatcher, relativePath, exclude));
 		};
+	}
+
+	private boolean hasMatch(PathMatcher pathMatcher, String path,
+			List<String> patterns) {
+		for (String pattern : patterns) {
+			if (pathMatcher.match(pattern, path)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

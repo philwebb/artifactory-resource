@@ -205,7 +205,7 @@ public class OutHandlerTests {
 
 	private void configureMockScanner(Directory directory) throws IOException {
 		List<File> files = new ArrayList<>();
-		File file = new File(directory.subDirectory("folder").getFile(), "foo.jar");
+		File file = new File(directory.getSubDirectory("folder").getFile(), "foo.jar");
 		FileCopyUtils.copy(NO_BYTES, file);
 		files.add(file);
 		given(this.directoryScanner.scan(any(), any(), any())).willReturn(files);
