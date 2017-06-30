@@ -20,12 +20,15 @@ import java.io.IOException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.springframework.stereotype.Component;
+
 /**
  * Write output to {@link SystemStreams#out()}.
  *
  * @author Phillip Webb
  * @author Madhura Bhave
  */
+@Component
 public class SystemOutput {
 
 	private final SystemStreams systemStreams;

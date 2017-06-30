@@ -16,8 +16,10 @@
 
 package io.spring.concourse.artifactoryresource.artifactory;
 
+import java.nio.file.Files;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.palantir.docker.compose.DockerComposeRule;
@@ -25,15 +27,16 @@ import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.connection.waiting.HealthChecks;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildArtifact;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
-import io.spring.concourse.artifactoryresource.artifactory.payload.BuildRunsResponse;
+import io.spring.concourse.artifactoryresource.artifactory.payload.BuildRun;
 import io.spring.concourse.artifactoryresource.artifactory.payload.ContinuousIntegrationAgent;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableByteArrayArtifact;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifact;
-import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifactQueryResponse;
+import org.assertj.core.api.Assertions;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,9 +44,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -56,6 +62,9 @@ public class HttpArtifactoryIT {
 			.waitingForService("artifactory", HealthChecks.toRespond2xxOverHttp(8081,
 					HttpArtifactoryIT::artifactoryUri))
 			.build();
+
+	@ClassRule
+	public static final TemporaryFolder temporaryFolder = new TemporaryFolder();
 
 	public static DockerPort port;
 
@@ -79,31 +88,23 @@ public class HttpArtifactoryIT {
 	}
 
 	@Test
-	public void testName() throws Exception {
+	public void addandGetBuildRun() throws Exception {
 		ArtifactoryBuildRuns buildRuns = server().buildRuns("my-build");
-		BuildArtifact artifact = new BuildArtifact("test", null, null, "bar");
+		BuildArtifact artifact = new BuildArtifact("test", "my-sha", "my-md5", "bar");
 		BuildModule modules = new BuildModule("foo-test",
 				Collections.singletonList(artifact));
 		buildRuns.add("1", "ci.example.com",
 				new ContinuousIntegrationAgent("Concourse", null),
 				Collections.singletonList(modules));
+		List<BuildRun> runs = buildRuns.getAll();
+		assertThat(runs.get(0).getBuildNumber()).isEqualTo("1");
 	}
 
 	@Test
-	public void getBuildRuns() throws Exception {
-		ArtifactoryBuildRuns buildRuns = server().buildRuns("my-build");
-		BuildRunsResponse runs = buildRuns.getAll();
-	}
-
-	@Test
-	public void fetchArtifacts() throws Exception {
-		DeployedArtifactQueryResponse results = server().repository("libs-snapshot-local")
-				.getDeployedArtifacts("spring-boot-dependencies", "1497125213592");
-		for (DeployedArtifact artifact : results.getResults()) {
-			server().repository("libs-snapshot-local").download(
-					"/" + artifact.getPath() + "/" + artifact.getName(),
-					"/tmp/helloworld");
-		}
+	public void download() throws Exception {
+		temporaryFolder.create();
+		List<DeployedArtifact> results = server().buildRuns("my-build").getDeployedArtifacts("1");
+		server().repository("libs-snapshot-local").download(results, temporaryFolder.newFolder());
 	}
 
 	private ArtifactoryServer server() {

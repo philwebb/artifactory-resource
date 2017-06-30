@@ -16,12 +16,15 @@
 
 package io.spring.concourse.artifactoryresource.command;
 
+import org.springframework.stereotype.Component;
+
 /**
  * Generate Maven metadata files for downloaded artifacts.
  *
  * @author Phillip Webb
  * @author Madhura Bhave
  */
+@Component
 public class MavenMetadataGenerator {
 
 	public void generate(Directory directory) {

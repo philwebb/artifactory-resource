@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
+import org.springframework.stereotype.Component;
+
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
@@ -37,6 +39,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
+@Component
 public class DirectoryScanner {
 
 	/**
