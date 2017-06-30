@@ -82,7 +82,7 @@ public class OutRequest {
 		@JsonCreator
 		public Params(@JsonProperty("build_number") String buildNumber,
 				@JsonProperty("repo") String repo, @JsonProperty("folder") String folder,
-				@JsonProperty("include ") List<String> include,
+				@JsonProperty("include") List<String> include,
 				@JsonProperty("exclude") List<String> exclude,
 				@JsonProperty("module_layout") String moduleLayout,
 				@JsonProperty("build_uri") String buildUri) {

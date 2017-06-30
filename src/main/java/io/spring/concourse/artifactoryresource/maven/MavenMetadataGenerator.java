@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.command;
+package io.spring.concourse.artifactoryresource.maven;
+
+import io.spring.concourse.artifactoryresource.io.Directory;
 
 import org.springframework.stereotype.Component;
 

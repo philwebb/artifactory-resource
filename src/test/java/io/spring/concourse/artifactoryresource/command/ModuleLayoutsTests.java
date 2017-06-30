@@ -17,7 +17,7 @@
 package io.spring.concourse.artifactoryresource.command;
 
 import io.spring.concourse.artifactoryresource.artifactory.BuildModulesGenerator;
-import io.spring.concourse.artifactoryresource.artifactory.MavenBuildModulesGenerator;
+import io.spring.concourse.artifactoryresource.maven.MavenBuildModulesGenerator;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

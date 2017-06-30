@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.command;
+package io.spring.concourse.artifactoryresource.io;
 
 import java.io.File;
 import java.io.IOException;

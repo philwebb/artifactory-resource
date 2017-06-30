@@ -18,6 +18,7 @@ package io.spring.concourse.artifactoryresource.command;
 
 import io.spring.concourse.artifactoryresource.command.payload.OutRequest;
 import io.spring.concourse.artifactoryresource.command.payload.OutResponse;
+import io.spring.concourse.artifactoryresource.io.Directory;
 import io.spring.concourse.artifactoryresource.system.SystemInput;
 import io.spring.concourse.artifactoryresource.system.SystemOutput;
 

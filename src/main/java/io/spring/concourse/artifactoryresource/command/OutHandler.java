@@ -31,6 +31,8 @@ import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArt
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableFileArtifact;
 import io.spring.concourse.artifactoryresource.command.payload.OutRequest;
 import io.spring.concourse.artifactoryresource.command.payload.OutRequest.Params;
+import io.spring.concourse.artifactoryresource.io.Directory;
+import io.spring.concourse.artifactoryresource.io.DirectoryScanner;
 import io.spring.concourse.artifactoryresource.command.payload.OutResponse;
 import io.spring.concourse.artifactoryresource.command.payload.Source;
 import io.spring.concourse.artifactoryresource.command.payload.Version;

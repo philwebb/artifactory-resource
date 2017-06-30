@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.command;
+package io.spring.concourse.artifactoryresource.maven;
 
 import org.junit.Ignore;
 import org.junit.Test;

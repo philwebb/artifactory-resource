@@ -30,6 +30,8 @@ import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
 import io.spring.concourse.artifactoryresource.command.payload.OutRequest;
 import io.spring.concourse.artifactoryresource.command.payload.OutRequest.Params;
+import io.spring.concourse.artifactoryresource.io.Directory;
+import io.spring.concourse.artifactoryresource.io.DirectoryScanner;
 import io.spring.concourse.artifactoryresource.command.payload.Source;
 import org.junit.Before;
 import org.junit.Rule;

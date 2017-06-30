@@ -26,6 +26,8 @@ import io.spring.concourse.artifactoryresource.command.payload.InRequest;
 import io.spring.concourse.artifactoryresource.command.payload.InResponse;
 import io.spring.concourse.artifactoryresource.command.payload.Source;
 import io.spring.concourse.artifactoryresource.command.payload.Version;
+import io.spring.concourse.artifactoryresource.io.Directory;
+import io.spring.concourse.artifactoryresource.maven.MavenMetadataGenerator;
 
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;

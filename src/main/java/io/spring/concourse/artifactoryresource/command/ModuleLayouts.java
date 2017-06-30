@@ -17,8 +17,8 @@
 package io.spring.concourse.artifactoryresource.command;
 
 import io.spring.concourse.artifactoryresource.artifactory.BuildModulesGenerator;
-import io.spring.concourse.artifactoryresource.artifactory.MavenBuildModulesGenerator;
 import io.spring.concourse.artifactoryresource.command.payload.OutRequest.Params;
+import io.spring.concourse.artifactoryresource.maven.MavenBuildModulesGenerator;
 
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;

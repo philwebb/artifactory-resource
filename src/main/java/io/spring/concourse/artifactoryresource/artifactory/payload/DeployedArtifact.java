@@ -50,9 +50,9 @@ public class DeployedArtifact {
 			@JsonProperty("name") String name, @JsonProperty("path") String path,
 			@JsonProperty("type") String type, @JsonProperty("size") long size,
 			@JsonProperty("created") Date created,
-			@JsonProperty("created_by") String createdBy,
+			@JsonProperty("created-by") String createdBy,
 			@JsonProperty("modified") Date modified,
-			@JsonProperty("modified_by") String modifiedBy,
+			@JsonProperty("modified-by") String modifiedBy,
 			@JsonProperty("updated") Date updated) {
 		Assert.hasText(repo, "Repo must not be empty");
 		Assert.hasText(name, "Name must not be empty");

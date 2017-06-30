@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.command;
+package io.spring.concourse.artifactoryresource.io;
 
 import java.io.File;
 
+import io.spring.concourse.artifactoryresource.io.Directory;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

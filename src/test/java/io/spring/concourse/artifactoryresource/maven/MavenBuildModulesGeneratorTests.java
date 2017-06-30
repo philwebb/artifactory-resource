@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.artifactory;
+package io.spring.concourse.artifactoryresource.maven;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +23,7 @@ import io.spring.concourse.artifactoryresource.artifactory.payload.BuildArtifact
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableByteArrayArtifact;
+import io.spring.concourse.artifactoryresource.maven.MavenBuildModulesGenerator;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

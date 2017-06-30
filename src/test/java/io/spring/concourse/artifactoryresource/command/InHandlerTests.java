@@ -26,6 +26,8 @@ import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryServer;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifact;
 import io.spring.concourse.artifactoryresource.command.payload.InRequest;
 import io.spring.concourse.artifactoryresource.command.payload.InRequest.Params;
+import io.spring.concourse.artifactoryresource.io.Directory;
+import io.spring.concourse.artifactoryresource.maven.MavenMetadataGenerator;
 import io.spring.concourse.artifactoryresource.command.payload.InResponse;
 import io.spring.concourse.artifactoryresource.command.payload.Source;
 import io.spring.concourse.artifactoryresource.command.payload.Version;

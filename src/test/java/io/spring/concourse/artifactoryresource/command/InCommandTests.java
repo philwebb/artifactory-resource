@@ -20,6 +20,7 @@ import java.io.File;
 
 import io.spring.concourse.artifactoryresource.command.payload.InRequest;
 import io.spring.concourse.artifactoryresource.command.payload.InResponse;
+import io.spring.concourse.artifactoryresource.io.Directory;
 import io.spring.concourse.artifactoryresource.system.SystemInput;
 import io.spring.concourse.artifactoryresource.system.SystemOutput;
 import org.junit.Before;

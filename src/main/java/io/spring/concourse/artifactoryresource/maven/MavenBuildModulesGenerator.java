@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.artifactory;
+package io.spring.concourse.artifactoryresource.maven;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.spring.concourse.artifactoryresource.artifactory.BuildModulesGenerator;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildArtifact;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
 import io.spring.concourse.artifactoryresource.artifactory.payload.Checksums;
