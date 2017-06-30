@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.springframework.util.FileCopyUtils;
 
 /**
  * Read input from {@link SystemStreams#in()} (dealing with timeouts).
@@ -39,25 +40,26 @@ public class SystemInput {
 
 	private static final long TIMEOUT = TimeUnit.SECONDS.toMillis(1);
 
+	private final Environment environment;
+
 	private final SystemStreams systemStreams;
 
 	private final ObjectMapper objectMapper;
 
-	private final Environment environment;
-
 	private final long timeout;
 
 	@Autowired
-	public SystemInput(SystemStreams systemStreams, ObjectMapper objectMapper, Environment environment) {
-		this(systemStreams, objectMapper, TIMEOUT, environment);
+	public SystemInput(Environment environment, SystemStreams systemStreams,
+			ObjectMapper objectMapper) {
+		this(environment, systemStreams, objectMapper, TIMEOUT);
 	}
 
-	protected SystemInput(SystemStreams systemStreams, ObjectMapper objectMapper,
-			long timeout, Environment environment) {
+	protected SystemInput(Environment environment, SystemStreams systemStreams,
+			ObjectMapper objectMapper, long timeout) {
+		this.environment = environment;
 		this.systemStreams = systemStreams;
 		this.objectMapper = objectMapper;
 		this.timeout = timeout;
-		this.environment = environment;
 	}
 
 	public <T> T read(Class<T> type) throws IOException {
@@ -68,17 +70,9 @@ public class SystemInput {
 			Assert.state(System.currentTimeMillis() - startTime < this.timeout,
 					"Timeout waiting for input");
 		}
-		String resolved = resolvePlaceholders(in);
+		String content = FileCopyUtils.copyToString(in);
+		String resolved = this.environment.resolvePlaceholders(content);
 		return this.objectMapper.readValue(resolved, type);
-	}
-
-	private String resolvePlaceholders(BufferedReader in) throws IOException {
-		StringBuilder inputString = new StringBuilder();
-		String s;
-		while ((s = in.readLine()) != null) {
-			inputString.append(s);
-		}
-		return this.environment.resolvePlaceholders(inputString.toString());
 	}
 
 }

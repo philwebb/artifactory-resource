@@ -46,8 +46,8 @@ public class SystemInputTests {
 
 	@Test
 	public void readWhenNoDataShouldTimeout() throws Exception {
-		SystemInput input = new SystemInput(new MockSystemStreams(""),
-				new ObjectMapper(), 10, this.environment);
+		SystemInput input = new SystemInput(this.environment, new MockSystemStreams(""),
+				new ObjectMapper(), 10);
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("Timeout waiting for input");
 		input.read(String[].class);
@@ -55,8 +55,8 @@ public class SystemInputTests {
 
 	@Test
 	public void readShouldDeserialize() throws Exception {
-		SystemInput input = new SystemInput(
-				new MockSystemStreams("[\"foo\",\"bar\"]"), new ObjectMapper(), this.environment);
+		SystemInput input = new SystemInput(this.environment,
+				new MockSystemStreams("[\"foo\",\"bar\"]"), new ObjectMapper());
 		String[] result = input.read(String[].class);
 		assertThat(result).containsExactly("foo", "bar");
 	}
@@ -64,8 +64,8 @@ public class SystemInputTests {
 	@Test
 	public void readShouldResolvePlaceholders() throws Exception {
 		this.environment.setProperty("bar", "hello-world");
-		SystemInput input = new SystemInput(
-				new MockSystemStreams("[\"foo\",\"${bar}\"]"), new ObjectMapper(), this.environment);
+		SystemInput input = new SystemInput(this.environment,
+				new MockSystemStreams("[\"foo\",\"${bar}\"]"), new ObjectMapper());
 		String[] result = input.read(String[].class);
 		assertThat(result).containsExactly("foo", "hello-world");
 	}
