@@ -88,7 +88,7 @@ public class InCommandTests {
 		given(this.handler.handle(eq(request), any())).willReturn(response);
 		File tempFolder = this.temporaryFolder.newFolder();
 		String dir = StringUtils.cleanPath(tempFolder.getPath());
-		this.command.run(new DefaultApplicationArguments(new String[] { dir }));
+		this.command.run(new DefaultApplicationArguments(new String[] { "in", dir }));
 		verify(this.handler).handle(eq(request), this.directoryCaptor.capture());
 		verify(this.systemOutput).write(response);
 		assertThat(this.directoryCaptor.getValue().getFile()).isEqualTo(tempFolder);

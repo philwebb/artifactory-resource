@@ -18,7 +18,6 @@ package io.spring.concourse.artifactoryresource.io;
 
 import java.io.File;
 
-import io.spring.concourse.artifactoryresource.io.Directory;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -121,7 +120,7 @@ public class DirectoryTests {
 		File file = this.temporaryFolder.newFolder();
 		String path = StringUtils.cleanPath(file.getPath());
 		ApplicationArguments args = new DefaultApplicationArguments(
-				new String[] { path });
+				new String[] { "in", path });
 		Directory directory = Directory.fromArgs(args);
 		assertThat(directory.getFile()).isEqualTo(file);
 	}

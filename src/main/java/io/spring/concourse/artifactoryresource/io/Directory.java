@@ -78,8 +78,8 @@ public class Directory {
 
 	public static Directory fromArgs(ApplicationArguments args) {
 		List<String> nonOptionArgs = args.getNonOptionArgs();
-		Assert.state(nonOptionArgs.size() >= 1, "No directory argument specified");
-		return new Directory(nonOptionArgs.get(0));
+		Assert.state(nonOptionArgs.size() >= 2, "No directory argument specified");
+		return new Directory(nonOptionArgs.get(1));
 	}
 
 }
