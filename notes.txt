@@ -1,9 +1,0 @@
-
-
-http://localhost:8081/artifactory/api/search/aql
-
-items.find({
-	"repo": "libs-snapshot-local",
-	"@build.name": "spring-boot-project",
-	"@build.number": "1497045926802"
-})
