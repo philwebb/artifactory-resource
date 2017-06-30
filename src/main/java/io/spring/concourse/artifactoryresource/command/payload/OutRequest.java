@@ -83,7 +83,6 @@ public class OutRequest {
 				@JsonProperty("include ") List<String> include,
 				@JsonProperty("exclude") List<String> exclude,
 				@JsonProperty("build_uri") String buildUri) {
-			Assert.hasText(buildNumber, "Build Number must not be empty");
 			Assert.hasText(repo, "Repo must not be empty");
 			Assert.hasText(folder, "Folder must not be empty");
 			this.buildNumber = buildNumber;

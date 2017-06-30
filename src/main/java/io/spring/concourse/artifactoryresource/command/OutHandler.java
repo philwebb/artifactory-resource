@@ -25,6 +25,7 @@ import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryBuildRuns;
 import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryRepository;
 import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryServer;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
+import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
 import io.spring.concourse.artifactoryresource.command.payload.OutRequest;
 import io.spring.concourse.artifactoryresource.command.payload.OutRequest.Params;
 import io.spring.concourse.artifactoryresource.command.payload.OutResponse;
@@ -32,6 +33,7 @@ import io.spring.concourse.artifactoryresource.command.payload.Source;
 import io.spring.concourse.artifactoryresource.command.payload.Version;
 
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 /**
  * Delegate used to handle operations triggered from the {@link OutCommand}.
@@ -44,14 +46,17 @@ public class OutHandler {
 
 	private final Artifactory artifactory;
 
-	public OutHandler(Artifactory artifactory) {
+	private BuildNumberGenerator buildNumberGenerator;
+
+	public OutHandler(Artifactory artifactory,
+			BuildNumberGenerator buildNumberGenerator) {
 		this.artifactory = artifactory;
 	}
 
 	public OutResponse handle(OutRequest request, Directory directory) {
 		Source source = request.getSource();
 		Params params = request.getParams();
-		String buildNumber = params.getBuildNumber();
+		String buildNumber = getOrGenerateBuildNumber(params);
 		ArtifactoryServer artifactoryServer = getArtifactoryServer(source);
 		ArtifactoryRepository artifactoryRepository = artifactoryServer
 				.repository(params.getRepo());
@@ -59,9 +64,21 @@ public class OutHandler {
 				.buildRuns(source.getBuildName());
 		List<File> files = directory.subFolder(params.getFolder())
 				.scan(params.getInclude(), params.getExclude());
+		List<DeployableArtifact> deployableArtifact = getDeployableArtifact(files);
 		List<BuildModule> modules = Collections.emptyList();
 		artifactoryBuildRuns.add(buildNumber, params.getBuildUri(), modules);
 		return new OutResponse(new Version(buildNumber));
+	}
+
+	private List<DeployableArtifact> getDeployableArtifact(List<File> files) {
+		throw new UnsupportedOperationException("Auto-generated method stub");
+	}
+
+	private String getOrGenerateBuildNumber(Params params) {
+		if (StringUtils.hasLength(params.getBuildNumber())) {
+			return params.getBuildNumber();
+		}
+		return this.buildNumberGenerator.generateBuildNumber();
 	}
 
 	private ArtifactoryServer getArtifactoryServer(Source source) {
