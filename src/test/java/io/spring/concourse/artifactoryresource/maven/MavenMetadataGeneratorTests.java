@@ -16,10 +16,16 @@
 
 package io.spring.concourse.artifactoryresource.maven;
 
-import org.junit.Ignore;
+import java.io.File;
+import java.io.IOException;
+
+import io.spring.concourse.artifactoryresource.io.Directory;
+import io.spring.concourse.artifactoryresource.io.DirectoryScanner;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
+import org.springframework.util.FileCopyUtils;
 
 /**
  * Tests for {@link MavenMetadataGenerator}.
@@ -27,15 +33,20 @@ import org.junit.rules.TemporaryFolder;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-@Ignore
 public class MavenMetadataGeneratorTests {
 
+	private static final byte[] NO_BYTES = {};
+
 	@Rule
-	public TemporaryFolder temporaryFolder;
+	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+	private MavenMetadataGenerator generator = new MavenMetadataGenerator(
+			new DirectoryScanner());
 
 	@Test
 	public void generateWhenUsingNonSnapshotShouldCreateMetadata() throws Exception {
-
+		Directory directory = createStructure("1.0.0-RELEASE");
+		this.generator.generate(directory);
 	}
 
 	@Test
@@ -47,6 +58,30 @@ public class MavenMetadataGeneratorTests {
 	public void generateWhenUsingSnapshotTimestampShouldCreateMetadata()
 			throws Exception {
 
+	}
+
+	private Directory createStructure(String version) throws IOException {
+		return createStructure(version, version);
+	}
+
+	private Directory createStructure(String folderVersion, String fileVersion)
+			throws IOException {
+		Directory root = new Directory(this.temporaryFolder.newFolder());
+		String prefix = "com/example/project/my-project/";
+		add(root, prefix + folderVersion + "/my-project-" + fileVersion + ".pom");
+		add(root, prefix + folderVersion + "/my-project-" + fileVersion + ".jar");
+		add(root, prefix + folderVersion + "/my-project-" + fileVersion + ".asc");
+		add(root, prefix + folderVersion + "/my-project-" + fileVersion + ".sha");
+		add(root, prefix + folderVersion + "/my-project-" + fileVersion + ".md5");
+		add(root, prefix + folderVersion + "/my-project-" + fileVersion + "-sources.jar");
+		add(root, prefix + folderVersion + "/other" + fileVersion + ".jar");
+		return root;
+	}
+
+	private void add(Directory root, String path) throws IOException {
+		File file = new File(root.getFile(), path);
+		file.getParentFile().mkdirs();
+		FileCopyUtils.copy(NO_BYTES, file);
 	}
 
 }
