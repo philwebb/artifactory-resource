@@ -42,10 +42,9 @@ public class InRequest {
 			@JsonProperty("params") Params params) {
 		Assert.notNull(source, "Source must not be null");
 		Assert.notNull(version, "Version must not be null");
-		Assert.notNull(params, "Params must not be null");
 		this.source = source;
 		this.version = version;
-		this.params = params;
+		this.params = (params == null ? new Params() : params);
 	}
 
 	public Source getSource() {
@@ -69,6 +68,10 @@ public class InRequest {
 	public static class Params {
 
 		private final boolean generateMavenMetadata;
+
+		public Params() {
+			this(null);
+		}
 
 		@JsonCreator
 		public Params(

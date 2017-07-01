@@ -65,10 +65,9 @@ public class InRequestTests {
 	}
 
 	@Test
-	public void createWhenParamsIsNullShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Params must not be null");
-		new InRequest(this.source, this.version, null);
+	public void createWhenParamsIsNullShouldUseDefauls() throws Exception {
+		InRequest request = new InRequest(this.source, this.version, null);
+		assertThat(request.getParams().isGenerateMavenMetadata()).isTrue();
 	}
 
 	@Test

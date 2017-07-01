@@ -62,7 +62,6 @@ resources:
 
 #### Params
 
-* `build_number`: *Required.* The build number to fetch
 * `generate_maven_metadata`: If maven meta-data should be regenerated
 
 
