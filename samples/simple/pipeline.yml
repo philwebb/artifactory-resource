@@ -33,4 +33,5 @@ jobs:
   - name: test
     plan:
       - get: artifactory
+        trigger: true
         passed: [build]
