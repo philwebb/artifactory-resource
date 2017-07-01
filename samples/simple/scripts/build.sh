@@ -1,5 +1,4 @@
 #!/bin/sh
 
-mkdir test/foo
-touch test/foo/bar.jar
-echo bar < test/foo/bar.jar
+mkdir -p test/org/example/foo/bar/1.0.0
+touch test/org/example/foo/bar/1.0.0/bar-1.0.0.jar
