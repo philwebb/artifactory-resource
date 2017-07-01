@@ -26,10 +26,9 @@ jobs:
         file: git-repo/samples/simple/tasks/build.yml
       - put: artifactory
         params:
-          repo: example-repo-local
+          repo: libs-snapshot-local
           build_number: ${BUILD_ID}
           folder: test
-          include: "*"
           build_url: http://192.168.100.4:8080/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}
   - name: test
     plan:
