@@ -59,7 +59,7 @@ public interface ArtifactoryRepository {
 	 * @param destination the destination folder.
 	 */
 	default void download(DeployedArtifact artifact, File destination) {
-		download(artifact.getPath(), destination);
+		download(artifact.getPath() + "/" + artifact.getName(), destination);
 	}
 
 	/**
