@@ -18,14 +18,21 @@ package io.spring.concourse.artifactoryresource.maven;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.util.function.Predicate;
 
 import io.spring.concourse.artifactoryresource.io.Directory;
 import io.spring.concourse.artifactoryresource.io.DirectoryScanner;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.xmlunit.builder.DiffBuilder;
+import org.xmlunit.builder.Input;
+import org.xmlunit.diff.Diff;
 
 import org.springframework.util.FileCopyUtils;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link MavenMetadataGenerator}.
@@ -44,20 +51,35 @@ public class MavenMetadataGeneratorTests {
 			new DirectoryScanner());
 
 	@Test
-	public void generateWhenUsingNonSnapshotShouldCreateMetadata() throws Exception {
-		Directory directory = createStructure("1.0.0-RELEASE");
+	public void generateWhenUsingNonSnapshotShouldNotCreateMetadata() throws Exception {
+		Directory directory = createStructure("1.0.0.RELEASE");
 		this.generator.generate(directory);
+		File file = new File(directory.toString()
+				+ "/com/example/project/my-project/1.0.0.RELEASE/maven-metadata.xml");
+		assertThat(file).doesNotExist();
 	}
 
 	@Test
 	public void generateWhenUsingSnapshotShouldCreateMetadata() throws Exception {
-
+		Directory directory = createStructure("1.0.0.BUILD-SNAPSHOT");
+		this.generator.generate(directory);
+		File file = new File(directory.toString()
+				+ "/com/example/project/my-project/1.0.0.BUILD-SNAPSHOT/maven-metadata.xml");
+		URL expected = getClass().getResource("generate-when-using-snapshot.xml");
+		assertThat(file).exists().matches(xmlContent(expected));
 	}
 
 	@Test
 	public void generateWhenUsingSnapshotTimestampShouldCreateMetadata()
 			throws Exception {
-
+		Directory directory = createStructure("1.0.0.BUILD-SNAPSHOT",
+				"1.0.0.BUILD-20170626.200218-328");
+		this.generator.generate(directory);
+		File file = new File(directory.toString()
+				+ "/com/example/project/my-project/1.0.0.BUILD-SNAPSHOT/maven-metadata.xml");
+		URL expected = getClass()
+				.getResource("generate-when-using-snapshot-timestamp.xml");
+		assertThat(file).exists().matches(xmlContent(expected));
 	}
 
 	private Directory createStructure(String version) throws IOException {
@@ -82,6 +104,19 @@ public class MavenMetadataGeneratorTests {
 		File file = new File(root.getFile(), path);
 		file.getParentFile().mkdirs();
 		FileCopyUtils.copy(NO_BYTES, file);
+	}
+
+	private Predicate<File> xmlContent(URL expected) {
+		return (actual) -> {
+			Diff diff = DiffBuilder.compare(Input.from(expected))
+					.withTest(Input.from(actual)).checkForSimilar().ignoreWhitespace()
+					.build();
+			if (diff.hasDifferences()) {
+				System.out.println(diff);
+				return false;
+			}
+			return true;
+		};
 	}
 
 }

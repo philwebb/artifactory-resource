@@ -17,6 +17,9 @@
 package io.spring.concourse.artifactoryresource.maven;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -24,12 +27,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import io.spring.concourse.artifactoryresource.io.Directory;
 import io.spring.concourse.artifactoryresource.io.DirectoryScanner;
 import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.SnapshotVersion;
 import org.apache.maven.artifact.repository.metadata.Versioning;
+import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Writer;
 
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -84,59 +89,56 @@ public class MavenMetadataGenerator {
 				&& StringUtils.getFilename(file.getName()).startsWith(prefix);
 	}
 
-	private void writeMetadata(File folder, List<Coordinates> coordinatesList) {
-		Metadata metadata = new Metadata();
-		Versioning versioning = new Versioning();
-		for (Coordinates coordinates : coordinatesList) {
-			SnapshotVersion snapshotVersion = new SnapshotVersion();
-			versioning.addSnapshotVersion(snapshotVersion);
+	private void writeMetadata(File folder, List<Coordinates> coordinates) {
+		List<SnapshotVersion> snapshotVersions = getSnapshotVersionMetadata(coordinates);
+		if (!snapshotVersions.isEmpty()) {
+			Metadata metadata = new Metadata();
+			Versioning versioning = new Versioning();
+			versioning.setSnapshotVersions(snapshotVersions);
+			metadata.setVersioning(versioning);
+			metadata.setGroupId(coordinates.get(0).getGroupId());
+			metadata.setArtifactId(coordinates.get(0).getArtifactId());
+			metadata.setVersion(coordinates.get(0).getVersion());
+			writeMetadataFile(metadata, new File(folder, "maven-metadata.xml"));
 		}
-		metadata.setVersioning(versioning);
 	}
 
-	// FIXME
+	private List<SnapshotVersion> getSnapshotVersionMetadata(
+			List<Coordinates> coordinates) {
+		return coordinates.stream().filter(Coordinates::isSnapshotVersion)
+				.map(this::asSnapshotVersionMetadata)
+				.collect(Collectors.toCollection(ArrayList::new));
+	}
 
-	/*
-	 * org/springframework/boot/spring-boot/1.5.5.BUILD-SNAPSHOT/
-	 *
-	 * maven-metadata.xml
-	 *
-	 *
-	 * <metadata
-	 * modelVersion="1.1.0"><groupId>org.springframework.boot</groupId><artifactId>
-	 * spring-boot</artifactId><version>1.5.5.BUILD-SNAPSHOT</version><versioning><
-	 * snapshot><timestamp>20170629.183538</timestamp><buildNumber>27</buildNumber></
-	 * snapshot><lastUpdated>20170629192731</lastUpdated><snapshotVersions><
-	 * snapshotVersion><classifier>javadoc</classifier><extension>jar</extension><
-	 * value>1.5.5.BUILD-20170629.183538-27</value><updated>20170629183538</updated></
-	 * snapshotVersion><snapshotVersion><classifier>sources</classifier><extension>jar
-	 * </extension><value>1.5.5.BUILD-20170629.183538-27</value><updated>
-	 * 20170629183538</updated></snapshotVersion><snapshotVersion><extension>jar</
-	 * extension><value>1.5.5.BUILD-20170629.183538-27</value><updated>20170629183538<
-	 * /updated></snapshotVersion><snapshotVersion><extension>pom</extension><value>1.
-	 * 5.5.BUILD-20170629.183538-27</value><updated>20170629183538</updated></
-	 * snapshotVersion></snapshotVersions></versioning></metadata>
-	 *
-	 *
-	 */
-	//
-	// Metadata metadata = new Metadata();
-	// metadata.setGroupId("");
-	// metadata.setArtifactId("");
-	// metadata.setVersion("");
-	// Versioning versioning = new Versioning();
-	// SnapshotVersion snapshotVersion = new SnapshotVersion();
-	// snapshotVersion.setClassifier("");
-	// snapshotVersion.setExtension("");
-	// snapshotVersion.setVersion("");
-	// versioning.addSnapshotVersion(snapshotVersion);
-	// metadata.setVersioning(versioning);
-	//
+	private SnapshotVersion asSnapshotVersionMetadata(Coordinates coordinates) {
+		SnapshotVersion snapshotVersion = new SnapshotVersion();
+		snapshotVersion.setClassifier(coordinates.getClassifier());
+		snapshotVersion.setExtension(coordinates.getExtension());
+		snapshotVersion.setVersion(coordinates.getSnapshotVersion());
+		return snapshotVersion;
+	}
+
+	private void writeMetadataFile(Metadata metadata, File file) {
+		try {
+			MetadataXpp3Writer writer = new MetadataXpp3Writer();
+			try (FileOutputStream outputStream = new FileOutputStream(file)) {
+				writer.write(outputStream, metadata);
+			}
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException(ex);
+		}
+	}
 
 	private static class Coordinates {
 
 		private static final Pattern FOLDER_PATTERN = Pattern
 				.compile("(.*)\\/(.*)\\/(.*)\\/(.*)");
+
+		private static final String SNAPSHOT_VERSION = "SNAPSHOT";
+
+		private static final Pattern VERSION_FILE_PATTERN = Pattern
+				.compile("^(.*)-([0-9]{8}.[0-9]{6})-([0-9]+)$");
 
 		private final String groupId;
 
@@ -168,6 +170,37 @@ public class MavenMetadataGenerator {
 			this.classifier = (snapshotVersionAndClassifier.length() > 1
 					? snapshotVersionAndClassifier.substring(1) : "");
 			this.snapshotVersion = prefix.substring(this.artifactId.length() + 1);
+		}
+
+		public String getGroupId() {
+			return this.groupId;
+		}
+
+		public String getArtifactId() {
+			return this.artifactId;
+		}
+
+		public String getVersion() {
+			return this.version;
+		}
+
+		public String getClassifier() {
+			return this.classifier;
+		}
+
+		public String getExtension() {
+			return this.extension;
+		}
+
+		public String getSnapshotVersion() {
+			return this.snapshotVersion;
+		}
+
+		public boolean isSnapshotVersion() {
+			return (this.version.regionMatches(true,
+					this.version.length() - SNAPSHOT_VERSION.length(), SNAPSHOT_VERSION,
+					0, SNAPSHOT_VERSION.length())
+					|| VERSION_FILE_PATTERN.matcher(this.version).matches());
 		}
 
 		@Override
