@@ -61,6 +61,9 @@ public class OutRequest {
 				.append("params", this.params).toString();
 	}
 
+	/**
+	 * Parameters for the {@link OutRequest}.
+	 */
 	public static class Params {
 
 		@JsonProperty("build_number")

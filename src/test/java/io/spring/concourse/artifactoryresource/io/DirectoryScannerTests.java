@@ -21,8 +21,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import io.spring.concourse.artifactoryresource.io.Directory;
-import io.spring.concourse.artifactoryresource.io.DirectoryScanner;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;

@@ -29,10 +29,20 @@ import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArt
  * @author Phillip Webb
  * @author Madhura Bhave
  */
+@FunctionalInterface
 public interface BuildModulesGenerator {
 
+	/**
+	 * {@link BuildModulesGenerator} that always returns an empty list.
+	 */
 	BuildModulesGenerator NONE = ((a) -> Collections.emptyList());
 
+	/**
+	 * Generate {@link BuildModule BuildModules} for the specified
+	 * {@link DeployableArtifact DeployableArtifacts}.
+	 * @param deployableArtifacts the deployable artifacts
+	 * @return a list of build modules (never {@code null})
+	 */
 	List<BuildModule> getBuildModules(List<DeployableArtifact> deployableArtifacts);
 
 }

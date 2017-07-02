@@ -30,7 +30,7 @@ public class HttpArtifactory implements Artifactory {
 
 	private final RestTemplateBuilder restTemplateBuilder;
 
-	public HttpArtifactory(RestTemplateBuilder restTemplateBuilder) {
+	HttpArtifactory(RestTemplateBuilder restTemplateBuilder) {
 		this.restTemplateBuilder = restTemplateBuilder;
 	}
 

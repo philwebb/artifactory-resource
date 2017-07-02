@@ -44,6 +44,7 @@ import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.boot.test.web.client.MockServerRestTemplateCustomizer;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -52,10 +53,6 @@ import org.springframework.test.web.client.RequestMatcher;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.http.HttpMethod.PUT;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -102,7 +99,8 @@ public class HttpArtifactoryBuildRunsTests {
 	@Test
 	public void addShouldAddBuildInfo() throws Exception {
 		this.server.expect(requestTo("http://repo.example.com/api/build"))
-				.andExpect(method(PUT)).andExpect(content().contentType(APPLICATION_JSON))
+				.andExpect(method(HttpMethod.PUT))
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonContent(getResource("payload/build-info.json")))
 				.andRespond(withSuccess());
 		ContinuousIntegrationAgent agent = new ContinuousIntegrationAgent("Concourse",
@@ -122,9 +120,9 @@ public class HttpArtifactoryBuildRunsTests {
 	@Test
 	public void getAllShouldReturnBuildRuns() throws Exception {
 		this.server.expect(requestTo("http://repo.example.com/api/build/my-build"))
-				.andExpect(method(GET))
+				.andExpect(method(HttpMethod.GET))
 				.andRespond(withSuccess(getResource("payload/build-runs-response.json"),
-						APPLICATION_JSON));
+						MediaType.APPLICATION_JSON));
 		List<BuildRun> runs = this.artifactoryBuildRuns.getAll();
 		assertThat(runs).hasSize(2);
 		assertThat(runs.get(0).getUri()).isEqualTo("/1234");
@@ -135,11 +133,11 @@ public class HttpArtifactoryBuildRunsTests {
 	public void fetchAllShouldFetchArtifactsCorrespondingToBuildAndRepo()
 			throws Exception {
 		String url = "http://repo.example.com/api/search/aql";
-		this.server.expect(requestTo(url)).andExpect(method(POST))
+		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.POST))
 				.andExpect(content().contentType(MediaType.TEXT_PLAIN))
 				.andExpect(aqlContent("my-build", "1234"))
 				.andRespond(withSuccess(getResource("payload/deployed-artifacts.json"),
-						APPLICATION_JSON));
+						MediaType.APPLICATION_JSON));
 		List<DeployedArtifact> artifacts = this.artifactoryBuildRuns
 				.getDeployedArtifacts("1234");
 		assertThat(artifacts).hasSize(1);

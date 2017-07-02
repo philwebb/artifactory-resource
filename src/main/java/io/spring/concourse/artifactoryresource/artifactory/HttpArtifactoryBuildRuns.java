@@ -86,8 +86,8 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 	@Override
 	public List<DeployedArtifact> getDeployedArtifacts(String buildNumber) {
 		Assert.notNull(buildNumber, "Build number must not be null");
-		URI uri = UriComponentsBuilder.fromUriString(this.uri)
-				.path("/api/search/aql").build(NO_VARIABLES);
+		URI uri = UriComponentsBuilder.fromUriString(this.uri).path("/api/search/aql")
+				.build(NO_VARIABLES);
 		RequestEntity<String> request = RequestEntity.post(uri)
 				.contentType(MediaType.TEXT_PLAIN)
 				.body(buildFetchQuery(this.buildName, buildNumber));

@@ -45,7 +45,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-class HttpArtifactoryRepository implements ArtifactoryRepository {
+public class HttpArtifactoryRepository implements ArtifactoryRepository {
 
 	private static final MediaType BINARY_OCTET_STREAM = MediaType
 			.parseMediaType("binary/octet-stream");
@@ -97,8 +97,8 @@ class HttpArtifactoryRepository implements ArtifactoryRepository {
 	}
 
 	private BodyBuilder deployRequest(DeployableArtifact artifact) throws IOException {
-		URI uri = UriComponentsBuilder.fromUriString(this.uri)
-				.path(this.repositoryName).path(artifact.getPath())
+		URI uri = UriComponentsBuilder.fromUriString(this.uri).path(this.repositoryName)
+				.path(artifact.getPath())
 				.path(buildMatrixParams(artifact.getProperties())).build(NO_VARIABLES);
 		Checksums checksums = artifact.getChecksums();
 		return RequestEntity.put(uri).contentType(BINARY_OCTET_STREAM)
@@ -120,8 +120,8 @@ class HttpArtifactoryRepository implements ArtifactoryRepository {
 	@Override
 	public void download(String path, File destination) {
 		Assert.hasLength(path, "Path must not be empty");
-		URI uri = UriComponentsBuilder.fromUriString(this.uri)
-				.path(this.repositoryName).path("/" + path).build(NO_VARIABLES);
+		URI uri = UriComponentsBuilder.fromUriString(this.uri).path(this.repositoryName)
+				.path("/" + path).build(NO_VARIABLES);
 		ResponseExtractor<Void> responseExtractor = (response) -> {
 			Path fullPath = destination.toPath().resolve(path);
 			Files.createDirectories(fullPath.getParent());

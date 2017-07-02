@@ -23,7 +23,6 @@ import io.spring.concourse.artifactoryresource.artifactory.payload.BuildArtifact
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableByteArrayArtifact;
-import io.spring.concourse.artifactoryresource.maven.MavenBuildModulesGenerator;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

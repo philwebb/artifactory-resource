@@ -152,7 +152,7 @@ public class MavenMetadataGenerator {
 
 		private final String snapshotVersion;
 
-		public Coordinates(Directory root, File file, String prefix) {
+		Coordinates(Directory root, File file, String prefix) {
 			String rootPath = StringUtils.cleanPath(root.getFile().getPath());
 			String relativePath = StringUtils.cleanPath(file.getPath())
 					.substring(rootPath.length() + 1);

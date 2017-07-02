@@ -40,7 +40,7 @@ public class MockSystemStreams extends SystemStreams {
 
 		private final ByteArrayOutputStream byteArrayOutputStream;
 
-		public ByteArrayPrintStream() {
+		ByteArrayPrintStream() {
 			super(new ByteArrayOutputStream());
 			this.byteArrayOutputStream = (ByteArrayOutputStream) this.out;
 		}

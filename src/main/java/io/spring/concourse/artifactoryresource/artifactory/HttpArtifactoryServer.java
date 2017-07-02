@@ -25,7 +25,7 @@ import org.springframework.web.client.RestTemplate;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-class HttpArtifactoryServer implements ArtifactoryServer {
+public class HttpArtifactoryServer implements ArtifactoryServer {
 
 	private final String uri;
 

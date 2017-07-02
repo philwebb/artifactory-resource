@@ -65,6 +65,9 @@ public class InRequest {
 				.append("version", this.version).append("params", this.params).toString();
 	}
 
+	/**
+	 * Parameters for the {@link InRequest}.
+	 */
 	public static class Params {
 
 		private final boolean generateMavenMetadata;

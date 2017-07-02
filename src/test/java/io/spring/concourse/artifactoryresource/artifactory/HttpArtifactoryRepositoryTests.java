@@ -34,14 +34,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.boot.test.web.client.MockServerRestTemplateCustomizer;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -90,7 +89,7 @@ public class HttpArtifactoryRepositoryTests {
 		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar",
 				"foo".getBytes());
 		String url = "http://repo.example.com/libs-snapshot-local/foo/bar.jar";
-		this.server.expect(requestTo(url)).andExpect(method(PUT))
+		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT))
 				.andExpect(header("X-Checksum-Deploy", "true"))
 				.andExpect(header("X-Checksum-Sha1", artifact.getChecksums().getSha1()))
 				.andRespond(withStatus(HttpStatus.NOT_FOUND));
@@ -117,7 +116,7 @@ public class HttpArtifactoryRepositoryTests {
 		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar",
 				"foo".getBytes());
 		String url = "http://repo.example.com/libs-snapshot-local/foo/bar.jar";
-		this.server.expect(requestTo(url)).andExpect(method(PUT))
+		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT))
 				.andExpect(header("X-Checksum-Deploy", "true"))
 				.andExpect(header("X-Checksum-Sha1", artifact.getChecksums().getSha1()))
 				.andRespond(withSuccess());
@@ -128,7 +127,7 @@ public class HttpArtifactoryRepositoryTests {
 	@Test
 	public void downloadShouldFetchArtifactAndWriteToFile() throws Exception {
 		String url = "http://repo.example.com/libs-snapshot-local/foo/bar.jar";
-		this.server.expect(requestTo(url)).andExpect(method(GET))
+		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.GET))
 				.andRespond(withSuccess(new ByteArrayResource(new byte[] {}),
 						MediaType.APPLICATION_OCTET_STREAM));
 		File destination = this.temporaryFolder.newFolder();
