@@ -69,4 +69,5 @@ public class SystemInputTests {
 		String[] result = input.read(String[].class);
 		assertThat(result).containsExactly("foo", "hello-world");
 	}
+
 }

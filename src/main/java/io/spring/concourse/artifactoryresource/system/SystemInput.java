@@ -19,6 +19,7 @@ package io.spring.concourse.artifactoryresource.system;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.util.concurrent.TimeUnit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -72,7 +73,7 @@ public class SystemInput {
 		}
 		String content = FileCopyUtils.copyToString(in);
 		String resolved = this.environment.resolvePlaceholders(content);
-		return this.objectMapper.readValue(resolved, type);
+		return this.objectMapper.readValue(new StringReader(resolved), type);
 	}
 
 }
