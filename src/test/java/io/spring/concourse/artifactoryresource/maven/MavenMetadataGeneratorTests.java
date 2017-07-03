@@ -112,7 +112,13 @@ public class MavenMetadataGeneratorTests {
 					.withTest(Input.from(actual)).checkForSimilar().ignoreWhitespace()
 					.build();
 			if (diff.hasDifferences()) {
-				throw new AssertionError(diff.toString());
+				try {
+					String content = new String(FileCopyUtils.copyToByteArray(actual));
+					throw new AssertionError(diff.toString() + "\n" + content);
+				}
+				catch (IOException ex) {
+					throw new IllegalStateException(ex);
+				}
 			}
 		};
 	}
