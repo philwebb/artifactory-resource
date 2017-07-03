@@ -40,9 +40,14 @@ public class BuildNumberGeneratorTests {
 				.parse("2011-12-03T10:15:30+00:00", DateTimeFormatter.ISO_DATE_TIME)
 				.toInstant(ZoneOffset.UTC);
 		Clock clock = Clock.fixed(fixedInstant, ZoneOffset.UTC);
-		System.out.println(clock.instant());
 		String buildNumber = new BuildNumberGenerator(clock).generateBuildNumber();
-		assertThat(buildNumber).isEqualTo("20111203101530000000");
+		assertThat(buildNumber).isEqualTo("20111203101530000000000");
+	}
+
+	@Test
+	public void generateBuildNumberShouldWorkWithRealClock() throws Exception {
+		String buildNumber = new BuildNumberGenerator().generateBuildNumber();
+		assertThat(buildNumber).isNotNull().hasSize(23);
 	}
 
 }
