@@ -215,6 +215,7 @@ public class MavenMetadataGenerator {
 			return Comparator.comparing(Coordinates::getGroupId)
 					.thenComparing(Coordinates::getArtifactId)
 					.thenComparing(Coordinates::getVersion)
+					.thenComparing(Coordinates::getExtension)
 					.thenComparing(Coordinates::getClassifier).compare(this, o);
 		}
 
