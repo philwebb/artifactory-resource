@@ -10,5 +10,8 @@ image_resource:
 inputs:
 - name: artifactory-resource
 
+caches:
+- path: root/.m2
+
 run:
   path: artifactory-resource/ci/scripts/build.sh
