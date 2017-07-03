@@ -1,0 +1,14 @@
+resources:
+- name: artifactory-resource
+  type: git
+  source:
+    uri: https://github.com/philwebb/artifactory-resource
+    branch: master
+
+jobs:
+- name: build
+  plan:
+  - get: artifactory-resource
+    trigger: true
+  - task: build
+    file: artifactory-resource/ci/tasks/build.yml
