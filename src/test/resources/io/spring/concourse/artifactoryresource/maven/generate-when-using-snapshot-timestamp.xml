@@ -6,16 +6,16 @@
 	<versioning>
 		<snapshotVersions>
 			<snapshotVersion>
-				<classifier>sources</classifier>
-				<extension>jar</extension>
-				<value>1.0.0.BUILD-20170626.200218-328</value>
-			</snapshotVersion>
-			<snapshotVersion>
 				<extension>jar</extension>
 				<value>1.0.0.BUILD-20170626.200218-328</value>
 			</snapshotVersion>
 			<snapshotVersion>
 				<extension>pom</extension>
+				<value>1.0.0.BUILD-20170626.200218-328</value>
+			</snapshotVersion>
+			<snapshotVersion>
+				<classifier>sources</classifier>
+				<extension>jar</extension>
 				<value>1.0.0.BUILD-20170626.200218-328</value>
 			</snapshotVersion>
 		</snapshotVersions>

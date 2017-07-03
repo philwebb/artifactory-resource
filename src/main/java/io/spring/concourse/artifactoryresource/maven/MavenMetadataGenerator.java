@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -105,7 +106,7 @@ public class MavenMetadataGenerator {
 
 	private List<SnapshotVersion> getSnapshotVersionMetadata(
 			List<Coordinates> coordinates) {
-		return coordinates.stream().filter(Coordinates::isSnapshotVersion)
+		return coordinates.stream().filter(Coordinates::isSnapshotVersion).sorted()
 				.map(this::asSnapshotVersionMetadata)
 				.collect(Collectors.toCollection(ArrayList::new));
 	}
@@ -130,7 +131,7 @@ public class MavenMetadataGenerator {
 		}
 	}
 
-	private static class Coordinates {
+	private static class Coordinates implements Comparable<Coordinates> {
 
 		private static final Pattern FOLDER_PATTERN = Pattern
 				.compile("(.*)\\/(.*)\\/(.*)\\/(.*)");
@@ -207,6 +208,14 @@ public class MavenMetadataGenerator {
 		public String toString() {
 			return this.groupId + ":" + this.artifactId + ":" + this.version + ":"
 					+ this.classifier + ":" + this.version + ":" + this.snapshotVersion;
+		}
+
+		@Override
+		public int compareTo(Coordinates o) {
+			return Comparator.comparing(Coordinates::getGroupId)
+					.thenComparing(Coordinates::getArtifactId)
+					.thenComparing(Coordinates::getVersion)
+					.thenComparing(Coordinates::getClassifier).compare(this, o);
 		}
 
 	}
