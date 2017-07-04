@@ -30,29 +30,45 @@ import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArt
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableByteArrayArtifact;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifact;
 import io.spring.concourse.artifactoryresource.command.BuildNumberGenerator;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests run against a real artifactory instance.
+ * Integration tests against a real artifactory instance started using Docker Compose.
  *
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class IntegrationTestRun {
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@ActiveProfiles("test")
+public class ApplicationIT {
 
-	private TemporaryFolder temporaryFolder;
+	@ClassRule
+	public static ArtifactoryServerConnection connection = new ArtifactoryServerConnection();
 
-	public IntegrationTestRun(TemporaryFolder temporaryFolder) {
-		this.temporaryFolder = temporaryFolder;
-	}
+	@Rule
+	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-	public void run(ArtifactoryServer server) throws Exception {
+	@Autowired
+	private Artifactory artifactory;
+
+	@Test
+	public void integrationTest() throws Exception {
 		String buildNumber = generateBuildNumber();
-		ArtifactoryRepository artifactoryRepository = server
+		ArtifactoryRepository artifactoryRepository = getServer()
 				.repository("example-repo-local");
-		ArtifactoryBuildRuns artifactoryBuildRuns = server.buildRuns("my-build");
+		ArtifactoryBuildRuns artifactoryBuildRuns = getServer().buildRuns("my-build");
 		deployArtifact(artifactoryRepository, buildNumber);
 		addBuildRun(artifactoryBuildRuns, buildNumber);
 		getBuildRuns(artifactoryBuildRuns, buildNumber);
@@ -98,6 +114,10 @@ public class IntegrationTestRun {
 		File folder = this.temporaryFolder.newFolder();
 		artifactoryRepository.download(results, folder);
 		assertThat(new File(folder, "foo/bar")).hasContent("foo");
+	}
+
+	private ArtifactoryServer getServer() {
+		return ApplicationIT.connection.getArtifactoryServer(this.artifactory);
 	}
 
 }
