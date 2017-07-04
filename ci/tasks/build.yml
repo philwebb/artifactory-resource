@@ -11,7 +11,7 @@ inputs:
 - name: artifactory-resource
 
 outputs:
-- name: artifactory-resource
+- name: artifactory-resource-build
 
 caches:
 - path: m2

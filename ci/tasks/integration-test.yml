@@ -8,6 +8,7 @@ image_resource:
     tag: 5.4.2
 
 inputs:
+- name: artifactory-resource
 - name: artifactory-resource-build
 
 caches:
