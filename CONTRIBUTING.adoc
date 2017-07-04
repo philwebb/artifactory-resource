@@ -51,10 +51,7 @@ Other IDEs and tools should also work without issue.
 To build the source you will need to install JDK 1.8.
 The project can be build with http://maven.apache.org/run-maven/index.html[Apache Maven] v3.5 or above (the Maven wrapper is included if you don't already have Maven installed).
 
-
-
-==== Default build
-The project can be built from the root directory using the standard maven command:
+The project can be built from the root directory using the standard Maven command:
 
 [indent=0]
 ----
@@ -67,7 +64,21 @@ If you are rebuilding often, you might also want to skip the tests until you are
 
 [indent=0]
 ----
-	$ ./mvnw clean install -DskipTests
+	$ ./mvnw clean install -DskipTests -DskipITs
+----
+
+==== Integration tests
+Docker compose is required for the integration tests that run as part of the default build.
+If you don't have Docker installer, or you just want to skip the tests you can build using the `-DskipITs` option.
+
+It's also possible to build using a locally downloaded copy of Artifactory.
+This is helpful when you're building the project on a system that cannot run docker compose, but it does mean you need to ensure port 8081 is free.
+
+To run with a locally downloaded artifactory use the `run-local-artifactory` profile:
+
+[indent=0]
+----
+	$ ./mvnw -Prun-local-artifactory clean install
 ----
 
 
