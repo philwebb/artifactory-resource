@@ -5,13 +5,10 @@ image_resource:
   type: docker-image
   source:
     repository: openjdk
-    tag: 8u131-jdk-alpine
+    tag: 8u131-jdk
 
 inputs:
 - name: artifactory-resource
-
-outputs:
-- name: artifactory-resource-build
 
 caches:
 - path: m2
