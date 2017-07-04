@@ -11,7 +11,7 @@ inputs:
 - name: artifactory-resource
 
 caches:
-- path: root/.m2
+- path: m2
 
 run:
   path: artifactory-resource/ci/scripts/build.sh
