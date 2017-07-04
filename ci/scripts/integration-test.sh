@@ -1,0 +1,4 @@
+#!/bin/sh
+
+mkdir -p m2 && ln -s "$(pwd)/m2" ~/.m2
+

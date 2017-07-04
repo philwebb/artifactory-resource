@@ -12,3 +12,5 @@ jobs:
     trigger: true
   - task: build
     file: artifactory-resource/ci/tasks/build.yml
+  - task: integration-test
+    file: artifactory-resource/ci/tasks/build.yml

@@ -4,17 +4,14 @@ platform: linux
 image_resource:
   type: docker-image
   source:
-    repository: openjdk
-    tag: 8u131-jdk-alpine
+    repository: docker.bintray.io:443/jfrog/artifactory-oss
+    tag: 5.4.2
 
 inputs:
-- name: artifactory-resource
-
-outputs:
 - name: artifactory-resource-build
 
 caches:
 - path: m2
 
 run:
-  path: artifactory-resource/ci/scripts/build.sh
+  path: artifactory-resource/ci/scripts/integration-test.sh
