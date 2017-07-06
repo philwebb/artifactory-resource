@@ -4,8 +4,27 @@ resources:
   source:
     uri: https://github.com/philwebb/artifactory-resource
     branch: master
+    ignore_paths: [ci/**]
+- name: git-docker-resource
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/philwebb/artifactory-resource
+    paths: [ci/dockerfiles/jdk-netstat/Dockerfile]
+- name: artifactory-resource-ci-image
+  type: docker-image
+  source:
+    repository: {{REPOSITORY}}
+    username: {{USERNAME}}
+    password: {{PASSWORD}}
 
 jobs:
+- name: build-image
+  plan:
+  - get: git-docker-resource
+    trigger: true
+  - put: artifactory-resource-ci-image
+    params: {build: git-docker-resource/ci/dockerfiles/jdk-netstat}
 - name: build
   plan:
   - get: artifactory-resource
