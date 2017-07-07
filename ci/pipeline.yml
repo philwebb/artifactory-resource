@@ -17,9 +17,23 @@ resources:
     repository: {{REPOSITORY}}
     username: {{USERNAME}}
     password: {{PASSWORD}}
+- name: artifactory-resource-image-snapshot
+  type: docker-image
+  source:
+    repository: {{REPOSITORY}}
+    username: {{USERNAME}}
+    password: {{PASSWORD}}
+    tag: {{SNAPSHOT-VERSION}}
+- name: artifactory-resource-image-release
+  type: docker-image
+  source:
+    repository: {{REPOSITORY}}
+    username: {{USERNAME}}
+    password: {{PASSWORD}}
+    tag: {{RELEASE-VERSION}}
 
 jobs:
-- name: build-image
+- name: build-ci-image
   plan:
   - get: git-docker-resource
     trigger: true
@@ -31,3 +45,23 @@ jobs:
     trigger: true
   - task: build
     file: artifactory-resource/ci/tasks/build.yml
+  - put: artifactory-resource-image-snapshot
+    params: {build: artifactory-resource}
+- name: release
+  plan:
+  - get: artifactory-resource
+    passed: [build]
+    trigger: false
+  - task: build-release-jar
+    file: artifactory-resource/ci/tasks/build-release-jar.yml
+    params:
+      release-version: {{RELEASE-VERSION}}
+  - put: artifactory-resource-image-release
+    params: {build: artifactory-resource}
+  - task: github-release
+    file: artifactory-resource/ci/tasks/github-release.yml
+    params:
+      release-version: {{RELEASE-VERSION}}
+      snapshot-version: {{SNAPSHOT-VERSION}}
+
+

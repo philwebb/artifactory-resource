@@ -2,5 +2,7 @@
 
 mkdir -p m2 && ln -s "$(pwd)/m2" ~/.m2
 
-cd artifactory-resource
-./mvnw install -Prun-local-artifactory
+pushd artifactory-resource
+	./mvnw install -Prun-local-artifactory
+popd
+cp artifactory-resource/target/artifactory-resource-*.jar generated-artifact
