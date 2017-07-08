@@ -9,9 +9,6 @@ image_resource:
 inputs:
 - name: artifactory-resource
 
-outputs:
-- name: generated-artifact
-
 caches:
 - path: m2
 

@@ -4,7 +4,7 @@ resources:
   source:
     uri: https://github.com/philwebb/artifactory-resource
     branch: master
-    ignore_paths: [ci/**]
+    ignore_paths: [ci/dockerfiles/jdk-netstat/Dockerfile]
 - name: git-docker-resource
   type: git
   source:
@@ -14,7 +14,7 @@ resources:
 - name: artifactory-resource-ci-image
   type: docker-image
   source:
-    repository: {{REPOSITORY}}
+    repository: {{CI_REPOSITORY}}
     username: {{USERNAME}}
     password: {{PASSWORD}}
 - name: artifactory-resource-image-snapshot
