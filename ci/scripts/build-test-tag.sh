@@ -29,5 +29,6 @@ sed -ie "s|<revision>.*</revision>|<revision>$snapshot_version</revision>|" pom.
 git add pom.xml
 git commit --message "v$snapshot_version Development"
 
+cd ..
 cp artifactory-resource/target/artifactory-resource-*.jar generated-artifact
 cp -r artifactory-resource artifactory-resource-updated
