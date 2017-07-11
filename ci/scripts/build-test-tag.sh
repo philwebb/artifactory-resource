@@ -22,7 +22,7 @@ patch=$(echo $version | cut -d'.' -f 3)
 #bump
 snapshot_version=$major.$minor.$((patch+1))-SNAPSHOT
 git reset --hard HEAD^1
-.sed -ie 's|<revision>.*</revision>|<revision>$snapshot_version</revision>|' pom.xml
+sed -ie 's|<revision>.*</revision>|<revision>$snapshot_version</revision>|' pom.xml
 git add pom.xml
 git commit --message "v$snapshot_version Development"
 
