@@ -6,18 +6,14 @@ image_resource:
   source:
     repository: springio/artifactory-resource-ci
 
-params:
-  RELEASE_VERSION: release-version
-
 inputs:
 - name: artifactory-resource
 
 outputs:
-- name: generated-artifact
-- name: artifactory-resource-updated
+- name: version
 
 caches:
 - path: m2
 
 run:
-  path: artifactory-resource/ci/scripts/update-version.sh
+  path: artifactory-resource/ci/scripts/get-version.sh

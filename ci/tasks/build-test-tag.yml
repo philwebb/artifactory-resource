@@ -8,13 +8,14 @@ image_resource:
 
 inputs:
 - name: artifactory-resource
+- name: version
 
 outputs:
 - name: generated-artifact
-- name: snapshot-version
+- name: artifactory-resource-updated
 
 caches:
 - path: m2
 
 run:
-  path: artifactory-resource/ci/scripts/build.sh
+  path: artifactory-resource/ci/scripts/build-test-tag.sh
