@@ -77,42 +77,42 @@ The first job deploys built artifacts and the second job retrieves and runs test
 .Example pipeline
 ----
 resource_types:
-  - name: artifactory-resource
-    type: docker-image
-    source: {repository: springio/artifactory-resource, tag: latest}
+- name: artifactory-resource
+  type: docker-image
+  source: {repository: springio/artifactory-resource, tag: latest}
 
 resources:
-  - name: git-repo
-    type: git
-    source:
-      uri: https://git.example.com/my-org/my-project
-      branch: master
-  - name: artifactory
-    type: artifactory-resource
-    source:
-      uri: {{ARTIFACTORY_URI}}
-      username: {{USERNAME}}
-      password: {{PASSWORD}}
-      build_name: my-project-build
+- name: git-repo
+  type: git
+  source:
+    uri: https://git.example.com/my-org/my-project
+    branch: master
+- name: artifactory
+  type: artifactory-resource
+  source:
+    uri: {{ARTIFACTORY_URI}}
+    username: {{USERNAME}}
+    password: {{PASSWORD}}
+    build_name: my-project-build
 
 jobs:
-  - name: build
-    plan:
-      - get: git-repo
-        trigger: true
-      - task: build
-        file: git-repo/samples/simple/tasks/build.yml
-      - put: artifactory
-        params:
-          repo: libs-snapshot-local
-          build_number: ${BUILD_ID}
-          folder: test
-          build_url: {{CONCOURSE_URI}}/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}
-  - name: test
-    plan:
-      - get: artifactory
-        trigger: true
-        passed: [build]
+- name: build
+  plan:
+  - get: git-repo
+    trigger: true
+  - task: build
+    file: git-repo/samples/simple/tasks/build.yml
+  - put: artifactory
+    params:
+      repo: libs-snapshot-local
+      build_number: "${BUILD_ID}"
+      folder: test
+      build_url: "{{CONCOURSE_URI}}/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}"
+- name: test
+  plan:
+  - get: artifactory
+    trigger: true
+    passed: [build]
 ----
 
 
