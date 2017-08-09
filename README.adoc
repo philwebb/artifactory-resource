@@ -159,3 +159,25 @@ Build modules will be also automatically added when dealing with a Maven style d
 * `include`: A list of Ant style patterns for the files to include
 * `exclude`: A list of Ant style patterns for the files to exclude
 * `build_uri`: The URL back to the concourse build (e.g. `+++https://my.concourse.url/builds/${BUILD_ID}+++`)
+* `artifact_set`: Additional configuration for a subset of the artifacts (see below)
+
+The `artifact_set` parameter can be used to apply specific additional configuration to a subset of artifacts.
+You create sets based on `include` and `exclude` Ant patterns, then apply any of the following additional configuration:
+
+* `properties`: A map of name/value pairs that will be added as artifactory properties.
+
+Here's a typical example:
+
+[source,yaml]
+.Artifact sets
+----
+params:
+  artifact-set:
+  - include:
+    - "**/*.zip"
+    exclude:
+    - "**/foo.zip"
+    properties:
+      zip-type: docs
+      zip-deployed: false
+----
