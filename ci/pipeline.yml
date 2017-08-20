@@ -19,4 +19,4 @@ jobs:
     trigger: true
   - put: ci-images-docker-registry
     params:
-      build: git-docker-resource/ci/dockerfiles/artifactory-resource-ci-image
+      build: git-docker-resource/ci/images/artifactory-resource-ci-image
