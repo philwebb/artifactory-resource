@@ -1,11 +1,11 @@
-#!/bin/sh
+#!/bin/bash
+set -e
 
-mkdir -p m2 && ln -s "$(pwd)/m2" ~/.m2
+source $(dirname $0)/common.sh
 
-cd artifactory-resource
-	current=$(xmllint --xpath '/*[local-name()="project"]/*[local-name()="properties"]/*[local-name()="revision"]/text()' pom.xml)
-	./mvnw install -Prun-local-artifactory
-cd ..
-echo $current > snapshot-version/version
-echo "Current version is $current"
-cp artifactory-resource/target/artifactory-resource-*.jar generated-artifact
+setup_symlinks
+cleanup_maven_repo
+
+pushd git-repo > /dev/null
+run_maven clean install -Prun-local-artifactory
+popd > /dev/null

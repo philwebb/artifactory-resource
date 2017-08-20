@@ -1,4 +1,10 @@
 resources:
+- name: git-repo
+  type: git
+  source:
+    uri: https://github.com/philwebb/artifactory-resource
+    branch: master
+    ignore_paths: ["ci/images/*"]
 - name: ci-images-git-repo
   type: git
   source:
@@ -19,4 +25,10 @@ jobs:
     trigger: true
   - put: ci-images-docker-registry
     params:
-      build: git-docker-resource/ci/images/artifactory-resource-ci-image
+      build: ci-images-git-repo/ci/images/artifactory-resource-ci-image
+- name: build
+  plan:
+  - get: git-repo
+    trigger: true
+  - task: build
+    file: git-repo/ci/tasks/build.yml
