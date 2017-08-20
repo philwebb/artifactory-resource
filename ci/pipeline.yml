@@ -14,14 +14,15 @@ resources:
 - name: ci-images-docker-registry
   type: docker-image
   source:
-    repository: springci/artifactory-resource-build
+    repository: springci/artifactory-resource-ci-image
+    tag: master
     username: {{docker-hub-username}}
     password: {{docker-hub-password}}
 jobs:
-- name: build-ci-images
+- name: build-artifactory-resource-ci-image
   plan:
   - get: ci-images-git-repo
     trigger: true
   - put: ci-images-docker-registry
     params:
-      build: git-docker-resource/ci/dockerfiles/jdk-netstat
+      build: git-docker-resource/ci/dockerfiles/artifactory-resource-ci-image
