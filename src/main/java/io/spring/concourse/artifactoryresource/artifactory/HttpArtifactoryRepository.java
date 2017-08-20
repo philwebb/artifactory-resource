@@ -99,7 +99,8 @@ public class HttpArtifactoryRepository implements ArtifactoryRepository {
 	private BodyBuilder deployRequest(DeployableArtifact artifact) throws IOException {
 		URI uri = UriComponentsBuilder.fromUriString(this.uri).path(this.repositoryName)
 				.path(artifact.getPath())
-				.path(buildMatrixParams(artifact.getProperties())).build(NO_VARIABLES);
+				.path(buildMatrixParams(artifact.getProperties()))
+				.buildAndExpand(NO_VARIABLES).encode().toUri();
 		Checksums checksums = artifact.getChecksums();
 		return RequestEntity.put(uri).contentType(BINARY_OCTET_STREAM)
 				.header("X-Checksum-Sha1", checksums.getSha1())
@@ -121,7 +122,7 @@ public class HttpArtifactoryRepository implements ArtifactoryRepository {
 	public void download(String path, File destination) {
 		Assert.hasLength(path, "Path must not be empty");
 		URI uri = UriComponentsBuilder.fromUriString(this.uri).path(this.repositoryName)
-				.path("/" + path).build(NO_VARIABLES);
+				.path("/" + path).buildAndExpand(NO_VARIABLES).encode().toUri();
 		ResponseExtractor<Void> responseExtractor = (response) -> {
 			Path fullPath = destination.toPath().resolve(path);
 			Files.createDirectories(fullPath.getParent());

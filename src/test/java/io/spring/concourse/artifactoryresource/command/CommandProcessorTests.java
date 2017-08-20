@@ -25,8 +25,8 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.DefaultApplicationArguments;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;

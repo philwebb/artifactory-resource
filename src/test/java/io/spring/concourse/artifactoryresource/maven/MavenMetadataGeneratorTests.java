@@ -19,10 +19,10 @@ package io.spring.concourse.artifactoryresource.maven;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.function.Consumer;
 
 import io.spring.concourse.artifactoryresource.io.Directory;
 import io.spring.concourse.artifactoryresource.io.DirectoryScanner;
+import org.assertj.core.api.Condition;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -66,7 +66,7 @@ public class MavenMetadataGeneratorTests {
 		File file = new File(directory.toString()
 				+ "/com/example/project/my-project/1.0.0.BUILD-SNAPSHOT/maven-metadata.xml");
 		URL expected = getClass().getResource("generate-when-using-snapshot.xml");
-		assertThat(file).exists().satisfies(xmlContent(expected));
+		assertThat(file).exists().has(xmlContent(expected));
 	}
 
 	@Test
@@ -79,7 +79,7 @@ public class MavenMetadataGeneratorTests {
 				+ "/com/example/project/my-project/1.0.0.BUILD-SNAPSHOT/maven-metadata.xml");
 		URL expected = getClass()
 				.getResource("generate-when-using-snapshot-timestamp.xml");
-		assertThat(file).exists().satisfies(xmlContent(expected));
+		assertThat(file).exists().has(xmlContent(expected));
 	}
 
 	private Directory createStructure(String version) throws IOException {
@@ -106,20 +106,27 @@ public class MavenMetadataGeneratorTests {
 		FileCopyUtils.copy(NO_BYTES, file);
 	}
 
-	private Consumer<File> xmlContent(URL expected) {
-		return (actual) -> {
-			Diff diff = DiffBuilder.compare(Input.from(expected))
-					.withTest(Input.from(actual)).checkForSimilar().ignoreWhitespace()
-					.build();
-			if (diff.hasDifferences()) {
-				try {
-					String content = new String(FileCopyUtils.copyToByteArray(actual));
-					throw new AssertionError(diff.toString() + "\n" + content);
+	private Condition<File> xmlContent(URL expected) {
+		return new Condition<File>("XML Content") {
+
+			@Override
+			public boolean matches(File actual) {
+				Diff diff = DiffBuilder.compare(Input.from(expected))
+						.withTest(Input.from(actual)).checkForSimilar().ignoreWhitespace()
+						.build();
+				if (diff.hasDifferences()) {
+					try {
+						String content = new String(
+								FileCopyUtils.copyToByteArray(actual));
+						throw new AssertionError(diff.toString() + "\n" + content);
+					}
+					catch (IOException ex) {
+						throw new IllegalStateException(ex);
+					}
 				}
-				catch (IOException ex) {
-					throw new IllegalStateException(ex);
-				}
+				return true;
 			}
+
 		};
 	}
 

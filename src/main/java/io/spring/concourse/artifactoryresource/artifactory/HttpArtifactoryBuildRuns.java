@@ -68,7 +68,7 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 
 	private void add(BuildInfo buildInfo) {
 		URI uri = UriComponentsBuilder.fromUriString(this.uri).path("api/build")
-				.build(NO_VARIABLES);
+				.buildAndExpand(NO_VARIABLES).encode().toUri();
 		RequestEntity<BuildInfo> request = RequestEntity.put(uri)
 				.contentType(MediaType.APPLICATION_JSON).body(buildInfo);
 		ResponseEntity<Void> exchange = this.restTemplate.exchange(request, Void.class);
@@ -78,7 +78,8 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 	@Override
 	public List<BuildRun> getAll() {
 		URI uri = UriComponentsBuilder.fromUriString(this.uri)
-				.path("api/build/{buildName}").build(this.buildName);
+				.path("api/build/{buildName}").buildAndExpand(this.buildName).encode()
+				.toUri();
 		return this.restTemplate.getForObject(uri, BuildRunsResponse.class)
 				.getBuildsRuns();
 	}
@@ -87,7 +88,7 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 	public List<DeployedArtifact> getDeployedArtifacts(String buildNumber) {
 		Assert.notNull(buildNumber, "Build number must not be null");
 		URI uri = UriComponentsBuilder.fromUriString(this.uri).path("/api/search/aql")
-				.build(NO_VARIABLES);
+				.buildAndExpand(NO_VARIABLES).encode().toUri();
 		RequestEntity<String> request = RequestEntity.post(uri)
 				.contentType(MediaType.TEXT_PLAIN)
 				.body(buildFetchQuery(this.buildName, buildNumber));

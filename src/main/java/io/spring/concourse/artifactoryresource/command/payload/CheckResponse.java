@@ -33,7 +33,6 @@ import org.springframework.util.Assert;
  */
 public class CheckResponse {
 
-	@JsonValue
 	private final List<Version> versions;
 
 	@JsonCreator
@@ -42,6 +41,7 @@ public class CheckResponse {
 		this.versions = Collections.unmodifiableList(versions);
 	}
 
+	@JsonValue
 	public List<Version> getVersions() {
 		return this.versions;
 	}

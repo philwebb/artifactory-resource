@@ -94,7 +94,7 @@ public class CheckHandlerTests {
 		CheckResponse response = this.handler.handle(request);
 		Stream<String> buildsNumbers = response.getVersions().stream()
 				.map(Version::getBuildNumber);
-		assertThat(buildsNumbers).containsExactly("4");
+		assertThat(buildsNumbers.toArray()).containsExactly("4");
 	}
 
 	@Test
@@ -106,7 +106,7 @@ public class CheckHandlerTests {
 		CheckResponse response = this.handler.handle(request);
 		Stream<String> buildsNumbers = response.getVersions().stream()
 				.map(Version::getBuildNumber);
-		assertThat(buildsNumbers).containsExactly("2", "3", "4");
+		assertThat(buildsNumbers.toArray()).containsExactly("2", "3", "4");
 	}
 
 	@Test
@@ -118,7 +118,7 @@ public class CheckHandlerTests {
 		CheckResponse response = this.handler.handle(request);
 		Stream<String> buildsNumbers = response.getVersions().stream()
 				.map(Version::getBuildNumber);
-		assertThat(buildsNumbers).containsExactly("4");
+		assertThat(buildsNumbers.toArray()).containsExactly("4");
 	}
 
 	@Test
@@ -129,7 +129,7 @@ public class CheckHandlerTests {
 		CheckResponse response = this.handler.handle(request);
 		Stream<String> buildsNumbers = response.getVersions().stream()
 				.map(Version::getBuildNumber);
-		assertThat(buildsNumbers).containsExactly("4");
+		assertThat(buildsNumbers.toArray()).containsExactly("4");
 	}
 
 }
