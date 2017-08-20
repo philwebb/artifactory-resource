@@ -1,4 +1,14 @@
 resources:
+- name: git-repo
+  type: git
+  source:
+    uri: https://github.com/philwebb/artifactory-resource
+    branch: master
+    ignore_paths: ["ci/images/*"]
+
+
+
+resources:
 - name: artifactory-resource
   type: git
   source:

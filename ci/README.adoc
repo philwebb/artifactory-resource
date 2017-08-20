@@ -1,0 +1,1 @@
+fly -t spring set-pipeline -p artifactory-resource -c ci/pipeline.yml
