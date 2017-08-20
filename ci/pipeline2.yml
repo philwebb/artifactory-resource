@@ -1,0 +1,67 @@
+resources:
+- name: artifactory-resource
+  type: git
+  source:
+    uri: https://github.com/philwebb/artifactory-resource
+    branch: master
+    ignore_paths: ["ci/images/*"]
+- name: images
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/philwebb/artifactory-resource
+    paths: ["ci/images/*"]
+- name: artifactory-resource-image
+  type: docker-image
+  source:
+    repository: {{CI_REPOSITORY}}
+    username: {{USERNAME}}
+    password: {{PASSWORD}}
+- name: artifactory-resource-snapshot-image
+  type: docker-image
+  source:
+    repository: {{REPOSITORY}}
+    username: {{USERNAME}}
+    password: {{PASSWORD}}
+    tag: {{SNAPSHOT-VERSION}}
+- name: artifactory-resource-release-image
+  type: docker-image
+  source:
+    repository: {{REPOSITORY}}
+    username: {{USERNAME}}
+    password: {{PASSWORD}}
+    tag: {{RELEASE-VERSION}}
+jobs:
+- name: build-images
+  plan:
+  - get: images
+    trigger: true
+  - put: artifactory-resource-image
+    params:
+      build: git-docker-resource/ci/dockerfiles/jdk-netstat
+- name: build
+  plan:
+  - get: artifactory-resource
+    trigger: true
+  - task: build
+    file: artifactory-resource/ci/tasks/build.yml
+  - put: artifactory-resource-image-snapshot
+    params: {build: artifactory-resource}
+- name: release
+  plan:
+  - get: artifactory-resource
+    passed: [build]
+    trigger: false
+  - task: build-release-jar
+    file: artifactory-resource/ci/tasks/build-release-jar.yml
+    params:
+      release-version: {{RELEASE-VERSION}}
+  - put: artifactory-resource-image-release
+    params: {build: artifactory-resource}
+  - task: github-release
+    file: artifactory-resource/ci/tasks/github-release.yml
+    params:
+      release-version: {{RELEASE-VERSION}}
+      snapshot-version: {{SNAPSHOT-VERSION}}
+
+
