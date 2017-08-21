@@ -42,5 +42,4 @@ jobs:
     params:
       build: git-repo
       build_args:
-        root: git-repo2
         jar:  built-artifact/artifactory-resource.jar
