@@ -9,3 +9,5 @@ cleanup_maven_repo
 pushd git-repo > /dev/null
 run_maven clean install -Prun-local-artifactory
 popd > /dev/null
+
+cp git-repo/target/artifactory-resource.jar built-artifact
