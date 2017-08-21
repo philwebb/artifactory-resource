@@ -40,7 +40,8 @@ jobs:
     file: git-repo/ci/tasks/build.yml
   - put: artifactory-resource-image
     params:
-      build: git-repo
+      build: .
+      dockerfile: git-repo/Dockerfile
       build_args:
         root: git-repo
         jar:  built-artifact/artifactory-resource.jar
