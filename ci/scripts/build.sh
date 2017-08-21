@@ -7,7 +7,7 @@ setup_symlinks
 cleanup_maven_repo
 
 pushd git-repo > /dev/null
-run_maven clean install -Prun-local-artifactory
+run_maven clean install -Prun-local-artifactory -DskipTests
 popd > /dev/null
 
 cp git-repo/target/artifactory-resource.jar built-artifact/
