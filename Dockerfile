@@ -1,5 +1,8 @@
 FROM openjdk:8-jdk-alpine
 
-ADD artifactory-resource/assets/ /opt/resource/
-ADD generated-artifact/* /artifact/
+ARG checkout=.
+ARG jar=target/artifactory-resource.jar
+
+ADD ${checkout}/assets/ /opt/resource/
+ADD ${jar} /artifact/artifactory-resource.jar
 RUN chmod +x /opt/resource/check /opt/resource/in /opt/resource/out

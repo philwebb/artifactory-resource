@@ -66,6 +66,7 @@
 		</dependency>
 	</dependencies>
 	<build>
+		<finalName>artifactory-resource</finalName>
 		<pluginManagement>
 			<plugins>
 				<plugin>
