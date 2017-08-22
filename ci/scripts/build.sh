@@ -7,8 +7,9 @@ setup_symlinks
 cleanup_maven_repo
 
 pushd git-repo > /dev/null
+version=$(xmllint --xpath '/*[local-name()="project"]/*[local-name()="properties"]/*[local-name()="revision"]/text()' pom.xml)
 run_maven clean install -Prun-local-artifactory -DskipTests
 popd > /dev/null
 
 cp git-repo/target/artifactory-resource.jar built-artifact/
-ls -l built-artifact
+echo $version > built-artifact/version

@@ -42,6 +42,7 @@ jobs:
     params:
       build: .
       dockerfile: git-repo/Dockerfile
+      tag: built-artifact/version
       build_args:
         root: git-repo
         jar:  built-artifact/artifactory-resource.jar
