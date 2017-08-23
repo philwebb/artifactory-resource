@@ -46,3 +46,18 @@ jobs:
       build_args:
         root: git-repo
         jar:  built-artifact/artifactory-resource.jar
+- name: release
+  plan:
+  - get: git-repo
+    passed: [build]
+    trigger: false
+  - task: release
+    file: artifactory-resource/ci/tasks/release.yml
+  - put: artifactory-resource-image
+    params:
+      build: .
+      dockerfile: git-repo/Dockerfile
+      tag: built-artifact/version
+      build_args:
+        root: git-repo
+        jar:  built-artifact/artifactory-resource.jar
