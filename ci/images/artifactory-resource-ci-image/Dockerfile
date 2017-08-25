@@ -5,4 +5,4 @@ RUN apt-get update && \
     apt-get -y install libxml2-utils && \
     apt-get install -y git
 
-ADD https://raw.githubusercontent.com/philwebb/concourse-java-scripts/c62b882385b426e0d2d1d54b6825bcc5551b3dcc/concourse-java.sh /opt/
+ADD https://raw.githubusercontent.com/philwebb/concourse-java-scripts/79a456d7ec8d6c866ec199369493c55bc905d745/concourse-java.sh /opt/
