@@ -10,6 +10,6 @@ inputs:
 outputs:
 - name: built-artifact
 caches:
-- path: m2
+- path: maven
 run:
   path: git-repo/ci/scripts/build.sh
