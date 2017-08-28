@@ -6,7 +6,7 @@ source $(dirname $0)/common.sh
 pushd git-repo > /dev/null
 snapshotVersion=$( get_revision_from_pom )
 releaseVersion=$( strip_snapshot_suffix "$snapshotVersion" )
-nextVersion=$( bump_version "$snapshotVersion" )
+nextVersion=$( bump_version_number "$snapshotVersion" )
 echo "Releasing $releaseVersion (next SNAPSHOT will be $nextVersion)"
 set_revision_to_pom "$releaseVersion"
 git config user.name "Spring Buildmaster"
