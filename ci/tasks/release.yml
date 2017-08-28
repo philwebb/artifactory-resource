@@ -12,4 +12,4 @@ outputs:
 caches:
 - path: maven
 run:
-  path: git-repo/ci/scripts/build.sh
+  path: git-repo/ci/scripts/release.sh
