@@ -63,3 +63,11 @@ jobs:
       build_args:
         root: git-repo
         jar:  built-artifact/artifactory-resource.jar
+groups:
+- name: "Artifactory Resource"
+  jobs:
+  - build
+  - release
+- name: "CI Images"
+  jobs:
+  - build-artifactory-resource-ci-image
