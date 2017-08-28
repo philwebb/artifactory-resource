@@ -15,6 +15,7 @@ git add pom.xml
 git commit -m"Release v$releaseVersion"
 git tag -a "v$releaseVersion" -m"Release version v$releaseVersion"
 build
+echo "Setting next development version (v$nextVersion)"
 git reset --hard HEAD^1
 set_revision_to_pom "$nextVersion"
 git add pom.xml
