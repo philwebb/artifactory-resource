@@ -20,9 +20,7 @@ git reset --hard HEAD^1
 set_revision_to_pom "$nextVersion"
 git add pom.xml
 git commit -m"Next development version (v$releaseVersion)"
-echo "default login $username password $password" > $HOME/.netrc
 popd > /dev/null
 
 cp git-repo/target/artifactory-resource.jar built-artifact/
 echo $releaseVersion > built-artifact/version
-build
