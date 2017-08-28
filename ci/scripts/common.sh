@@ -5,6 +5,4 @@ build() {
 }
 
 setup_symlinks
-echo "Setup cache symlinks"
 cleanup_maven_repo "io.spring.concourse.artifactoryresource"
-echo "Cleaned local m2 repo"
