@@ -3,7 +3,9 @@ set -e
 
 source $(dirname $0)/common.sh
 
-pushd git-repo > /dev/null
+git clone git-repo release-git-repo
+
+pushd updated-git-repo > /dev/null
 git branch
 snapshotVersion=$( get_revision_from_pom )
 releaseVersion=$( strip_snapshot_suffix "$snapshotVersion" )
@@ -21,7 +23,8 @@ git reset --hard HEAD^
 set_revision_to_pom "$nextVersion"
 git add pom.xml
 git commit -m"Next development version (v$releaseVersion)"
+git show HEAD
 popd > /dev/null
 
-cp git-repo/target/artifactory-resource.jar built-artifact/
+cp release-git-repo/target/artifactory-resource.jar built-artifact/
 echo $releaseVersion > built-artifact/version

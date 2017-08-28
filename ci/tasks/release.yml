@@ -8,6 +8,7 @@ image_resource:
 inputs:
 - name: git-repo
 outputs:
+- name: release-git-repo
 - name: built-artifact
 caches:
 - path: maven
