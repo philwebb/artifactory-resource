@@ -54,7 +54,7 @@ jobs:
     passed: [build]
     trigger: false
   - task: release
-    file: artifactory-resource/ci/tasks/release.yml
+    file: git-repo/ci/tasks/release.yml
   - put: artifactory-resource-image
     params:
       build: .
