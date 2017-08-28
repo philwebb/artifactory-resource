@@ -5,7 +5,7 @@ source $(dirname $0)/common.sh
 
 git clone git-repo release-git-repo
 
-pushd updated-git-repo > /dev/null
+pushd release-git-repo > /dev/null
 git branch
 snapshotVersion=$( get_revision_from_pom )
 releaseVersion=$( strip_snapshot_suffix "$snapshotVersion" )
