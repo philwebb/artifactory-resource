@@ -22,7 +22,6 @@ git add pom.xml
 git commit -m"Next development version (v$releaseVersion)"
 echo "default login $username password $password" > $HOME/.netrc
 git push origin "v$releaseVersion"
-build
 popd > /dev/null
 
 cp git-repo/target/artifactory-resource.jar built-artifact/
