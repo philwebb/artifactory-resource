@@ -3,14 +3,14 @@ resources:
   type: git
   source:
     uri: https://github.com/philwebb/artifactory-resource
+    username: ((github-username))
+    password: ((github-password))
     branch: master
     ignore_paths: ["ci/images/*"]
 - name: ci-images-git-repo
   type: git
   source:
     uri: https://github.com/philwebb/artifactory-resource
-    username: ((github-username))
-    password: ((github-password))
     branch: master
     paths: ["ci/images/*"]
 - name: artifactory-resource-ci-image

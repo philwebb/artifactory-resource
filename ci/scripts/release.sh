@@ -4,6 +4,7 @@ set -e
 source $(dirname $0)/common.sh
 
 pushd git-repo > /dev/null
+git branch
 snapshotVersion=$( get_revision_from_pom )
 releaseVersion=$( strip_snapshot_suffix "$snapshotVersion" )
 nextVersion=$( bump_version_number "$snapshotVersion" )
@@ -16,7 +17,7 @@ git commit -m"Release v$releaseVersion"
 git tag -a "v$releaseVersion" -m"Release version v$releaseVersion"
 build
 echo "Setting next development version (v$nextVersion)"
-git reset --hard HEAD^1
+git reset --hard HEAD^
 set_revision_to_pom "$nextVersion"
 git add pom.xml
 git commit -m"Next development version (v$releaseVersion)"
