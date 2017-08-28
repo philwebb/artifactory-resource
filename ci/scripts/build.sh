@@ -1,14 +1,11 @@
 #!/bin/bash
 set -e
 
-source /opt/concourse-java.sh
-
-setup_symlinks
-cleanup_maven_repo "io.spring.concourse.artifactoryresource"
+source $(dirname $0)/common.sh
 
 pushd git-repo > /dev/null
 version=$( get_revision_from_pom )
-run_maven clean install -Prun-local-artifactory
+build
 popd > /dev/null
 
 cp git-repo/target/artifactory-resource.jar built-artifact/
