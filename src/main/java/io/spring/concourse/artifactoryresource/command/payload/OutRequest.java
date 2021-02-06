@@ -27,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Request to the {@code "/opt/resource/out"} script.
@@ -92,6 +93,10 @@ public class OutRequest {
 
 		private final int threads;
 
+		private final String gpgPrivateKey;
+
+		private final String gpgPassphrase;
+
 		@JsonCreator
 		public Params(@JsonProperty("debug") Boolean debug, @JsonProperty("repo") String repo,
 				@JsonProperty("build_number") String buildNumber, @JsonProperty("folder") String folder,
@@ -99,7 +104,9 @@ public class OutRequest {
 				@JsonProperty("module_layout") String moduleLayout, @JsonProperty("build_uri") String buildUri,
 				@JsonProperty("strip_snapshot_timestamps") Boolean stripSnapshotTimestamps,
 				@JsonProperty("disable_checksum_uploads") Boolean disableChecksumUploads,
-				@JsonProperty("artifact_set") List<ArtifactSet> artifactSet, @JsonProperty("threads") Integer threads) {
+				@JsonProperty("artifact_set") List<ArtifactSet> artifactSet, @JsonProperty("threads") Integer threads,
+				@JsonProperty("gpg_private_key") String gpgPrivateKey,
+				@JsonProperty("gpg_passphrase") String gpgPassphrase) {
 			Assert.hasText(repo, "Repo must not be empty");
 			Assert.hasText(folder, "Folder must not be empty");
 			this.debug = (debug != null) ? debug : false;
@@ -117,6 +124,8 @@ public class OutRequest {
 			this.artifactSet = (artifactSet != null) ? Collections.unmodifiableList(new ArrayList<>(artifactSet))
 					: Collections.emptyList();
 			this.threads = Integer.max(1, (threads != null) ? threads : 1);
+			this.gpgPrivateKey = gpgPrivateKey;
+			this.gpgPassphrase = gpgPassphrase;
 		}
 
 		public boolean isDebug() {
@@ -167,13 +176,24 @@ public class OutRequest {
 			return this.threads;
 		}
 
+		public String getGpgPrivateKey() {
+			return this.gpgPrivateKey;
+		}
+
+		public String getGpgPassphrase() {
+			return this.gpgPassphrase;
+		}
+
 		@Override
 		public String toString() {
 			return new ToStringCreator(this).append("buildNumber", this.buildNumber).append("folder", this.folder)
 					.append("include", this.include).append("exclude", this.exclude)
 					.append("moduleLayout", this.moduleLayout).append("buildUri", this.buildUri)
 					.append("stripSnapshotTimestamps", this.stripSnapshotTimestamps)
-					.append("artifactSet", this.artifactSet).append("threads", this.threads).toString();
+					.append("artifactSet", this.artifactSet).append("threads", this.threads)
+					.append("gpgPrivateKey", (StringUtils.hasText(this.gpgPrivateKey)) ? "<set>" : "<not set>")
+					.append("gpgPassphrase", (StringUtils.hasText(this.gpgPassphrase)) ? "<set>" : "<not set>")
+					.toString();
 		}
 
 	}

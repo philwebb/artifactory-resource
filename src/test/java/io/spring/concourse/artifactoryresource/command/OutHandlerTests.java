@@ -346,7 +346,7 @@ class OutHandlerTests {
 		return new OutRequest(new Source("https://ci.example.com", "admin", "password", "my-build", null, null),
 				new Params(false, "libs-snapshot-local", buildNumber, "folder", include, exclude, "mock",
 						"https://ci.example.com/1234", stripSnapshotTimestamps, disableChecksumUploads, artifactSet,
-						threads));
+						threads, null, null));
 	}
 
 	private Directory createDirectory() throws IOException {

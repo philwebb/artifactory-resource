@@ -46,6 +46,7 @@ import io.spring.concourse.artifactoryresource.command.payload.OutRequest.Params
 import io.spring.concourse.artifactoryresource.command.payload.OutResponse;
 import io.spring.concourse.artifactoryresource.command.payload.Source;
 import io.spring.concourse.artifactoryresource.command.payload.Version;
+import io.spring.concourse.artifactoryresource.gpg.GpgSigner;
 import io.spring.concourse.artifactoryresource.io.Directory;
 import io.spring.concourse.artifactoryresource.io.DirectoryScanner;
 import io.spring.concourse.artifactoryresource.io.FileSet;
@@ -113,6 +114,10 @@ public class OutHandler {
 		ArtifactoryServer artifactoryServer = getArtifactoryServer(source);
 		MultiValueMap<Category, DeployableArtifact> batchedArtifacts = getBatchedArtifacts(buildNumber, buildTimestamp,
 				source, params, directory);
+		if (params.getGpg() != null) {
+			console.log("Signing artifacts");
+			batchedArtifacts = new GpgSigner().sign(batchedArtifacts);
+		}
 		int size = batchedArtifacts.values().stream().mapToInt(List::size).sum();
 		Assert.state(size > 0, "No artifacts found to deploy");
 		console.log("Deploying {} artifacts to {} as build {} using {} thread(s)", size, source.getUri(), buildNumber,
