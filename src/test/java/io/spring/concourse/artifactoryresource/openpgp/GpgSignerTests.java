@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.gpg;
+package io.spring.concourse.artifactoryresource.openpgp;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -31,6 +31,7 @@ import java.security.Security;
 import java.security.SignatureException;
 import java.util.Date;
 
+import io.spring.concourse.artifactoryresource.openpgp.GpgSigner;
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.bouncycastle.bcpg.HashAlgorithmTags;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;

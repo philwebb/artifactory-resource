@@ -1,4 +1,4 @@
-package io.spring.concourse.artifactoryresource.gpg;
+package io.spring.concourse.artifactoryresource.openpgp;
 
 import java.io.FileInputStream;
 import java.io.InputStream;

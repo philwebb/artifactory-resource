@@ -46,7 +46,6 @@ import io.spring.concourse.artifactoryresource.command.payload.OutRequest.Params
 import io.spring.concourse.artifactoryresource.command.payload.OutResponse;
 import io.spring.concourse.artifactoryresource.command.payload.Source;
 import io.spring.concourse.artifactoryresource.command.payload.Version;
-import io.spring.concourse.artifactoryresource.gpg.GpgSigner;
 import io.spring.concourse.artifactoryresource.io.Directory;
 import io.spring.concourse.artifactoryresource.io.DirectoryScanner;
 import io.spring.concourse.artifactoryresource.io.FileSet;
@@ -54,6 +53,7 @@ import io.spring.concourse.artifactoryresource.io.FileSet.Category;
 import io.spring.concourse.artifactoryresource.io.PathFilter;
 import io.spring.concourse.artifactoryresource.maven.MavenCoordinates;
 import io.spring.concourse.artifactoryresource.maven.MavenVersionType;
+import io.spring.concourse.artifactoryresource.openpgp.GpgSigner;
 import io.spring.concourse.artifactoryresource.system.ConsoleLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

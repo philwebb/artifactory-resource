@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.gpg;
+package io.spring.concourse.artifactoryresource.openpgp;
 
 import java.io.IOException;
 import java.io.InputStream;
