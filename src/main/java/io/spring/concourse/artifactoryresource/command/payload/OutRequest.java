@@ -93,9 +93,9 @@ public class OutRequest {
 
 		private final int threads;
 
-		private final String gpgPrivateKey;
+		private final String signingKey;
 
-		private final String gpgPassphrase;
+		private final String signingPassphrase;
 
 		@JsonCreator
 		public Params(@JsonProperty("debug") Boolean debug, @JsonProperty("repo") String repo,
@@ -105,8 +105,8 @@ public class OutRequest {
 				@JsonProperty("strip_snapshot_timestamps") Boolean stripSnapshotTimestamps,
 				@JsonProperty("disable_checksum_uploads") Boolean disableChecksumUploads,
 				@JsonProperty("artifact_set") List<ArtifactSet> artifactSet, @JsonProperty("threads") Integer threads,
-				@JsonProperty("gpg_private_key") String gpgPrivateKey,
-				@JsonProperty("gpg_passphrase") String gpgPassphrase) {
+				@JsonProperty("signing_key") String signingKey,
+				@JsonProperty("signing_passphrase") String signingPassphrase) {
 			Assert.hasText(repo, "Repo must not be empty");
 			Assert.hasText(folder, "Folder must not be empty");
 			this.debug = (debug != null) ? debug : false;
@@ -124,8 +124,8 @@ public class OutRequest {
 			this.artifactSet = (artifactSet != null) ? Collections.unmodifiableList(new ArrayList<>(artifactSet))
 					: Collections.emptyList();
 			this.threads = Integer.max(1, (threads != null) ? threads : 1);
-			this.gpgPrivateKey = gpgPrivateKey;
-			this.gpgPassphrase = gpgPassphrase;
+			this.signingKey = signingKey;
+			this.signingPassphrase = signingPassphrase;
 		}
 
 		public boolean isDebug() {
@@ -176,12 +176,12 @@ public class OutRequest {
 			return this.threads;
 		}
 
-		public String getGpgPrivateKey() {
-			return this.gpgPrivateKey;
+		public String getSigningKey() {
+			return this.signingKey;
 		}
 
-		public String getGpgPassphrase() {
-			return this.gpgPassphrase;
+		public String getSigningPassphrase() {
+			return this.signingPassphrase;
 		}
 
 		@Override
@@ -191,8 +191,8 @@ public class OutRequest {
 					.append("moduleLayout", this.moduleLayout).append("buildUri", this.buildUri)
 					.append("stripSnapshotTimestamps", this.stripSnapshotTimestamps)
 					.append("artifactSet", this.artifactSet).append("threads", this.threads)
-					.append("gpgPrivateKey", (StringUtils.hasText(this.gpgPrivateKey)) ? "<set>" : "<not set>")
-					.append("gpgPassphrase", (StringUtils.hasText(this.gpgPassphrase)) ? "<set>" : "<not set>")
+					.append("signingKey", (StringUtils.hasText(this.signingKey)) ? "<set>" : "<not set>")
+					.append("signingPassphrase", (StringUtils.hasText(this.signingPassphrase)) ? "<set>" : "<not set>")
 					.toString();
 		}
 

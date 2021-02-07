@@ -17,6 +17,7 @@
 package io.spring.concourse.artifactoryresource.command;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -53,7 +54,7 @@ import io.spring.concourse.artifactoryresource.io.FileSet.Category;
 import io.spring.concourse.artifactoryresource.io.PathFilter;
 import io.spring.concourse.artifactoryresource.maven.MavenCoordinates;
 import io.spring.concourse.artifactoryresource.maven.MavenVersionType;
-import io.spring.concourse.artifactoryresource.openpgp.GpgSigner;
+import io.spring.concourse.artifactoryresource.openpgp.ArmoredAsciiSigner;
 import io.spring.concourse.artifactoryresource.system.ConsoleLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,9 +115,8 @@ public class OutHandler {
 		ArtifactoryServer artifactoryServer = getArtifactoryServer(source);
 		MultiValueMap<Category, DeployableArtifact> batchedArtifacts = getBatchedArtifacts(buildNumber, buildTimestamp,
 				source, params, directory);
-		if (params.getGpg() != null) {
-			console.log("Signing artifacts");
-			batchedArtifacts = new GpgSigner().sign(batchedArtifacts);
+		if (StringUtils.hasText(params.getSigningKey())) {
+			batchedArtifacts = signArtifacts(batchedArtifacts, params.getSigningKey(), params.getSigningPassphrase());
 		}
 		int size = batchedArtifacts.values().stream().mapToInt(List::size).sum();
 		Assert.state(size > 0, "No artifacts found to deploy");
@@ -205,6 +205,18 @@ public class OutHandler {
 		String stripped = path.replace(coordinates.getSnapshotVersion(), coordinates.getVersion());
 		logger.debug("Stripped timestamp version {} to {}", path, stripped);
 		return stripped;
+	}
+
+	private MultiValueMap<Category, DeployableArtifact> signArtifacts(
+			MultiValueMap<Category, DeployableArtifact> batchedArtifacts, String signingKey, String signingPassphrase) {
+		try {
+			console.log("Signing artifacts");
+			ArmoredAsciiSigner signer = ArmoredAsciiSigner.get(signingKey, signingPassphrase);
+			return new DeployableArtifactsSigner(signer).sign(batchedArtifacts);
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException("Unable to sign artifacts", ex);
+		}
 	}
 
 	private void deployArtifacts(ArtifactoryServer artifactoryServer, Params params,

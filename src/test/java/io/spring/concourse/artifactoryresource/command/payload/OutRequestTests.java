@@ -89,8 +89,8 @@ class OutRequestTests {
 		assertThat(request.getParams().isStripSnapshotTimestamps()).isEqualTo(false);
 		assertThat(request.getParams().isDisableChecksumUploads()).isEqualTo(true);
 		assertThat(request.getParams().getThreads()).isEqualTo(8);
-		assertThat(request.getParams().getGpgPrivateKey()).isNull();
-		assertThat(request.getParams().getGpgPassphrase()).isNull();
+		assertThat(request.getParams().getSigningKey()).isNull();
+		assertThat(request.getParams().getSigningPassphrase()).isNull();
 		List<ArtifactSet> artifactSet = request.getParams().getArtifactSet();
 		assertThat(artifactSet).hasSize(1);
 		assertThat(artifactSet.get(0).getInclude()).containsExactly("**/*.zip");
@@ -111,6 +111,13 @@ class OutRequestTests {
 		assertThat(request.getParams().getRepo()).isEqualTo("libs-snapshot-local");
 		assertThat(request.getParams().getFolder()).isEqualTo("dist");
 		assertThat(request.getParams().getBuildUri()).isEqualTo("https://ci.example.com");
+	}
+
+	@Test
+	void readDeserializesJsonWithSigning() throws Exception {
+		OutRequest request = this.json.readObject("out-request-with-signing.json");
+		assertThat(request.getParams().getSigningKey()).isEqualTo("sign.txt");
+		assertThat(request.getParams().getSigningPassphrase()).isEqualTo("secret");
 	}
 
 	@Test
