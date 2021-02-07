@@ -75,29 +75,24 @@ public class ArmoredAsciiSigner {
 
 	private final Clock clock;
 
-	private ArmoredAsciiSigner(Clock clock, InputStream signingKeyInputStream, String passphrase)
-			throws IOException, PGPException {
+	private ArmoredAsciiSigner(Clock clock, InputStream signingKeyInputStream, String passphrase) throws IOException {
 		PGPSecretKey signingKey = getSigningKey(signingKeyInputStream);
 		this.clock = clock;
 		this.signingKey = signingKey;
-		this.privateKey = signingKey.extractPrivateKey(getDecryptorFactory(passphrase));
+		this.privateKey = extractPrivateKey(passphrase, signingKey);
 		this.contentSigner = getContentSigner(signingKey.getPublicKey().getAlgorithm());
 	}
 
-	private PBESecretKeyDecryptor getDecryptorFactory(String passphrase) throws PGPException {
-		return new JcePBESecretKeyDecryptorBuilder().setProvider(BouncyCastleProvider.PROVIDER_NAME)
-				.build(passphrase.toCharArray());
-	}
-
-	private JcaPGPContentSignerBuilder getContentSigner(int signingAlgorithm) {
-		return new JcaPGPContentSignerBuilder(signingAlgorithm, HashAlgorithmTags.SHA256)
-				.setProvider(BouncyCastleProvider.PROVIDER_NAME);
-	}
-
-	private PGPSecretKey getSigningKey(InputStream inputStream) throws IOException, PGPException {
-		try (InputStream decoderStream = PGPUtil.getDecoderStream(inputStream)) {
-			PGPSecretKeyRingCollection keyrings = new PGPSecretKeyRingCollection(decoderStream, FINGERPRINT_CALCULATOR);
-			return getSigningKey(keyrings);
+	private PGPSecretKey getSigningKey(InputStream inputStream) throws IOException {
+		try {
+			try (InputStream decoderStream = PGPUtil.getDecoderStream(inputStream)) {
+				PGPSecretKeyRingCollection keyrings = new PGPSecretKeyRingCollection(decoderStream,
+						FINGERPRINT_CALCULATOR);
+				return getSigningKey(keyrings);
+			}
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException("Unable to read signing key", ex);
 		}
 	}
 
@@ -111,6 +106,25 @@ public class ArmoredAsciiSigner {
 			}
 		}
 		throw new IllegalArgumentException("Keyring does not contain a suitable signing key");
+	}
+
+	private PGPPrivateKey extractPrivateKey(String passphrase, PGPSecretKey signingKey) {
+		try {
+			return signingKey.extractPrivateKey(getDecryptorFactory(passphrase));
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException("Unable to extract private key", ex);
+		}
+	}
+
+	private PBESecretKeyDecryptor getDecryptorFactory(String passphrase) throws PGPException {
+		return new JcePBESecretKeyDecryptorBuilder().setProvider(BouncyCastleProvider.PROVIDER_NAME)
+				.build(passphrase.toCharArray());
+	}
+
+	private JcaPGPContentSignerBuilder getContentSigner(int signingAlgorithm) {
+		return new JcaPGPContentSignerBuilder(signingAlgorithm, HashAlgorithmTags.SHA256)
+				.setProvider(BouncyCastleProvider.PROVIDER_NAME);
 	}
 
 	/**
@@ -158,6 +172,7 @@ public class ArmoredAsciiSigner {
 		Assert.notNull(source, "Source must not be null");
 		Assert.notNull(destination, "Destination must not be null");
 		try (ArmoredOutputStream armoredOutputStream = new ArmoredOutputStream(destination)) {
+			armoredOutputStream.setHeader(ArmoredOutputStream.VERSION_HDR, null);
 			sign(source, armoredOutputStream);
 		}
 		catch (PGPException ex) {
@@ -223,13 +238,14 @@ public class ArmoredAsciiSigner {
 	 */
 	public static ArmoredAsciiSigner get(Clock clock, String signingKey, String passphrase) throws IOException {
 		Assert.notNull(clock, "Clock must not be null");
+		Assert.notNull(signingKey, "SigningKey must not be null");
 		Assert.hasText(signingKey, "SigningKey must not be empty");
 		if (isArmoredAscii(signingKey)) {
 			byte[] bytes = signingKey.getBytes(StandardCharsets.UTF_8);
 			return get(clock, new ByteArrayInputStream(bytes), passphrase);
 		}
 		Assert.isTrue(!signingKey.contains("\n"),
-				"Signing key is not does not contain a PHP private key block and does not reference a file");
+				"Signing key is not does not contain a PGP private key block and does not reference a file");
 		return get(clock, new File(signingKey), passphrase);
 	}
 
@@ -319,12 +335,7 @@ public class ArmoredAsciiSigner {
 		Assert.notNull(clock, "Clock must not be null");
 		Assert.notNull(signingKey, "SigningKey must not be null");
 		Assert.notNull(passphrase, "Passphrase must not be null");
-		try {
-			return new ArmoredAsciiSigner(clock, signingKey, passphrase);
-		}
-		catch (PGPException ex) {
-			throw new IllegalStateException(ex);
-		}
+		return new ArmoredAsciiSigner(clock, signingKey, passphrase);
 	}
 
 	private static boolean isArmoredAscii(String signingKey) {
